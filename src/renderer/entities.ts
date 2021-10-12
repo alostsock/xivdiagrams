@@ -7,13 +7,20 @@ import {
 	Bounds,
 	calcRectPoints,
 	calcBoundsFromPoints,
+	Points,
 } from 'renderer/geometry';
-import { Control, CircleRadiusControl } from 'renderer/controls';
+import {
+	Control,
+	CircleRadiusControl,
+	RectCornerControl,
+	RectRotationControl,
+} from 'renderer/controls';
 
-const PADDING = 10;
+const PADDING = 24;
 const ROUGH_OPTIONS: RoughOptions = {
-	roughness: 0.5,
-	bowing: 0.5,
+	roughness: 1,
+	bowing: 1,
+	curveFitting: 0.99,
 };
 
 interface BaseEntityData {
@@ -36,6 +43,7 @@ export interface RectData extends BaseEntityData {
 	width: number;
 	height: number;
 	rotation: number;
+	points: Points;
 }
 
 export type EntityData = CircleData | RectData;
@@ -111,7 +119,12 @@ export class Rect implements Entity<RectData> {
 		this.width = width;
 		this.height = height;
 		this.rotation = rotation;
-		this.controls = [];
+		this.controls = [0, 1, 2, 3].map((ix) => new RectCornerControl(this, ix));
+		this.controls.push(new RectRotationControl(this));
+	}
+
+	get points(): Points {
+		return calcRectPoints(this.origin, this.width, this.height, this.rotation);
 	}
 
 	get bounds(): Bounds {
@@ -126,14 +139,7 @@ export class Rect implements Entity<RectData> {
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		const points = calcRectPoints(
-			this.origin,
-			this.width,
-			this.height,
-			this.rotation
-		);
-
-		rc.polygon(points, {
+		rc.polygon(this.points, {
 			...ROUGH_OPTIONS,
 			seed: this.seed,
 			strokeWidth: this.strokeWidth,
@@ -141,6 +147,7 @@ export class Rect implements Entity<RectData> {
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
+			this.controls.forEach((c) => c.render(ctx));
 		}
 	}
 }

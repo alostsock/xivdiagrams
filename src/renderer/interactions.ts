@@ -3,7 +3,6 @@ import { action } from 'mobx';
 import { diagram } from 'renderer/diagram';
 import { Entities, Entity, EntityData } from 'renderer/entities';
 import {
-	calcRectPoints,
 	distToCircle,
 	distToPolygon,
 	Point,
@@ -117,13 +116,7 @@ export function hitTest(
 				break;
 			}
 			case 'rect': {
-				const points = calcRectPoints(
-					entity.origin,
-					entity.width,
-					entity.height,
-					entity.rotation
-				);
-				const d = distToPolygon(point, points);
+				const d = distToPolygon(point, entity.points);
 				if (d <= tolerance) return entity;
 				break;
 			}
