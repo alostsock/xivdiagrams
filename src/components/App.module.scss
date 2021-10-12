@@ -1,0 +1,48 @@
+.grid {
+  min-height: 100vh;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-rows: min-content 1fr 1fr;
+  grid-template-columns: 20rem 100vh;
+  grid-template-areas:
+    "a x"
+    "b x"
+    "c x";
+
+}
+
+.grid > * {
+  width: 100%;
+  height: 100%;
+}
+
+.heading, .properties, .notes {
+  background: #eee;
+}
+
+.heading {
+  grid-area: a;
+}
+
+.properties {
+  grid-area: b;
+}
+
+.notes {
+  grid-area: c;
+}
+
+.diagram {
+  grid-area: x;
+  position: relative;
+  max-width: 100vh;
+  max-height: 100vh;
+}
+
+.controls {
+  position: absolute;
+  top: 0.5rem;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
