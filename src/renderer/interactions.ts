@@ -49,10 +49,10 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	const hit = hitTest([x, y], diagram.entities);
 
-	diagram.entities.forEach((e) => (e.isSelected = false));
+	diagram.setSelection([]);
 
 	if (hit) {
-		hit.isSelected = true;
+		diagram.setSelection([hit]);
 		diagram.dragAnchor = [x, y];
 	}
 	diagram.render();

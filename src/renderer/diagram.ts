@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
-import { Entities, EntityData } from 'renderer/entities';
+import { Entities, Entity, EntityData } from 'renderer/entities';
 import { Point } from 'renderer/geometry';
 
 class Diagram {
@@ -55,6 +55,14 @@ class Diagram {
 
 	selectEntityType(type: EntityData['type']) {
 		this.selectedEntityType = type;
+	}
+
+	setSelection(selected: Entities) {
+		const selectedIds = new Set(selected.map((s) => s.id));
+		const unselected = this.entities.filter((e) => !selectedIds.has(e.id));
+		unselected.forEach((e) => (e.isSelected = false));
+		selected.forEach((e) => (e.isSelected = true));
+		this.entities = [...unselected, ...selected];
 	}
 }
 
