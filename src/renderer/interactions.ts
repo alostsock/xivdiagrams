@@ -35,10 +35,8 @@ export const handlePointerMove = action(function handlePointerMove(
 		return;
 	}
 
-	const hit = hitTest([x, y], diagram.entities);
-
-	if (hit && hit.isSelected && diagram.selectedIds.size === 1) {
-		for (const control of hit.controls) {
+	if (diagram.selectedEntities.length === 1) {
+		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
 				diagram.cursorType = 'crosshair';
 				return;
@@ -46,6 +44,7 @@ export const handlePointerMove = action(function handlePointerMove(
 		}
 	}
 
+	const hit = hitTest([x, y], diagram.entities);
 	if (hit) {
 		diagram.cursorType = 'move';
 		return;
@@ -62,10 +61,8 @@ export const handlePointerDown = action(function handlePointerDown(
 	const x = e.clientX - left;
 	const y = e.clientY - top;
 
-	const hit = hitTest([x, y], diagram.entities);
-
-	if (hit && hit.isSelected && diagram.selectedIds.size === 1) {
-		for (const control of hit.controls) {
+	if (diagram.selectedEntities.length === 1) {
+		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
 				diagram.controlInUse = control;
 				diagram.cursorType = 'crosshair';
@@ -74,6 +71,7 @@ export const handlePointerDown = action(function handlePointerDown(
 		}
 	}
 
+	const hit = hitTest([x, y], diagram.entities);
 	if (hit) {
 		diagram.setSelection([hit]);
 		diagram.dragAnchor = [x, y];

@@ -16,7 +16,7 @@ import {
 	RectRotationControl,
 } from 'renderer/controls';
 
-const PADDING = 24;
+const PADDING = 0;
 const ROUGH_OPTIONS: RoughOptions = {
 	roughness: 1,
 	bowing: 1,

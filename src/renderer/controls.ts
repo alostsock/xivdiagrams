@@ -102,7 +102,7 @@ export class RectRotationControl implements Control<Rect> {
 	constructor(public parent: Rect) {}
 
 	get position() {
-		const distFromCenter = this.parent.height / 2 + 14;
+		const distFromCenter = this.parent.height / 2 + 20;
 		const [x0, y0] = this.parent.origin;
 		return rotatePoint(
 			[x0, y0],
