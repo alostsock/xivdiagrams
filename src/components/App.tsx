@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { action, runInAction, autorun } from 'mobx';
+import { runInAction, autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { diagram } from 'renderer/diagram';
 import {
