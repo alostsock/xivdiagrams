@@ -1,7 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
-import { Entities, Entity, EntityData } from 'renderer/entities';
-import { Point } from 'renderer/geometry';
+import type { Entities, EntityData } from 'renderer/entities';
+import type { Control } from 'renderer/controls';
+import type { Point } from 'renderer/geometry';
 
 class Diagram {
 	canvas: HTMLCanvasElement | null = null;
@@ -10,11 +11,15 @@ class Diagram {
 	ready = false;
 
 	entities: Entities = [];
+	selectedIds = new Set<string>();
 
+	// ui state
 	selectedEntityType: EntityData['type'] = 'circle';
-	cursorType: 'default' | 'crosshair' | 'move' | 'grab' = 'crosshair';
+	cursorType: 'default' | 'crosshair' | 'move' | 'grab' = 'default';
 
+	// interaction state
 	dragAnchor: Point | null = null;
+	controlInUse: Control<any> | null = null;
 
 	constructor() {
 		makeAutoObservable(this);
@@ -58,8 +63,8 @@ class Diagram {
 	}
 
 	setSelection(selected: Entities) {
-		const selectedIds = new Set(selected.map((s) => s.id));
-		const unselected = this.entities.filter((e) => !selectedIds.has(e.id));
+		this.selectedIds = new Set(selected.map((s) => s.id));
+		const unselected = this.entities.filter((e) => !this.selectedIds.has(e.id));
 		unselected.forEach((e) => (e.isSelected = false));
 		selected.forEach((e) => (e.isSelected = true));
 		this.entities = [...unselected, ...selected];

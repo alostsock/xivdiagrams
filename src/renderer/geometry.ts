@@ -9,12 +9,16 @@ export type Bounds = {
 	bottom: number;
 };
 
-function dist2([x0, y0]: Point, [x1, y1]: Point) {
+export function dist2([x0, y0]: Point, [x1, y1]: Point) {
 	return (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
 }
 
-function dot(u: number[], v: number[]): number {
+export function dot(u: number[], v: number[]): number {
 	return u.reduce((acc, current, i) => (acc += current * v[i]), 0);
+}
+
+export function calcAngle([x1, y1]: Point, [x2, y2]: Point): number {
+	return Math.atan2(y2 - y1, x2 - x1);
 }
 
 export function rotatePoint(
@@ -71,10 +75,6 @@ export function pointInBounds(
 	{ left, right, top, bottom }: Bounds
 ): boolean {
 	return x > left && x < right && y > top && y < bottom;
-}
-
-export function calcAngle([x1, y1]: Point, [x2, y2]: Point): number {
-	return Math.atan2(y2 - y1, x2 - x1);
 }
 
 export function pointInCircle(

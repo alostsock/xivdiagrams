@@ -1,17 +1,18 @@
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
-import { RoughGenerator } from 'roughjs/bin/generator';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
+import { RoughGenerator } from 'roughjs/bin/generator';
 import {
 	Point,
 	Bounds,
 	calcRectPoints,
 	calcBoundsFromPoints,
 } from 'renderer/geometry';
+import { Control, CircleRadiusControl } from 'renderer/controls';
 
 const PADDING = 10;
 const ROUGH_OPTIONS: RoughOptions = {
-	roughness: 0.7,
+	roughness: 0.5,
 	bowing: 0.5,
 };
 
@@ -22,6 +23,7 @@ interface BaseEntityData {
 	bounds: Bounds;
 	isSelected: boolean;
 	origin: Point;
+	strokeWidth: number;
 }
 
 export interface CircleData extends BaseEntityData {
@@ -39,6 +41,7 @@ export interface RectData extends BaseEntityData {
 export type EntityData = CircleData | RectData;
 
 export type Entity<T> = T & {
+	controls: Control<Entity<T>>[];
 	draw: (rc: RoughCanvas, ctx: CanvasRenderingContext2D) => void;
 };
 
@@ -50,12 +53,16 @@ export class Circle implements Entity<CircleData> {
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
 	origin: Point;
+	strokeWidth = 1;
 	radius: number;
+
+	controls: Control<Circle>[];
 
 	constructor(options: Pick<CircleData, 'origin' | 'radius'>) {
 		const { origin, radius } = options;
 		this.origin = origin;
 		this.radius = radius;
+		this.controls = [new CircleRadiusControl(this)];
 	}
 
 	get bounds(): Bounds {
@@ -70,10 +77,15 @@ export class Circle implements Entity<CircleData> {
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const [x, y] = this.origin;
-		rc.circle(x, y, 2 * this.radius, { seed: this.seed, ...ROUGH_OPTIONS });
+		rc.circle(x, y, 2 * this.radius, {
+			...ROUGH_OPTIONS,
+			seed: this.seed,
+			strokeWidth: this.strokeWidth,
+		});
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
+			this.controls.forEach((c) => c.render(ctx));
 		}
 	}
 }
@@ -84,9 +96,12 @@ export class Rect implements Entity<RectData> {
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
 	origin: Point;
+	strokeWidth = 1;
 	width: number;
 	height: number;
 	rotation: number;
+
+	controls: Control<Rect>[];
 
 	constructor(
 		options: Pick<RectData, 'origin' | 'width' | 'height' | 'rotation'>
@@ -96,6 +111,7 @@ export class Rect implements Entity<RectData> {
 		this.width = width;
 		this.height = height;
 		this.rotation = rotation;
+		this.controls = [];
 	}
 
 	get bounds(): Bounds {
@@ -117,7 +133,11 @@ export class Rect implements Entity<RectData> {
 			this.rotation
 		);
 
-		rc.polygon(points, { seed: this.seed, ...ROUGH_OPTIONS });
+		rc.polygon(points, {
+			...ROUGH_OPTIONS,
+			seed: this.seed,
+			strokeWidth: this.strokeWidth,
+		});
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);

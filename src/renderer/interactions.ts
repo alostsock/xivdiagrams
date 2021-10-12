@@ -8,7 +8,6 @@ import {
 	distToPolygon,
 	Point,
 	pointInBounds,
-	pointInPolygon,
 } from 'renderer/geometry';
 
 export const handlePointerMove = action(function handlePointerMove(
@@ -32,11 +31,28 @@ export const handlePointerMove = action(function handlePointerMove(
 		return;
 	}
 
-	if (!hitTest([x, y], diagram.entities)) {
-		diagram.cursorType = 'default';
-	} else {
-		diagram.cursorType = 'move';
+	if (diagram.controlInUse) {
+		diagram.controlInUse.handleDrag([x, y]);
+		return;
 	}
+
+	const hit = hitTest([x, y], diagram.entities);
+
+	if (hit && hit.isSelected && diagram.selectedIds.size === 1) {
+		for (const control of hit.controls) {
+			if (control.hitTest([x, y])) {
+				diagram.cursorType = 'crosshair';
+				return;
+			}
+		}
+	}
+
+	if (hit) {
+		diagram.cursorType = 'move';
+		return;
+	}
+
+	diagram.cursorType = 'default';
 });
 
 export const handlePointerDown = action(function handlePointerDown(
@@ -49,12 +65,24 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	const hit = hitTest([x, y], diagram.entities);
 
-	diagram.setSelection([]);
+	if (hit && hit.isSelected && diagram.selectedIds.size === 1) {
+		for (const control of hit.controls) {
+			if (control.hitTest([x, y])) {
+				diagram.controlInUse = control;
+				diagram.cursorType = 'crosshair';
+				return;
+			}
+		}
+	}
 
 	if (hit) {
 		diagram.setSelection([hit]);
 		diagram.dragAnchor = [x, y];
+		diagram.render();
+		return;
 	}
+
+	diagram.setSelection([]);
 	diagram.render();
 });
 
@@ -63,6 +91,7 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 ) {
 	e.stopPropagation();
 	diagram.dragAnchor = null;
+	diagram.controlInUse = null;
 	diagram.cursorType = 'default';
 });
 
@@ -76,27 +105,27 @@ export function hitTest(
 	for (let i = entities.length - 1; i > -1; i--) {
 		const entity = entities[i];
 
-		if (pointInBounds(point, entity.bounds)) {
-			if (entity.isSelected) return entity;
+		if (!pointInBounds(point, entity.bounds)) continue;
 
-			if (
-				entity.type === 'circle' &&
-				distToCircle(point, entity.origin, entity.radius) <= tolerance
-			) {
-				return entity;
-			} else if (
-				entity.type === 'rect' &&
-				distToPolygon(
-					point,
-					calcRectPoints(
-						entity.origin,
-						entity.width,
-						entity.height,
-						entity.rotation
-					)
-				) < tolerance
-			) {
-				return entity;
+		// selection should bypass detailed hit testing
+		if (entity.isSelected) return entity;
+
+		switch (entity.type) {
+			case 'circle': {
+				const d = distToCircle(point, entity.origin, entity.radius);
+				if (d <= tolerance) return entity;
+				break;
+			}
+			case 'rect': {
+				const points = calcRectPoints(
+					entity.origin,
+					entity.width,
+					entity.height,
+					entity.rotation
+				);
+				const d = distToPolygon(point, points);
+				if (d <= tolerance) return entity;
+				break;
 			}
 		}
 	}
