@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
-import type { Options as RoughOptions } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
+import { ROUGH_OPTIONS, BOUNDS_MARGIN } from 'renderer/constants';
 import {
 	Point,
 	Points,
@@ -18,13 +18,6 @@ import {
 	ConeRadiusRotationControl,
 	ConeAngleControl,
 } from 'renderer/controls';
-
-const PADDING = 0;
-const ROUGH_OPTIONS: RoughOptions = {
-	roughness: 1,
-	bowing: 1,
-	curveFitting: 0.97,
-};
 
 interface BaseEntityData {
 	id: string;
@@ -86,10 +79,10 @@ export class Circle implements Entity<CircleData> {
 	get bounds(): Bounds {
 		const [x, y] = this.origin;
 		return {
-			left: x - this.radius - PADDING,
-			right: x + this.radius + PADDING,
-			top: y - this.radius - PADDING,
-			bottom: y + this.radius + PADDING,
+			left: x - this.radius - BOUNDS_MARGIN,
+			right: x + this.radius + BOUNDS_MARGIN,
+			top: y - this.radius - BOUNDS_MARGIN,
+			bottom: y + this.radius + BOUNDS_MARGIN,
 		};
 	}
 
@@ -164,7 +157,14 @@ export class Cone implements Entity<ConeData> {
 			points.push([x0, y0 - this.radius]);
 		}
 
-		return calcBoundsFromPoints(points);
+		const bounds = calcBoundsFromPoints(points);
+
+		return {
+			left: bounds.left - BOUNDS_MARGIN,
+			right: bounds.right + BOUNDS_MARGIN,
+			top: bounds.top - BOUNDS_MARGIN,
+			bottom: bounds.bottom + BOUNDS_MARGIN,
+		};
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
@@ -228,8 +228,8 @@ export class Rect implements Entity<RectData> {
 		return calcBoundsFromPoints(
 			calcRectPoints(
 				this.origin,
-				this.width + 2 * PADDING,
-				this.height + 2 * PADDING,
+				this.width + 2 * BOUNDS_MARGIN,
+				this.height + 2 * BOUNDS_MARGIN,
 				this.rotation
 			)
 		);

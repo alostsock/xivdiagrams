@@ -1,3 +1,4 @@
+import { CONTROL_RADIUS, CONTROL_OFFSET } from 'renderer/constants';
 import {
 	calcAngle,
 	Point,
@@ -19,11 +20,7 @@ export interface Control<T> {
 	handleDrag: (point: Point) => void;
 }
 
-function renderCircleControl(
-	ctx: CanvasRenderingContext2D,
-	[x, y]: Point,
-	radius: number
-) {
+function renderCircleControl(ctx: CanvasRenderingContext2D, [x, y]: Point) {
 	ctx.save();
 
 	ctx.strokeStyle = STROKE_STYLE;
@@ -31,11 +28,15 @@ function renderCircleControl(
 	ctx.fillStyle = FILL_STYLE;
 
 	ctx.beginPath();
-	ctx.arc(x, y, radius, 0, Math.PI * 2);
+	ctx.arc(x, y, CONTROL_RADIUS, 0, Math.PI * 2);
 	ctx.fill();
 	ctx.stroke();
 
 	ctx.restore();
+}
+
+function hitTestCircleControl(point: Point, controlPosition: Point) {
+	return pointInCircle(point, controlPosition, CONTROL_RADIUS);
 }
 
 export class CircleRadiusControl implements Control<Circle> {
@@ -52,11 +53,11 @@ export class CircleRadiusControl implements Control<Circle> {
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
-		renderCircleControl(ctx, this.position, 7);
+		renderCircleControl(ctx, this.position);
 	}
 
 	hitTest(point: Point) {
-		return pointInCircle(point, this.position, 7);
+		return hitTestCircleControl(point, this.position);
 	}
 
 	handleDrag([x, y]: Point) {
@@ -80,11 +81,11 @@ export class ConeRadiusRotationControl implements Control<Cone> {
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
-		renderCircleControl(ctx, this.position, 7);
+		renderCircleControl(ctx, this.position);
 	}
 
 	hitTest(point: Point) {
-		return pointInCircle(point, this.position, 7);
+		return hitTestCircleControl(point, this.position);
 	}
 
 	handleDrag([x, y]: Point) {
@@ -111,11 +112,11 @@ export class ConeAngleControl implements Control<Cone> {
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
-		renderCircleControl(ctx, this.position, 7);
+		renderCircleControl(ctx, this.position);
 	}
 
 	hitTest(point: Point) {
-		return pointInCircle(point, this.position, 7);
+		return hitTestCircleControl(point, this.position);
 	}
 
 	handleDrag(point: Point) {
@@ -158,11 +159,11 @@ export class RectCornerControl implements Control<Rect> {
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
-		renderCircleControl(ctx, this.position, 7);
+		renderCircleControl(ctx, this.position);
 	}
 
 	hitTest(point: Point) {
-		return pointInCircle(point, this.position, 7);
+		return hitTestCircleControl(point, this.position);
 	}
 
 	handleDrag(point: Point) {
@@ -185,7 +186,7 @@ export class RectRotationControl implements Control<Rect> {
 	constructor(public parent: Rect) {}
 
 	get position() {
-		const distFromCenter = this.parent.height / 2 + 24;
+		const distFromCenter = this.parent.height / 2 + CONTROL_OFFSET;
 		const [x0, y0] = this.parent.origin;
 		return rotatePoint(
 			[x0, y0],
@@ -195,11 +196,11 @@ export class RectRotationControl implements Control<Rect> {
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
-		renderCircleControl(ctx, this.position, 7);
+		renderCircleControl(ctx, this.position);
 	}
 
 	hitTest(point: Point) {
-		return pointInCircle(point, this.position, 7);
+		return hitTestCircleControl(point, this.position);
 	}
 
 	handleDrag(point: Point) {

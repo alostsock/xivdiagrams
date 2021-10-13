@@ -1,5 +1,6 @@
 import { PointerEvent } from 'react';
 import { action } from 'mobx';
+import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { diagram } from 'renderer/diagram';
 import { Entities, Entity, EntityData } from 'renderer/entities';
 import {
@@ -97,8 +98,6 @@ export function hitTest(
 	point: Point,
 	entities: Entities
 ): Entity<EntityData> | false {
-	const tolerance = 10;
-
 	// elements in the fore should be hit first
 	for (let i = entities.length - 1; i > -1; i--) {
 		const entity = entities[i];
@@ -111,18 +110,18 @@ export function hitTest(
 		switch (entity.type) {
 			case 'circle': {
 				const d = distToCircle(point, entity.origin, entity.radius);
-				if (d <= tolerance) return entity;
+				if (d <= HIT_TEST_TOLERANCE) return entity;
 				break;
 			}
 			case 'cone': {
 				const { origin, radius, start, end } = entity;
 				const d = distToCone(point, origin, radius, start, end);
-				if (d <= tolerance) return entity;
+				if (d <= HIT_TEST_TOLERANCE) return entity;
 				break;
 			}
 			case 'rect': {
 				const d = distToPolygon(point, entity.points);
-				if (d <= tolerance) return entity;
+				if (d <= HIT_TEST_TOLERANCE) return entity;
 				break;
 			}
 		}
