@@ -141,7 +141,13 @@ export function distToCone(
 	// only check distance to arc if the point falls within the angle,
 	// otherwise the point is closer to a segment
 	const pointAngle = calcAngle(origin, point);
-	if (pointAngle > startAngle && pointAngle < endAngle) {
+	const pointAnglePi2 = pointAngle + Math.PI * 2;
+	const pointAngleNPi2 = pointAngle - Math.PI * 2;
+	if (
+		(pointAngle > startAngle && pointAngle < endAngle) ||
+		(pointAnglePi2 > startAngle && pointAnglePi2 < endAngle) ||
+		(pointAngleNPi2 > startAngle && pointAngleNPi2 < endAngle)
+	) {
 		distances.push(Math.abs(Math.hypot(x - x0, y - y0) - radius));
 	}
 	return Math.min(...distances);
