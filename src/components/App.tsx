@@ -7,15 +7,11 @@ import {
 	handlePointerDown,
 	handlePointerUpLeave,
 } from 'renderer/interactions';
-import { Circle, Rect } from 'renderer/entities';
+import { Circle, Cone, Rect } from 'renderer/entities';
 import styles from './App.module.scss';
 
 autorun(() => {
 	console.log('selected entity type', diagram.selectedEntityType);
-});
-
-autorun(() => {
-	console.log('dragging', diagram.dragAnchor ? true : false);
 });
 
 const App = observer(function App() {
@@ -38,6 +34,14 @@ const App = observer(function App() {
 						width: 50,
 						height: 80,
 						rotation: Math.PI / 4,
+					})
+				);
+				diagram.entities.push(
+					new Cone({
+						origin: [50, 250],
+						radius: 90,
+						start: 0,
+						end: Math.PI * 1.5,
 					})
 				);
 			});

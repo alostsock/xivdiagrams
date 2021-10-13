@@ -4,6 +4,7 @@ import { diagram } from 'renderer/diagram';
 import { Entities, Entity, EntityData } from 'renderer/entities';
 import {
 	distToCircle,
+	distToCone,
 	distToPolygon,
 	Point,
 	pointInBounds,
@@ -110,6 +111,12 @@ export function hitTest(
 		switch (entity.type) {
 			case 'circle': {
 				const d = distToCircle(point, entity.origin, entity.radius);
+				if (d <= tolerance) return entity;
+				break;
+			}
+			case 'cone': {
+				const { origin, radius, start, end } = entity;
+				const d = distToCone(point, origin, radius, start, end);
 				if (d <= tolerance) return entity;
 				break;
 			}

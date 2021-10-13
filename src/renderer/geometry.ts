@@ -122,6 +122,31 @@ export function distToSegment(p: Point, v: Point, w: Point) {
 	return Math.hypot(proj[0] - p[0], proj[1] - p[1]);
 }
 
+export function distToCone(
+	point: Point,
+	origin: Point,
+	radius: number,
+	startAngle: number,
+	endAngle: number
+): number {
+	const [x, y] = point;
+	const [x0, y0] = origin;
+	// get shortest distance to each side of the cone
+	const arcP1 = rotatePoint(origin, [x0 + radius, y0], startAngle);
+	const arcP2 = rotatePoint(origin, [x0 + radius, y0], endAngle);
+	const distances = [
+		distToSegment(point, origin, arcP1),
+		distToSegment(point, origin, arcP2),
+	];
+	// only check distance to arc if the point falls within the angle,
+	// otherwise the point is closer to a segment
+	const pointAngle = calcAngle(origin, point);
+	if (pointAngle > startAngle && pointAngle < endAngle) {
+		distances.push(Math.abs(Math.hypot(x - x0, y - y0) - radius));
+	}
+	return Math.min(...distances);
+}
+
 export function distToPolygon(point: Point, points: Points): number {
 	let minDist: number = Infinity;
 	// iterate through line segments

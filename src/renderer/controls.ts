@@ -4,7 +4,7 @@ import {
 	pointInCircle,
 	rotatePoint,
 } from 'renderer/geometry';
-import { Circle, Rect } from 'renderer/entities';
+import { Circle, Cone, Rect } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 
 const STROKE_STYLE = '#0060DF';
@@ -45,10 +45,10 @@ export class CircleRadiusControl implements Control<Circle> {
 
 	get position(): Point {
 		const [x0, y0] = this.parent.origin;
-		const distFromCenter = this.parent.radius;
-		const x = x0 + distFromCenter * Math.cos(this.angle);
-		const y = y0 + distFromCenter * Math.sin(this.angle);
-		return [x, y];
+		return [
+			x0 + this.parent.radius * Math.cos(this.angle),
+			y0 + this.parent.radius * Math.sin(this.angle),
+		];
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
@@ -63,6 +63,89 @@ export class CircleRadiusControl implements Control<Circle> {
 		const [x0, y0] = this.parent.origin;
 		this.angle = calcAngle([x0, y0], [x, y]);
 		this.parent.radius = Math.hypot(x - x0, y - y0);
+		diagram.render();
+	}
+}
+
+export class ConeRadiusRotationControl implements Control<Cone> {
+	constructor(public parent: Cone) {}
+
+	get position(): Point {
+		const midAngle = (this.parent.start + this.parent.end) / 2;
+		const [x0, y0] = this.parent.origin;
+		return [
+			x0 + this.parent.radius * Math.cos(midAngle),
+			y0 + this.parent.radius * Math.sin(midAngle),
+		];
+	}
+
+	render(ctx: CanvasRenderingContext2D) {
+		renderCircleControl(ctx, this.position, 7);
+	}
+
+	hitTest(point: Point) {
+		return pointInCircle(point, this.position, 7);
+	}
+
+	handleDrag([x, y]: Point) {
+		const [x0, y0] = this.parent.origin;
+		this.parent.radius = Math.hypot(x - x0, y - y0);
+
+		const angleWidth = this.parent.end - this.parent.start;
+		const midAngle = calcAngle(this.parent.origin, [x, y]);
+		this.parent.start = midAngle - angleWidth / 2;
+		this.parent.end = midAngle + angleWidth / 2;
+		diagram.render();
+	}
+}
+
+export class ConeAngleControl implements Control<Cone> {
+	constructor(public parent: Cone) {}
+
+	get position(): Point {
+		const [x0, y0] = this.parent.origin;
+		return [
+			x0 + this.parent.radius * 0.5 * Math.cos(this.parent.end),
+			y0 + this.parent.radius * 0.5 * Math.sin(this.parent.end),
+		];
+	}
+
+	render(ctx: CanvasRenderingContext2D) {
+		renderCircleControl(ctx, this.position, 7);
+	}
+
+	hitTest(point: Point) {
+		return pointInCircle(point, this.position, 7);
+	}
+
+	handleDrag(point: Point) {
+		const pi2 = Math.PI * 2;
+		let start = this.parent.start;
+		// returns an angle from [-pi, pi]
+		let end = calcAngle(this.parent.origin, point);
+		if (end < start) end += pi2;
+		// spooky stuff happens if the end angle is too close
+		if ((end - start) % pi2 > pi2 - 0.1) {
+			end = start + pi2 - 0.1;
+		} else if (end - start < 0.1) {
+			end = start + 0.1;
+		}
+		// wrap around if the arc overlaps
+		if (end - start >= pi2) {
+			start += pi2;
+		}
+		// keep values in range
+		// while (start < -Math.PI && end < -Math.PI || start < -pi2 || end < -pi2) {
+		while (start < -pi2 || end < -pi2) {
+			start += pi2;
+			end += pi2;
+		}
+		while (start > pi2 || end > pi2) {
+			start -= pi2;
+			end -= pi2;
+		}
+		this.parent.start = start;
+		this.parent.end = end;
 		diagram.render();
 	}
 }
@@ -102,7 +185,7 @@ export class RectRotationControl implements Control<Rect> {
 	constructor(public parent: Rect) {}
 
 	get position() {
-		const distFromCenter = this.parent.height / 2 + 20;
+		const distFromCenter = this.parent.height / 2 + 24;
 		const [x0, y0] = this.parent.origin;
 		return rotatePoint(
 			[x0, y0],
