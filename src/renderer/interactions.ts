@@ -2,7 +2,7 @@ import { PointerEvent } from 'react';
 import { action } from 'mobx';
 import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { diagram } from 'renderer/diagram';
-import { Entities, Entity, EntityData } from 'renderer/entities';
+import { Entity } from 'renderer/entities';
 import {
 	distToCircle,
 	distToCone,
@@ -94,10 +94,7 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 	diagram.cursorType = 'default';
 });
 
-export function hitTest(
-	point: Point,
-	entities: Entities
-): Entity<EntityData> | false {
+export function hitTest(point: Point, entities: Entity[]): Entity | false {
 	// elements in the fore should be hit first
 	for (let i = entities.length - 1; i > -1; i--) {
 		const entity = entities[i];

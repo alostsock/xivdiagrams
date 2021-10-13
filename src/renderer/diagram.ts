@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
-import type { Entities, EntityData } from 'renderer/entities';
+import type { Entity } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import type { Point } from 'renderer/geometry';
 
@@ -10,11 +10,11 @@ class Diagram {
 	context: CanvasRenderingContext2D | null = null;
 	ready = false;
 
-	entities: Entities = [];
-	selectedEntities: Entities = [];
+	entities: Entity[] = [];
+	selectedEntities: Entity[] = [];
 
 	// ui state
-	selectedEntityType: EntityData['type'] = 'circle';
+	selectedEntityType: Entity['type'] = 'circle';
 	cursorType: 'default' | 'crosshair' | 'move' | 'grab' = 'default';
 
 	// interaction state
@@ -58,11 +58,11 @@ class Diagram {
 		}
 	}
 
-	selectEntityType(type: EntityData['type']) {
+	selectEntityType(type: Entity['type']) {
 		this.selectedEntityType = type;
 	}
 
-	setSelection(selected: Entities) {
+	setSelection(selected: Entity[]) {
 		const selectedIds = new Set(selected.map((s) => s.id));
 		const unselected = this.entities.filter((e) => !selectedIds.has(e.id));
 		unselected.forEach((e) => (e.isSelected = false));

@@ -19,13 +19,15 @@ import {
 	ConeAngleControl,
 } from 'renderer/controls';
 
+// 'data' types will be used for json serializing/deserializing
+
 interface BaseEntityData {
 	id: string;
-	seed: number;
+	seed?: number;
 	type: string;
+	origin: Point;
 	bounds: Bounds;
 	isSelected: boolean;
-	origin: Point;
 	strokeWidth: number;
 }
 
@@ -46,20 +48,40 @@ export interface RectData extends BaseEntityData {
 	width: number;
 	height: number;
 	rotation: number;
-	points: Points;
 }
 
 export type EntityData = CircleData | ConeData | RectData;
 
-export type Entity<T> = T & {
-	controls: Control<Entity<T>>[];
+type BaseEntity<T> = T & {
+	controls: Control<BaseEntity<T>>[];
 	draw: (rc: RoughCanvas, ctx: CanvasRenderingContext2D) => void;
 };
 
-export type Entities = Array<Entity<EntityData>>;
+export type Entity = Circle | Cone | Rect;
 
-export class Circle implements Entity<CircleData> {
-	id = nanoid(8);
+const generateId = () => nanoid(8);
+
+function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
+	const { left, right, top, bottom } = bounds;
+	ctx.save();
+
+	ctx.strokeStyle = '#0060DF';
+	ctx.lineWidth = 1;
+
+	ctx.beginPath();
+	ctx.moveTo(left, top);
+	ctx.lineTo(right, top);
+	ctx.lineTo(right, bottom);
+	ctx.lineTo(left, bottom);
+	ctx.closePath();
+
+	ctx.stroke();
+
+	ctx.restore();
+}
+
+export class Circle implements BaseEntity<CircleData> {
+	id = generateId();
 	type: 'circle' = 'circle';
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
@@ -101,8 +123,8 @@ export class Circle implements Entity<CircleData> {
 	}
 }
 
-export class Cone implements Entity<ConeData> {
-	id = nanoid(8);
+export class Cone implements BaseEntity<ConeData> {
+	id = generateId();
 	type: 'cone' = 'cone';
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
@@ -195,8 +217,8 @@ export class Cone implements Entity<ConeData> {
 	}
 }
 
-export class Rect implements Entity<RectData> {
-	id = nanoid(8);
+export class Rect implements BaseEntity<RectData> {
+	id = generateId();
 	type: 'rect' = 'rect';
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
@@ -247,23 +269,4 @@ export class Rect implements Entity<RectData> {
 			this.controls.forEach((c) => c.render(ctx));
 		}
 	}
-}
-
-function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
-	const { left, right, top, bottom } = bounds;
-	ctx.save();
-
-	ctx.strokeStyle = '#0060DF';
-	ctx.lineWidth = 1;
-
-	ctx.beginPath();
-	ctx.moveTo(left, top);
-	ctx.lineTo(right, top);
-	ctx.lineTo(right, bottom);
-	ctx.lineTo(left, bottom);
-	ctx.closePath();
-
-	ctx.stroke();
-
-	ctx.restore();
 }
