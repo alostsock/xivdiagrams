@@ -5,7 +5,7 @@ import {
 	pointInCircle,
 	rotatePoint,
 } from 'renderer/geometry';
-import { Circle, Cone, Rect } from 'renderer/entities';
+import { Circle, Cone, Rect, Line } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 
 const STROKE_STYLE = '#0060DF';
@@ -205,6 +205,42 @@ export class RectRotationControl implements Control<Rect> {
 
 	handleDrag(point: Point) {
 		this.parent.rotation = this.angle + calcAngle(this.parent.origin, point);
+		diagram.render();
+	}
+}
+
+export class LinePointControl implements Control<Line> {
+	constructor(public parent: Line, public isHead: boolean) {}
+
+	get position() {
+		return this.isHead ? this.parent.lineTo : this.parent.origin;
+	}
+
+	render(ctx: CanvasRenderingContext2D) {
+		renderCircleControl(ctx, this.position);
+	}
+
+	hitTest(point: Point) {
+		return hitTestCircleControl(point, this.position);
+	}
+
+	handleDrag(point: Point) {
+		if (this.isHead) {
+			const anchor = this.parent.origin;
+			this.parent.angle = calcAngle(anchor, point);
+			this.parent.length = Math.hypot(
+				point[0] - anchor[0],
+				point[1] - anchor[1]
+			);
+		} else {
+			const anchor = this.parent.lineTo;
+			this.parent.origin = point;
+			this.parent.angle = calcAngle(point, anchor);
+			this.parent.length = Math.hypot(
+				point[0] - anchor[0],
+				point[1] - anchor[1]
+			);
+		}
 		diagram.render();
 	}
 }

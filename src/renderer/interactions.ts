@@ -9,6 +9,7 @@ import {
 	distToCone,
 	distToPolygon,
 	pointInBounds,
+	distToSegments,
 } from 'renderer/geometry';
 
 function getCanvasCoords(e: PointerEvent<HTMLCanvasElement>): Point {
@@ -121,6 +122,12 @@ export function hitTest(point: Point, entities: Entity[]): Entity | false {
 			}
 			case 'rect': {
 				const d = distToPolygon(point, entity.points);
+				if (d <= HIT_TEST_TOLERANCE) return entity;
+				break;
+			}
+			case 'line':
+			case 'arrow': {
+				const d = distToSegments(point, entity.segments);
 				if (d <= HIT_TEST_TOLERANCE) return entity;
 				break;
 			}

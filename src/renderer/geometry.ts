@@ -1,6 +1,7 @@
 export type Point = [number, number];
-
-export type Points = Array<Point>;
+export type Points = Point[];
+export type Segment = [Point, Point];
+export type Segments = Segment[];
 
 export type Bounds = {
 	left: number;
@@ -120,6 +121,15 @@ export function distToSegment(p: Point, v: Point, w: Point) {
 	// projection = v + t * (w-v)
 	const proj: Point = [v[0] + t * (w[0] - v[0]), v[1] + t * (w[1] - v[1])];
 	return Math.hypot(proj[0] - p[0], proj[1] - p[1]);
+}
+
+export function distToSegments(p: Point, segments: Segments) {
+	let min = Infinity;
+	segments.forEach(([s1, s2]) => {
+		const d = distToSegment(p, s1, s2);
+		if (d < min) min = d;
+	});
+	return min;
 }
 
 export function distToCone(

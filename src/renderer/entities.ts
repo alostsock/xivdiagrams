@@ -5,6 +5,7 @@ import { ROUGH_OPTIONS, BOUNDS_MARGIN } from 'renderer/constants';
 import {
 	Point,
 	Points,
+	Segments,
 	Bounds,
 	calcRectPoints,
 	calcBoundsFromPoints,
@@ -17,6 +18,7 @@ import {
 	RectRotationControl,
 	ConeRadiusRotationControl,
 	ConeAngleControl,
+	LinePointControl,
 } from 'renderer/controls';
 
 // 'data' types will be used for json serializing/deserializing
@@ -50,14 +52,22 @@ export interface RectData extends BaseEntityData {
 	rotation: number;
 }
 
-export type EntityData = CircleData | ConeData | RectData;
+type LineType = 'line' | 'arrow';
+
+export interface LineData extends BaseEntityData {
+	type: LineType;
+	angle: number;
+	length: number;
+}
+
+export type EntityData = CircleData | ConeData | RectData | LineData;
 
 type BaseEntity<T> = T & {
 	controls: Control<BaseEntity<T>>[];
 	draw: (rc: RoughCanvas, ctx: CanvasRenderingContext2D) => void;
 };
 
-export type Entity = Circle | Cone | Rect;
+export type Entity = Circle | Cone | Rect | Line | Arrow;
 
 const generateId = () => nanoid(8);
 
@@ -262,6 +272,125 @@ export class Rect implements BaseEntity<RectData> {
 			...ROUGH_OPTIONS,
 			seed: this.seed,
 			strokeWidth: this.strokeWidth,
+		});
+
+		if (this.isSelected) {
+			drawBounds(ctx, this.bounds);
+			this.controls.forEach((c) => c.render(ctx));
+		}
+	}
+}
+
+export class Line implements BaseEntity<LineData> {
+	id = generateId();
+	type: 'line' | 'arrow' = 'line';
+	seed = RoughGenerator.newSeed();
+	isSelected: boolean = false;
+	origin: Point;
+	strokeWidth = 1;
+	angle: number;
+	length: number;
+
+	controls: Control<Line>[];
+
+	constructor(options: Pick<LineData, 'origin' | 'angle' | 'length'>) {
+		this.origin = options.origin;
+		this.angle = options.angle;
+		this.length = options.length;
+		this.controls = [
+			new LinePointControl(this, true),
+			new LinePointControl(this, false),
+		];
+	}
+
+	get lineTo(): Point {
+		return [
+			this.origin[0] + this.length * Math.cos(this.angle),
+			this.origin[1] + this.length * Math.sin(this.angle),
+		];
+	}
+
+	get segments(): Segments {
+		return [[this.origin, this.lineTo]];
+	}
+
+	get bounds() {
+		const bounds = calcBoundsFromPoints([this.origin, this.lineTo]);
+		return {
+			left: bounds.left - BOUNDS_MARGIN,
+			right: bounds.right + BOUNDS_MARGIN,
+			top: bounds.top - BOUNDS_MARGIN,
+			bottom: bounds.bottom + BOUNDS_MARGIN,
+		};
+	}
+
+	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+		const options = {
+			...ROUGH_OPTIONS,
+			seed: this.seed,
+			strokeWidth: this.strokeWidth,
+		};
+		rc.line(
+			this.origin[0],
+			this.origin[1],
+			this.lineTo[0],
+			this.lineTo[1],
+			options
+		);
+
+		if (this.isSelected) {
+			drawBounds(ctx, this.bounds);
+			this.controls.forEach((c) => c.render(ctx));
+		}
+	}
+}
+
+export class Arrow extends Line {
+	type: 'arrow' = 'arrow';
+
+	get headPoints(): Points {
+		const length = 30;
+		const spread = Math.PI / 7;
+		const base: Point = [this.lineTo[0] + length, this.lineTo[1]];
+		return [
+			rotatePoint(this.lineTo, base, this.angle + Math.PI + spread),
+			rotatePoint(this.lineTo, base, this.angle + Math.PI - spread),
+		];
+	}
+
+	get segments(): Segments {
+		const headPoints = this.headPoints;
+		return [
+			[this.origin, this.lineTo],
+			[this.lineTo, headPoints[0]],
+			[this.lineTo, headPoints[1]],
+		];
+	}
+
+	get bounds() {
+		const bounds = calcBoundsFromPoints([
+			this.origin,
+			this.lineTo,
+			...this.headPoints,
+		]);
+
+		return {
+			left: bounds.left - BOUNDS_MARGIN,
+			right: bounds.right + BOUNDS_MARGIN,
+			top: bounds.top - BOUNDS_MARGIN,
+			bottom: bounds.bottom + BOUNDS_MARGIN,
+		};
+	}
+
+	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+		const options = {
+			...ROUGH_OPTIONS,
+			seed: this.seed,
+			strokeWidth: this.strokeWidth,
+		};
+
+		this.segments.forEach(([[x1, y1], [x2, y2]]) => {
+			rc.line(x1, y1, x2, y2, options);
 		});
 
 		if (this.isSelected) {

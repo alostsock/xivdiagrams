@@ -5,8 +5,8 @@ import {
 	CircleSvg,
 	ConeSvg,
 	RectSvg,
-	ArrowSvg,
 	LineSvg,
+	ArrowSvg,
 } from 'icons';
 import clsx from 'clsx';
 import './Toolset.scss';
@@ -14,9 +14,11 @@ import { action } from 'mobx';
 
 const tools: [Tool, JSX.Element][] = [
 	['cursor', <CursorSvg />],
+	['rect', <RectSvg />],
 	['circle', <CircleSvg />],
 	['cone', <ConeSvg />],
-	['rect', <RectSvg />],
+	['line', <LineSvg />],
+	['arrow', <ArrowSvg />],
 ];
 
 interface Props {

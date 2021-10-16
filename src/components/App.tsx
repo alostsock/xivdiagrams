@@ -7,7 +7,7 @@ import {
 	handlePointerDown,
 	handlePointerUpLeave,
 } from 'renderer/interactions';
-import { Circle, Cone, Rect } from 'renderer/entities';
+import { Circle, Cone, Rect, Line, Arrow } from 'renderer/entities';
 import Toolset from 'components/Toolset';
 import './App.scss';
 
@@ -37,6 +37,12 @@ const App = observer(function App() {
 					start: 0,
 					end: Math.PI * 1.5,
 				})
+			);
+			diagram.entities.push(
+				new Line({ origin: [200, 100], angle: Math.PI / 6, length: 100 })
+			);
+			diagram.entities.push(
+				new Arrow({ origin: [200, 200], angle: Math.PI / 6, length: 100 })
 			);
 			diagram.render();
 		});
