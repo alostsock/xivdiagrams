@@ -4,20 +4,25 @@ import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { diagram } from 'renderer/diagram';
 import { Entity } from 'renderer/entities';
 import {
+	Point,
 	distToCircle,
 	distToCone,
 	distToPolygon,
-	Point,
 	pointInBounds,
 } from 'renderer/geometry';
+
+function getCanvasCoords(e: PointerEvent<HTMLCanvasElement>): Point {
+	const { left, top } = e.currentTarget.getBoundingClientRect();
+	const x = (e.clientX - left) * window.devicePixelRatio;
+	const y = (e.clientY - top) * window.devicePixelRatio;
+	return [x, y];
+}
 
 export const handlePointerMove = action(function handlePointerMove(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
 	e.stopPropagation();
-	const { left, top } = e.currentTarget.getBoundingClientRect();
-	const x = e.clientX - left;
-	const y = e.clientY - top;
+	const [x, y] = getCanvasCoords(e);
 
 	if (diagram.dragAnchor) {
 		const [anchorX, anchorY] = diagram.dragAnchor;
@@ -59,9 +64,7 @@ export const handlePointerDown = action(function handlePointerDown(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
 	e.stopPropagation();
-	const { left, top } = e.currentTarget.getBoundingClientRect();
-	const x = e.clientX - left;
-	const y = e.clientY - top;
+	const [x, y] = getCanvasCoords(e);
 
 	if (diagram.selectedEntities.length === 1) {
 		for (const control of diagram.selectedEntities[0].controls) {

@@ -47,8 +47,11 @@ class Diagram {
 		const parent = this.canvas.parentElement;
 		if (!parent) return;
 
-		this.canvas.width = parent.clientWidth;
-		this.canvas.height = parent.clientHeight;
+		this.canvas.style.width = `${parent.clientWidth}px`;
+		this.canvas.style.height = `${parent.clientHeight}px`;
+
+		this.canvas.width = parent.clientWidth * window.devicePixelRatio;
+		this.canvas.height = parent.clientHeight * window.devicePixelRatio;
 	}
 
 	render(): void {
