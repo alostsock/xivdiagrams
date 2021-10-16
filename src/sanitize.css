@@ -1,0 +1,262 @@
+/* snippets from sanitize.css */
+
+/**
+ * 1. Add border box sizing in all browsers (opinionated).
+ * 2. Backgrounds do not repeat by default (opinionated).
+ */
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  background-repeat: no-repeat; /* 2 */
+}
+
+/**
+ * 1. Add text decoration inheritance in all browsers (opinionated).
+ * 2. Add vertical alignment inheritance in all browsers (opinionated).
+ */
+
+::before,
+::after {
+  text-decoration: inherit; /* 1 */
+  vertical-align: inherit; /* 2 */
+}
+
+/**
+ * 1. Use the default cursor in all browsers (opinionated).
+ * 2. Change the line height in all browsers (opinionated).
+ * 3. Breaks words to prevent overflow in all browsers (opinionated).
+ * 4. Use a 4-space tab width in all browsers (opinionated).
+ * 5. Remove the grey highlight on links in iOS (opinionated).
+ * 6. Prevent adjustments of font size after orientation changes in iOS.
+ */
+
+:where(:root) {
+  cursor: default; /* 1 */
+  line-height: 1.5; /* 2 */
+  overflow-wrap: break-word; /* 3 */
+  -moz-tab-size: 4; /* 4 */
+  tab-size: 4; /* 4 */
+  -webkit-tap-highlight-color: transparent; /* 5 */
+  -webkit-text-size-adjust: 100%; /* 6 */
+  text-size-adjust: 100%; /* 6 */
+}
+
+/**
+ * Remove the margin in all browsers (opinionated).
+ */
+
+:where(body) {
+  margin: 0;
+}
+
+/**
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Edge, Firefox, and Safari.
+ */
+
+:where(h1) {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+/**
+ * Remove the list style on navigation lists in all browsers (opinionated).
+ */
+
+:where(nav) :where(ol, ul) {
+  list-style-type: none;
+  padding: 0;
+}
+
+/**
+ * Prevent VoiceOver from ignoring list semantics in Safari (opinionated).
+ */
+
+:where(nav li)::before {
+  content: "\200B";
+  float: left;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ * 3. Prevent overflow of the container in all browsers (opinionated).
+ */
+
+:where(pre) {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+  overflow: auto; /* 3 */
+}
+
+/**
+ * Add the correct font weight in Chrome, Edge, and Safari.
+ */
+
+:where(b, strong) {
+  font-weight: bolder;
+}
+
+/**
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
+ */
+
+:where(code, kbd, samp) {
+  font-family: monospace, monospace; /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/*
+ * Change the alignment on media elements in all browsers (opinionated).
+ */
+
+:where(audio, canvas, iframe, img, svg, video) {
+  vertical-align: middle;
+}
+
+/**
+ * Remove the margin on controls in Safari.
+ */
+
+:where(button, input, select) {
+  margin: 0;
+}
+
+/**
+ * Correct the inability to style buttons in iOS and Safari.
+ */
+
+:where(button, [type="button" i], [type="reset" i], [type="submit" i]) {
+  -webkit-appearance: button;
+}
+
+/**
+ * Change the inconsistent appearance in all browsers (opinionated).
+ */
+
+:where(fieldset) {
+  border: 1px solid #a0a0a0;
+}
+
+/**
+ * 1. Remove the margin in Firefox and Safari.
+ * 3. Change the resize direction in all browsers (opinionated).
+ */
+
+:where(textarea) {
+  margin: 0; /* 1 */
+  resize: vertical; /* 3 */
+}
+
+/**
+ * 1. Correct the odd appearance in Chrome, Edge, and Safari.
+ * 2. Correct the outline style in Safari.
+ */
+
+:where([type="search" i]) {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/**
+ * Correct the cursor style of increment and decrement buttons in Safari.
+ */
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/**
+ * Correct the text style of placeholders in Chrome, Edge, and Safari.
+ */
+
+::-webkit-input-placeholder {
+  color: inherit;
+  opacity: 0.54;
+}
+
+/**
+ * Remove the inner padding in Chrome, Edge, and Safari on macOS.
+ */
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/**
+ * 1. Correct the inability to style upload buttons in iOS and Safari.
+ * 2. Change font properties to `inherit` in Safari.
+ */
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/**
+ * Restrict sizing to the page width in all browsers (opinionated).
+ */
+
+:where(iframe, img, input, video, select, textarea) {
+  height: auto;
+  max-width: 100%;
+}
+
+/**
+ * 1. Change the inconsistent appearance in all browsers (opinionated).
+ * 2. Add typography inheritance in all browsers (opinionated).
+ */
+
+:where(button, input, select, textarea) {
+  background-color: transparent; /* 1 */
+  border: 1px solid WindowFrame; /* 1 */
+  color: inherit; /* 1 */
+  font: inherit; /* 2 */
+  letter-spacing: inherit; /* 2 */
+  padding: 0.25em 0.375em; /* 1 */
+}
+
+/**
+ * Change the inconsistent appearance in all browsers (opinionated).
+ */
+
+:where(select) {
+  -webkit-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='4'%3E%3Cpath d='M4 0h6L7 4'/%3E%3C/svg%3E") no-repeat right center / 1em;
+  border-radius: 0;
+  padding-right: 1em;
+}
+
+/**
+ * Don't show the arrow for multiple choice selects
+ */
+
+:where(select[multiple]) {
+  background-image: none;
+}
+
+/*
+ * 1. Remove animations when motion is reduced (opinionated).
+ * 2. Remove fixed background attachments when motion is reduced (opinionated).
+ * 3. Remove timed scrolling behaviors when motion is reduced (opinionated).
+ * 4. Remove transitions when motion is reduced (opinionated).
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-delay: -1ms !important; /* 1 */
+    animation-duration: 1ms !important; /* 1 */
+    animation-iteration-count: 1 !important; /* 1 */
+    background-attachment: initial !important; /* 2 */
+    scroll-behavior: auto !important; /* 3 */
+    transition-delay: 0s !important; /* 4 */
+    transition-duration: 0s !important; /* 4 */
+  }
+}

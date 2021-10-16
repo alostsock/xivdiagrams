@@ -4,7 +4,7 @@ import { configure as configureMobx } from 'mobx';
 import reportWebVitals from './reportWebVitals';
 
 import App from './components/App';
-import './index.css';
+import './index.scss';
 
 configureMobx({
 	enforceActions: 'always',

@@ -4,6 +4,8 @@ import type { Entity } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import type { Point } from 'renderer/geometry';
 
+export type Tool = 'cursor' | Entity['type'];
+
 class Diagram {
 	canvas: HTMLCanvasElement | null = null;
 	roughCanvas: RoughCanvas | null = null;
@@ -14,7 +16,7 @@ class Diagram {
 	selectedEntities: Entity[] = [];
 
 	// ui state
-	selectedEntityType: Entity['type'] = 'circle';
+	selectedTool: Tool = 'cursor';
 	cursorType: 'default' | 'crosshair' | 'move' | 'grab' = 'default';
 
 	// interaction state
@@ -34,6 +36,7 @@ class Diagram {
 		this.canvas = el;
 		this.roughCanvas = new RoughCanvas(el);
 		this.context = el.getContext('2d');
+		this.context!.imageSmoothingEnabled = false;
 		this.resize();
 		this.render();
 		this.ready = true;
@@ -56,10 +59,6 @@ class Diagram {
 		for (const entity of this.entities) {
 			entity.draw(this.roughCanvas, this.context);
 		}
-	}
-
-	selectEntityType(type: Entity['type']) {
-		this.selectedEntityType = type;
 	}
 
 	setSelection(selected: Entity[]) {
