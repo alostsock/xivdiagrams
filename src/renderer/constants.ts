@@ -1,8 +1,10 @@
 import type { Options as RoughOptions } from 'roughjs/bin/core';
 
+export const BASE_CANVAS_SIZE = 540;
+
 export const ROUGH_OPTIONS: RoughOptions = {
 	roughness: 1,
-	curveFitting: 0.98,
+	curveFitting: 0.97,
 	strokeWidth: 1,
 };
 
@@ -15,5 +17,5 @@ export const BOUNDS_MARGIN = 10;
 
 // controls
 
-export const CONTROL_RADIUS = 7;
+export const CONTROL_RADIUS = 6;
 export const CONTROL_OFFSET = 24;

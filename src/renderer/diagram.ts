@@ -1,5 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
+import { BASE_CANVAS_SIZE } from 'renderer/constants';
 import type { Entity } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import type { Point } from 'renderer/geometry';
@@ -10,7 +11,6 @@ class Diagram {
 	canvas: HTMLCanvasElement | null = null;
 	roughCanvas: RoughCanvas | null = null;
 	context: CanvasRenderingContext2D | null = null;
-	baseCanvasSize: number = 600;
 	scale: number = 1;
 
 	// diagram state
@@ -56,7 +56,7 @@ class Diagram {
 		this.canvas.width = size * window.devicePixelRatio;
 		this.canvas.height = size * window.devicePixelRatio;
 
-		this.scale = (size * window.devicePixelRatio) / this.baseCanvasSize;
+		this.scale = (size * window.devicePixelRatio) / BASE_CANVAS_SIZE;
 		this.context.scale(this.scale, this.scale);
 
 		diagram.render();
