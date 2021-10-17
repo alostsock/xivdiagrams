@@ -2,17 +2,18 @@
 .App {
 	min-height: 100vh;
 	display: grid;
-	grid-template-columns: minmax(min-content, 1fr) 120vh minmax(min-content, 1fr);
+	grid-template-columns: minmax(min-content, 1fr) 100vh minmax(min-content, 1fr);
 	grid-template-rows: min-content 1fr 1fr;
+	overflow: hidden;
 
 	@media (max-aspect-ratio: 9/5) {
-		grid-template-columns: minmax(min-content, 1fr) 120vh;
+		grid-template-columns: minmax(min-content, 1fr) 100vh;
 	}
 
 	.heading,
 	.properties,
 	.notes {
-		background: var(--oc-gray-2);
+		background: var(--oc-gray-1);
 	}
 
 	.heading {

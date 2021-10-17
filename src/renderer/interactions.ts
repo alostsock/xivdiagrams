@@ -6,8 +6,8 @@ import { Point, pointInBounds } from 'renderer/geometry';
 
 function getCanvasCoords(e: PointerEvent<HTMLCanvasElement>): Point {
 	const { left, top } = e.currentTarget.getBoundingClientRect();
-	const x = (e.clientX - left) * window.devicePixelRatio;
-	const y = (e.clientY - top) * window.devicePixelRatio;
+	const x = ((e.clientX - left) * window.devicePixelRatio) / diagram.scale;
+	const y = ((e.clientY - top) * window.devicePixelRatio) / diagram.scale;
 	return [x, y];
 }
 

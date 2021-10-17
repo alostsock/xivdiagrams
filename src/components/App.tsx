@@ -20,7 +20,6 @@ const App = observer(function App() {
 
 		runInAction(() => {
 			diagram.attach(diagramEl);
-			diagram.render();
 
 			diagram.entities.push(new Circle({ origin: [50, 50], radius: 50 }));
 			diagram.entities.push(
@@ -49,11 +48,22 @@ const App = observer(function App() {
 		});
 	}, [diagramEl]);
 
+	const [containerEl, setContainerEl] = useState<HTMLElement | null>(null);
+	const containerRef = (element: HTMLElement | null) => setContainerEl(element);
+	useEffect(() => {
+		if (!containerEl) return;
+
+		const resizeObserver = new ResizeObserver(() => diagram.resize());
+
+		resizeObserver.observe(containerEl);
+		return () => resizeObserver.disconnect();
+	}, [containerEl]);
+
 	return (
 		<div className="App">
 			<header className="heading">heading</header>
 
-			<div className="diagram">
+			<div ref={containerRef} className="diagram">
 				<Toolset className="toolset" />
 
 				<canvas

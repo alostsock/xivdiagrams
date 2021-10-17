@@ -1,4 +1,4 @@
-import { autorun, makeAutoObservable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Entity } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
@@ -10,16 +10,18 @@ class Diagram {
 	canvas: HTMLCanvasElement | null = null;
 	roughCanvas: RoughCanvas | null = null;
 	context: CanvasRenderingContext2D | null = null;
-	ready = false;
+	scale: number = 1;
 
+	// diagram state
 	entities: Entity[] = [];
-	selectedEntities: Entity[] = [];
+	originalCanvasSize: number | null = null;
 
 	// ui state
 	selectedTool: Tool = 'cursor';
 	cursorType: 'default' | 'crosshair' | 'move' | 'grab' = 'default';
 
 	// interaction state
+	selectedEntities: Entity[] = [];
 	dragAnchor: Point | null = null;
 	entityControlInUse: Control<any> | null = null;
 	entityInCreation: Entity | null = null;
@@ -39,25 +41,40 @@ class Diagram {
 		this.context = el.getContext('2d');
 		this.context!.imageSmoothingEnabled = false;
 		this.resize();
-		this.ready = true;
 	}
 
 	resize(): void {
-		if (!this.canvas) return;
+		if (!this.canvas || !this.context) return;
 		const parent = this.canvas.parentElement;
 		if (!parent) return;
 
-		this.canvas.style.width = `${parent.clientWidth}px`;
-		this.canvas.style.height = `${parent.clientHeight}px`;
+		// keep canvas a square
+		const size = Math.min(parent.clientWidth, parent.clientHeight);
+		this.canvas.style.width = `${size}px`;
+		this.canvas.style.height = `${size}px`;
 
-		this.canvas.width = parent.clientWidth * window.devicePixelRatio;
-		this.canvas.height = parent.clientHeight * window.devicePixelRatio;
+		this.canvas.width = size * window.devicePixelRatio;
+		this.canvas.height = size * window.devicePixelRatio;
+
+		if (!this.originalCanvasSize) {
+			this.originalCanvasSize = size * window.devicePixelRatio;
+		} else {
+			this.scale = (size * window.devicePixelRatio) / this.originalCanvasSize;
+			this.context.scale(this.scale, this.scale);
+		}
+
+		diagram.render();
 	}
 
 	render(): void {
 		if (!this.canvas || !this.roughCanvas || !this.context) return;
 
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.context.clearRect(
+			0,
+			0,
+			this.canvas.width / this.scale,
+			this.canvas.height / this.scale
+		);
 
 		for (const entity of this.entities) {
 			entity.draw(this.roughCanvas, this.context);
