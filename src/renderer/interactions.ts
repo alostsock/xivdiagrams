@@ -17,6 +17,11 @@ export const handlePointerMove = action(function handlePointerMove(
 	e.stopPropagation();
 	const [x, y] = getCanvasCoords(e);
 
+	if (diagram.entityControlInUse) {
+		diagram.entityControlInUse.handleDrag([x, y]);
+		return;
+	}
+
 	if (diagram.dragAnchor) {
 		const [anchorX, anchorY] = diagram.dragAnchor;
 		diagram.entities.forEach((entity) => {
@@ -30,15 +35,10 @@ export const handlePointerMove = action(function handlePointerMove(
 		return;
 	}
 
-	if (diagram.controlInUse) {
-		diagram.controlInUse.handleDrag([x, y]);
-		return;
-	}
-
 	if (diagram.selectedEntities.length === 1) {
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
-				diagram.cursorType = 'crosshair';
+				diagram.cursorType = 'grab';
 				return;
 			}
 		}
@@ -58,11 +58,12 @@ export const handlePointerDown = action(function handlePointerDown(
 ) {
 	e.stopPropagation();
 	const [x, y] = getCanvasCoords(e);
+	diagram.dragAnchor = [x, y];
 
 	if (diagram.selectedEntities.length === 1) {
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
-				diagram.controlInUse = control;
+				diagram.entityControlInUse = control;
 				diagram.cursorType = 'crosshair';
 				return;
 			}
@@ -72,7 +73,6 @@ export const handlePointerDown = action(function handlePointerDown(
 	const hit = hitTest([x, y], diagram.entities);
 	if (hit) {
 		diagram.setSelection([hit]);
-		diagram.dragAnchor = [x, y];
 		diagram.render();
 		return;
 	}
@@ -86,7 +86,7 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 ) {
 	e.stopPropagation();
 	diagram.dragAnchor = null;
-	diagram.controlInUse = null;
+	diagram.entityControlInUse = null;
 	diagram.cursorType = 'default';
 });
 

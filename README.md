@@ -4,7 +4,6 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 
 Roadmap, listed in priority order:
 
-- tool selection
 - drag to create
 - player/enemy markers
 - title, author, notes, steps
@@ -14,7 +13,7 @@ Roadmap, listed in priority order:
 - object/mechanic markers
 - entity properties
 - freehand tool
-- ? grid, snap-to
+- grid, snap-to
 - ? searchable debuffs for players
 - ? fight-specific bg
 - ? undo/redo

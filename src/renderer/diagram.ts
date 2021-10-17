@@ -21,7 +21,8 @@ class Diagram {
 
 	// interaction state
 	dragAnchor: Point | null = null;
-	controlInUse: Control<any> | null = null;
+	entityControlInUse: Control<any> | null = null;
+	entityInCreation: Entity | null = null;
 
 	constructor() {
 		makeAutoObservable(this);
