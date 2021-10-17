@@ -2,7 +2,7 @@ import type { Options as RoughOptions } from 'roughjs/bin/core';
 
 export const ROUGH_OPTIONS: RoughOptions = {
 	roughness: 1,
-	curveFitting: 0.97,
+	curveFitting: 0.98,
 	strokeWidth: 1,
 };
 

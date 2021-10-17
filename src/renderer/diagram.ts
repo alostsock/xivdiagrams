@@ -10,11 +10,11 @@ class Diagram {
 	canvas: HTMLCanvasElement | null = null;
 	roughCanvas: RoughCanvas | null = null;
 	context: CanvasRenderingContext2D | null = null;
+	baseCanvasSize: number = 600;
 	scale: number = 1;
 
 	// diagram state
 	entities: Entity[] = [];
-	originalCanvasSize: number | null = null;
 
 	// ui state
 	selectedTool: Tool = 'cursor';
@@ -56,12 +56,8 @@ class Diagram {
 		this.canvas.width = size * window.devicePixelRatio;
 		this.canvas.height = size * window.devicePixelRatio;
 
-		if (!this.originalCanvasSize) {
-			this.originalCanvasSize = size * window.devicePixelRatio;
-		} else {
-			this.scale = (size * window.devicePixelRatio) / this.originalCanvasSize;
-			this.context.scale(this.scale, this.scale);
-		}
+		this.scale = (size * window.devicePixelRatio) / this.baseCanvasSize;
+		this.context.scale(this.scale, this.scale);
 
 		diagram.render();
 	}

@@ -4,13 +4,13 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 
 Roadmap, listed in priority order:
 
+- entity properties
 - player/enemy markers
 - title, author, notes, steps
 - backend sync (create, edit, view)
 - copy/paste
 - keybinds (bksp, del, esc, ctrl+c, ctrl+v)
 - object/mechanic markers
-- entity properties
 - freehand tool
 - grid, snap-to
 - ? searchable debuffs for players
