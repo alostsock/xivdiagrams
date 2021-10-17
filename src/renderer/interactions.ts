@@ -1,16 +1,8 @@
 import { PointerEvent } from 'react';
 import { action } from 'mobx';
-import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { diagram } from 'renderer/diagram';
 import { Entity } from 'renderer/entities';
-import {
-	Point,
-	distToCircle,
-	distToCone,
-	distToPolygon,
-	pointInBounds,
-	distToSegments,
-} from 'renderer/geometry';
+import { Point, pointInBounds } from 'renderer/geometry';
 
 function getCanvasCoords(e: PointerEvent<HTMLCanvasElement>): Point {
 	const { left, top } = e.currentTarget.getBoundingClientRect();
@@ -108,30 +100,7 @@ export function hitTest(point: Point, entities: Entity[]): Entity | false {
 		// selection should bypass detailed hit testing
 		if (entity.isSelected) return entity;
 
-		switch (entity.type) {
-			case 'circle': {
-				const d = distToCircle(point, entity.origin, entity.radius);
-				if (d <= HIT_TEST_TOLERANCE) return entity;
-				break;
-			}
-			case 'cone': {
-				const { origin, radius, start, end } = entity;
-				const d = distToCone(point, origin, radius, start, end);
-				if (d <= HIT_TEST_TOLERANCE) return entity;
-				break;
-			}
-			case 'rect': {
-				const d = distToPolygon(point, entity.points);
-				if (d <= HIT_TEST_TOLERANCE) return entity;
-				break;
-			}
-			case 'line':
-			case 'arrow': {
-				const d = distToSegments(point, entity.segments);
-				if (d <= HIT_TEST_TOLERANCE) return entity;
-				break;
-			}
-		}
+		if (entity.hitTest(point)) return entity;
 	}
 
 	return false;

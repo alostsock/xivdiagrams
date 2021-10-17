@@ -2,8 +2,8 @@ import type { Options as RoughOptions } from 'roughjs/bin/core';
 
 export const ROUGH_OPTIONS: RoughOptions = {
 	roughness: 1,
-	bowing: 1,
 	curveFitting: 0.97,
+	strokeWidth: 1,
 };
 
 // entities

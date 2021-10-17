@@ -1,7 +1,11 @@
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import { RoughGenerator } from 'roughjs/bin/generator';
-import { ROUGH_OPTIONS, BOUNDS_MARGIN } from 'renderer/constants';
+import {
+	BOUNDS_MARGIN,
+	HIT_TEST_TOLERANCE,
+	ROUGH_OPTIONS,
+} from 'renderer/constants';
 import {
 	Point,
 	Points,
@@ -10,6 +14,10 @@ import {
 	calcRectPoints,
 	calcBoundsFromPoints,
 	rotatePoint,
+	distToCircle,
+	distToCone,
+	distToPolygon,
+	distToSegments,
 } from 'renderer/geometry';
 import {
 	Control,
@@ -30,7 +38,6 @@ interface BaseEntityData {
 	origin: Point;
 	bounds: Bounds;
 	isSelected: boolean;
-	strokeWidth: number;
 }
 
 export interface CircleData extends BaseEntityData {
@@ -64,6 +71,7 @@ export type EntityData = CircleData | ConeData | RectData | LineData;
 
 type BaseEntity<T> = T & {
 	controls: Control<BaseEntity<T>>[];
+	hitTest: (point: Point) => boolean;
 	draw: (rc: RoughCanvas, ctx: CanvasRenderingContext2D) => void;
 };
 
@@ -96,7 +104,6 @@ export class Circle implements BaseEntity<CircleData> {
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
 	origin: Point;
-	strokeWidth = 1;
 	radius: number;
 
 	controls: Control<Circle>[];
@@ -118,12 +125,15 @@ export class Circle implements BaseEntity<CircleData> {
 		};
 	}
 
+	hitTest(point: Point) {
+		return distToCircle(point, this.origin, this.radius) <= HIT_TEST_TOLERANCE;
+	}
+
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const [x, y] = this.origin;
 		rc.circle(x, y, 2 * this.radius, {
 			...ROUGH_OPTIONS,
 			seed: this.seed,
-			strokeWidth: this.strokeWidth,
 		});
 
 		if (this.isSelected) {
@@ -139,7 +149,6 @@ export class Cone implements BaseEntity<ConeData> {
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
 	origin: Point;
-	strokeWidth = 1;
 	radius: number;
 	start: number;
 	end: number;
@@ -199,13 +208,19 @@ export class Cone implements BaseEntity<ConeData> {
 		};
 	}
 
+	hitTest(point: Point) {
+		return (
+			distToCone(point, this.origin, this.radius, this.start, this.end) <=
+			HIT_TEST_TOLERANCE
+		);
+	}
+
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const [x0, y0] = this.origin;
 		const size = 2 * this.radius;
 		const options = {
 			...ROUGH_OPTIONS,
 			seed: this.seed,
-			strokeWidth: this.strokeWidth,
 		};
 
 		// there is a bit of overdrawing if closed = true
@@ -233,7 +248,6 @@ export class Rect implements BaseEntity<RectData> {
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
 	origin: Point;
-	strokeWidth = 1;
 	width: number;
 	height: number;
 	rotation: number;
@@ -267,11 +281,14 @@ export class Rect implements BaseEntity<RectData> {
 		);
 	}
 
+	hitTest(point: Point) {
+		return distToPolygon(point, this.points) <= HIT_TEST_TOLERANCE;
+	}
+
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		rc.polygon(this.points, {
 			...ROUGH_OPTIONS,
 			seed: this.seed,
-			strokeWidth: this.strokeWidth,
 		});
 
 		if (this.isSelected) {
@@ -287,7 +304,6 @@ export class Line implements BaseEntity<LineData> {
 	seed = RoughGenerator.newSeed();
 	isSelected: boolean = false;
 	origin: Point;
-	strokeWidth = 1;
 	angle: number;
 	length: number;
 
@@ -324,11 +340,14 @@ export class Line implements BaseEntity<LineData> {
 		};
 	}
 
+	hitTest(point: Point) {
+		return distToSegments(point, this.segments) <= HIT_TEST_TOLERANCE;
+	}
+
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const options = {
 			...ROUGH_OPTIONS,
 			seed: this.seed,
-			strokeWidth: this.strokeWidth,
 		};
 		rc.line(
 			this.origin[0],
@@ -386,7 +405,6 @@ export class Arrow extends Line {
 		const options = {
 			...ROUGH_OPTIONS,
 			seed: this.seed,
-			strokeWidth: this.strokeWidth,
 		};
 
 		this.segments.forEach(([[x1, y1], [x2, y2]]) => {
