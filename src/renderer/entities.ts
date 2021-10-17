@@ -13,6 +13,7 @@ import {
 	Bounds,
 	calcRectPoints,
 	calcBoundsFromPoints,
+	calcAngle,
 	rotatePoint,
 	distToCircle,
 	distToCone,
@@ -78,6 +79,48 @@ type BaseEntity<T> = T & {
 export type Entity = Circle | Cone | Rect | Line | Arrow;
 
 const generateId = () => nanoid(8);
+
+export function createEntity(
+	type: Entity['type'],
+	[x0, y0]: Point,
+	[x, y]: Point
+): Entity {
+	switch (type) {
+		case 'rect':
+			return new Rect({
+				origin: [(x0 + x) / 2, (y0 + y) / 2],
+				rotation: 0,
+				width: x - x0,
+				height: y - y0,
+			});
+		case 'circle':
+			return new Circle({
+				origin: [(x0 + x) / 2, (y0 + y) / 2],
+				radius: Math.max((x - x0) / 2, (y - y0) / 2),
+			});
+		case 'cone':
+			const defaultAngle = Math.PI / 6;
+			const angle = calcAngle([x0, y0], [x, y]);
+			return new Cone({
+				origin: [x0, y0],
+				radius: Math.hypot(x - x0, y - y0),
+				start: angle - defaultAngle,
+				end: angle + defaultAngle,
+			});
+		case 'line':
+			return new Line({
+				origin: [x0, y0],
+				angle: calcAngle([x0, y0], [x, y]),
+				length: Math.hypot(x - x0, y - y0),
+			});
+		case 'arrow':
+			return new Arrow({
+				origin: [x0, y0],
+				angle: calcAngle([x0, y0], [x, y]),
+				length: Math.hypot(x - x0, y - y0),
+			});
+	}
+}
 
 function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
 	const { left, right, top, bottom } = bounds;
@@ -223,11 +266,11 @@ export class Cone implements BaseEntity<ConeData> {
 			seed: this.seed,
 		};
 
-		// there is a bit of overdrawing if closed = true
-		// use `preserveVertices` and draw lines manually instead
+		// roughjs has a bit of overdrawing for arcs
+		// use lower roughness to mitigate this
 		rc.arc(x0, y0, size, size, this.start, this.end, false, {
 			...options,
-			preserveVertices: true,
+			roughness: 0.35,
 		});
 
 		const arcP1 = rotatePoint(this.origin, [x0 + this.radius, y0], this.start);

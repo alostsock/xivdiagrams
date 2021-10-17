@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { autorun, makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Entity } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
@@ -39,7 +39,6 @@ class Diagram {
 		this.context = el.getContext('2d');
 		this.context!.imageSmoothingEnabled = false;
 		this.resize();
-		this.render();
 		this.ready = true;
 	}
 
@@ -62,6 +61,10 @@ class Diagram {
 
 		for (const entity of this.entities) {
 			entity.draw(this.roughCanvas, this.context);
+		}
+
+		if (this.entityInCreation) {
+			this.entityInCreation.draw(this.roughCanvas, this.context);
 		}
 	}
 

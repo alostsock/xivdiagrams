@@ -1,7 +1,7 @@
 import { PointerEvent } from 'react';
 import { action } from 'mobx';
 import { diagram } from 'renderer/diagram';
-import { Entity } from 'renderer/entities';
+import { Entity, createEntity } from 'renderer/entities';
 import { Point, pointInBounds } from 'renderer/geometry';
 
 function getCanvasCoords(e: PointerEvent<HTMLCanvasElement>): Point {
@@ -17,12 +17,31 @@ export const handlePointerMove = action(function handlePointerMove(
 	e.stopPropagation();
 	const [x, y] = getCanvasCoords(e);
 
+	if (diagram.selectedTool !== 'cursor') {
+		// either about to create, or creating an entity
+		diagram.cursorType = 'crosshair';
+
+		if (diagram.dragAnchor) {
+			// TODO: modify entity instead of creating a new one
+			diagram.entityInCreation = createEntity(
+				diagram.selectedTool,
+				diagram.dragAnchor,
+				[x, y]
+			);
+			diagram.render();
+		}
+
+		return;
+	}
+
 	if (diagram.entityControlInUse) {
+		// dragging a control
 		diagram.entityControlInUse.handleDrag([x, y]);
 		return;
 	}
 
 	if (diagram.dragAnchor) {
+		// moving entities
 		const [anchorX, anchorY] = diagram.dragAnchor;
 		diagram.entities.forEach((entity) => {
 			if (entity.isSelected) {
@@ -36,6 +55,7 @@ export const handlePointerMove = action(function handlePointerMove(
 	}
 
 	if (diagram.selectedEntities.length === 1) {
+		// indicate to the user what is draggable
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
 				diagram.cursorType = 'grab';
@@ -60,6 +80,18 @@ export const handlePointerDown = action(function handlePointerDown(
 	const [x, y] = getCanvasCoords(e);
 	diagram.dragAnchor = [x, y];
 
+	if (diagram.selectedTool !== 'cursor') {
+		// start creating an entity
+		diagram.setSelection([]);
+		diagram.entityInCreation = createEntity(
+			diagram.selectedTool,
+			diagram.dragAnchor,
+			diagram.dragAnchor
+		);
+		return;
+	}
+
+	// only allow interacting with controls if one entity is selected
 	if (diagram.selectedEntities.length === 1) {
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
@@ -77,6 +109,7 @@ export const handlePointerDown = action(function handlePointerDown(
 		return;
 	}
 
+	// nothing hit
 	diagram.setSelection([]);
 	diagram.render();
 });
@@ -88,13 +121,24 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 	diagram.dragAnchor = null;
 	diagram.entityControlInUse = null;
 	diagram.cursorType = 'default';
+
+	if (diagram.entityInCreation) {
+		// add the entity to the stack, and clear temporary state
+		diagram.entities.push(diagram.entityInCreation);
+		diagram.setSelection([diagram.entityInCreation]);
+		diagram.entityInCreation = null;
+		diagram.render();
+		// TODO: add tool lock
+		diagram.selectedTool = 'cursor';
+	}
 });
 
-export function hitTest(point: Point, entities: Entity[]): Entity | false {
+function hitTest(point: Point, entities: Entity[]): Entity | false {
 	// elements in the fore should be hit first
 	for (let i = entities.length - 1; i > -1; i--) {
 		const entity = entities[i];
 
+		// bypass detailed hit testing if out of bounds
 		if (!pointInBounds(point, entity.bounds)) continue;
 
 		// selection should bypass detailed hit testing

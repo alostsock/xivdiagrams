@@ -4,7 +4,6 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 
 Roadmap, listed in priority order:
 
-- drag to create
 - player/enemy markers
 - title, author, notes, steps
 - backend sync (create, edit, view)

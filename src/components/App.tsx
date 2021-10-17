@@ -20,6 +20,7 @@ const App = observer(function App() {
 
 		runInAction(() => {
 			diagram.attach(diagramEl);
+			diagram.render();
 
 			diagram.entities.push(new Circle({ origin: [50, 50], radius: 50 }));
 			diagram.entities.push(

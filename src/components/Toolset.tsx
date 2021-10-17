@@ -38,7 +38,11 @@ const Toolset = observer(function Toolset({ className, style }: Props) {
 						type="radio"
 						name={tool}
 						checked={diagram.selectedTool === tool}
-						onChange={action(() => (diagram.selectedTool = tool))}
+						onChange={action(() => {
+							diagram.setSelection([]);
+							diagram.selectedTool = tool;
+							diagram.render();
+						})}
 					/>
 					{icon}
 				</label>
