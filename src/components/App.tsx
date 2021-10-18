@@ -8,8 +8,10 @@ import {
 	handlePointerUpLeave,
 } from 'renderer/interactions';
 import { Circle, Cone, Rect, Line, Arrow } from 'renderer/entities';
+import Heading from 'components/Heading';
+import Properties from 'components/Properties';
+import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
-import './App.scss';
 
 const App = observer(function App() {
 	const [diagramEl, setDiagramEl] = useState<HTMLCanvasElement | null>(null);
@@ -61,7 +63,7 @@ const App = observer(function App() {
 
 	return (
 		<div className="App">
-			<header className="heading">heading</header>
+			<Heading className="heading" />
 
 			<div ref={containerRef} className="diagram">
 				<Toolset className="toolset" />
@@ -76,9 +78,9 @@ const App = observer(function App() {
 				></canvas>
 			</div>
 
-			<div className="properties">properties</div>
+			<Notes className="notes" />
 
-			<div className="notes">notes</div>
+			<Properties className="properties" />
 		</div>
 	);
 });

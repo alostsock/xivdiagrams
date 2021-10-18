@@ -1,6 +1,14 @@
 @import './sanitize.css';
 @import './open-color.css';
 
+:where(svg:not([fill])) {
+	fill: currentColor;
+}
+
+:where(svg:not([stroke])) {
+	stroke: currentColor;
+}
+
 html,
 body {
 	width: 100%;
@@ -16,12 +24,24 @@ body {
 	color: var(--oc-gray-8);
 }
 
-:where(svg:not([fill])) {
-	fill: currentColor;
+#root {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
-:where(svg:not([stroke])) {
-	stroke: currentColor;
+h1,
+h2 {
+	padding: 0;
+	margin: 0;
+}
+
+h1 {
+	font-size: 2rem;
+}
+
+h2 {
+	font-size: 1.5rem;
 }
 
 button,
@@ -35,7 +55,7 @@ fieldset > label {
 	display: flex;
 	align-items: center;
 
-  transition: background 150ms, color 150ms;
+	transition: background 150ms, color 150ms;
 
 	&:hover {
 		cursor: pointer;
@@ -57,10 +77,93 @@ fieldset > label {
 	}
 }
 
-fieldset > label {
-	input[type='radio'] {
+.App {
+	width: 100%;
+	max-width: calc(60rem + 100vh);
+	min-height: 100vh;
+
+	display: grid;
+	grid-template-columns: minmax(20rem, 30rem) 100vh minmax(20rem, 30rem);
+	grid-template-rows: min-content 1fr 1fr;
+	grid-template-areas:
+		'a d c'
+		'b d c'
+		'b d c';
+
+	@media screen and (max-aspect-ratio: 9/5) {
+		max-width: calc(30rem + 100vh);
+		grid-template-columns: minmax(20rem, 30rem) 100vh;
+		grid-template-areas:
+			'a d'
+			'b d'
+			'c d';
+	}
+
+	.heading {
+		grid-area: a;
+	}
+
+	.diagram {
+		grid-area: d;
+		width: 100%;
+		height: 100%;
+		position: relative;
+
+		.toolset {
+			position: absolute;
+			left: 0;
+		}
+
+		canvas {
+			background: #fefefe;
+		}
+	}
+
+	.properties {
+		grid-area: b;
+	}
+
+	.notes {
+		grid-area: c;
+	}
+}
+
+.Toolset {
+	height: 100%;
+	padding: 0.5rem;
+	border: none;
+	pointer-events: none;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+
+	label + label {
+		margin-top: 0.5rem;
+	}
+
+	label {
+		width: 2rem;
+		height: 2rem;
+		pointer-events: auto;
+	}
+
+	label > input[type='radio'] {
 		opacity: 0;
 		position: absolute;
 		pointer-events: none;
+	}
+}
+
+.Heading,
+.Properties,
+.Notes {
+	width: 100%;
+	padding: 0.5rem;
+}
+
+.Heading {
+	h2 {
+		color: var(--oc-gray-7);
 	}
 }

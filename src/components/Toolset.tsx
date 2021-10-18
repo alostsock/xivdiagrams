@@ -9,7 +9,6 @@ import {
 	ArrowSvg,
 } from 'icons';
 import clsx from 'clsx';
-import './Toolset.scss';
 import { action } from 'mobx';
 
 const tools: [Tool, JSX.Element][] = [
