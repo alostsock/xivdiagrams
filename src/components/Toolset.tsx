@@ -38,7 +38,7 @@ const Toolset = observer(function Toolset({ className, style }: Props) {
 						name={tool}
 						checked={diagram.selectedTool === tool}
 						onChange={action(() => {
-							diagram.setSelection([]);
+							diagram.updateSelection([]);
 							diagram.selectedTool = tool;
 							diagram.render();
 						})}

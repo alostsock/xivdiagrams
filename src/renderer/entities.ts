@@ -1,3 +1,4 @@
+import { makeAutoObservable } from 'mobx';
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
@@ -81,7 +82,7 @@ type BaseEntity<T extends BaseData> = T & {
 	toJSON: () => T;
 };
 
-export type Entity = Circle | Cone | Rect | Line | Arrow;
+export type Entity = Circle | Cone | Rect | Line;
 
 export class Circle implements BaseEntity<CircleData> {
 	id;
@@ -95,6 +96,7 @@ export class Circle implements BaseEntity<CircleData> {
 	controls: Control<Circle>[];
 
 	constructor(options: ConstructorOptions<CircleData>) {
+		makeAutoObservable(this);
 		this.id = options.id ?? generateId();
 		this.roughOptions = getRoughOptions(options.roughOptions);
 		this.origin = options.origin;
@@ -151,6 +153,7 @@ export class Cone implements BaseEntity<ConeData> {
 	controls: Control<Cone>[];
 
 	constructor(options: ConstructorOptions<ConeData>) {
+		makeAutoObservable(this);
 		this.id = options.id ?? generateId();
 		this.roughOptions = getRoughOptions(options.roughOptions);
 		this.origin = options.origin;
@@ -260,6 +263,7 @@ export class Rect implements BaseEntity<RectData> {
 	controls: Control<Rect>[];
 
 	constructor(options: ConstructorOptions<RectData>) {
+		makeAutoObservable(this);
 		this.id = options.id ?? generateId();
 		this.roughOptions = getRoughOptions(options.roughOptions);
 		this.origin = options.origin;
@@ -313,7 +317,7 @@ export class Rect implements BaseEntity<RectData> {
 
 export class Line implements BaseEntity<LineData> {
 	id;
-	type: LineType = 'line';
+	type: LineType;
 	roughOptions: RoughOptions;
 
 	origin: Point;
@@ -324,7 +328,9 @@ export class Line implements BaseEntity<LineData> {
 	controls: Control<Line>[];
 
 	constructor(options: ConstructorOptions<LineData>) {
+		makeAutoObservable(this);
 		this.id = options.id ?? generateId();
+		this.type = options.type ?? 'line';
 		this.roughOptions = getRoughOptions(options.roughOptions);
 		this.origin = options.origin;
 		this.angle = options.angle;
@@ -353,44 +359,7 @@ export class Line implements BaseEntity<LineData> {
 		];
 	}
 
-	get segments(): Segments {
-		return [[this.origin, this.lineTo]];
-	}
-
-	get bounds() {
-		const bounds = calcBoundsFromPoints([this.origin, this.lineTo]);
-		return {
-			left: bounds.left - BOUNDS_MARGIN,
-			right: bounds.right + BOUNDS_MARGIN,
-			top: bounds.top - BOUNDS_MARGIN,
-			bottom: bounds.bottom + BOUNDS_MARGIN,
-		};
-	}
-
-	hitTest(point: Point) {
-		return distToSegments(point, this.segments) <= HIT_TEST_TOLERANCE;
-	}
-
-	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		rc.line(
-			this.origin[0],
-			this.origin[1],
-			this.lineTo[0],
-			this.lineTo[1],
-			this.roughOptions
-		);
-
-		if (this.isSelected) {
-			drawBounds(ctx, this.bounds);
-			this.controls.forEach((c) => c.render(ctx));
-		}
-	}
-}
-
-export class Arrow extends Line {
-	type: 'arrow' = 'arrow';
-
-	get headPoints(): Points {
+	get arrowPoints() {
 		const length = 30;
 		const spread = Math.PI / 7;
 		const base: Point = [this.lineTo[0] + length, this.lineTo[1]];
@@ -401,27 +370,31 @@ export class Arrow extends Line {
 	}
 
 	get segments(): Segments {
-		const headPoints = this.headPoints;
-		return [
-			[this.origin, this.lineTo],
-			[this.lineTo, headPoints[0]],
-			[this.lineTo, headPoints[1]],
-		];
+		let segments: Segments = [[this.origin, this.lineTo]];
+		if (this.type === 'arrow') {
+			const arrowPoints = this.arrowPoints;
+			segments.push([this.lineTo, arrowPoints[0]]);
+			segments.push([this.lineTo, arrowPoints[1]]);
+		}
+		return segments;
 	}
 
 	get bounds() {
-		const bounds = calcBoundsFromPoints([
-			this.origin,
-			this.lineTo,
-			...this.headPoints,
-		]);
-
+		let points = [this.origin, this.lineTo];
+		if (this.type === 'arrow') {
+			points.push(...this.arrowPoints);
+		}
+		const bounds = calcBoundsFromPoints(points);
 		return {
 			left: bounds.left - BOUNDS_MARGIN,
 			right: bounds.right + BOUNDS_MARGIN,
 			top: bounds.top - BOUNDS_MARGIN,
 			bottom: bounds.bottom + BOUNDS_MARGIN,
 		};
+	}
+
+	hitTest(point: Point) {
+		return distToSegments(point, this.segments) <= HIT_TEST_TOLERANCE;
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
@@ -497,13 +470,9 @@ export function createEntity(
 				end: angle + defaultAngle,
 			});
 		case 'line':
-			return new Line({
-				origin: [x0, y0],
-				angle: calcAngle([x0, y0], [x, y]),
-				length: Math.hypot(x - x0, y - y0),
-			});
 		case 'arrow':
-			return new Arrow({
+			return new Line({
+				type,
 				origin: [x0, y0],
 				angle: calcAngle([x0, y0], [x, y]),
 				length: Math.hypot(x - x0, y - y0),
@@ -530,9 +499,8 @@ export function deserializeEntities(entities: EntityData[]): Entity[] {
 			case 'cone':
 				return new Cone({ ...entityData });
 			case 'line':
-				return new Line({ ...entityData });
 			case 'arrow':
-				return new Arrow({ ...entityData });
+				return new Line({ ...entityData });
 		}
 	});
 }

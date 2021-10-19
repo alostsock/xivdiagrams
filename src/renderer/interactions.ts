@@ -43,11 +43,9 @@ export const handlePointerMove = action(function handlePointerMove(
 	if (diagram.dragAnchor) {
 		// moving entities
 		const [anchorX, anchorY] = diagram.dragAnchor;
-		diagram.entities.forEach((entity) => {
-			if (entity.isSelected) {
-				const [originX, originY] = entity.origin;
-				entity.origin = [originX + x - anchorX, originY + y - anchorY];
-			}
+		diagram.selectedEntities.forEach((entity) => {
+			const [originX, originY] = entity.origin;
+			entity.origin = [originX + x - anchorX, originY + y - anchorY];
 		});
 		diagram.dragAnchor = [x, y];
 		diagram.render();
@@ -82,12 +80,12 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	if (diagram.selectedTool !== 'cursor') {
 		// start creating an entity
-		diagram.setSelection([]);
 		diagram.entityInCreation = createEntity(
 			diagram.selectedTool,
 			diagram.dragAnchor,
 			diagram.dragAnchor
 		);
+		diagram.render();
 		return;
 	}
 
@@ -104,14 +102,12 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	const hit = hitTest([x, y], diagram.entities);
 	if (hit) {
-		diagram.setSelection([hit]);
-		diagram.render();
+		diagram.updateSelection([hit]);
 		return;
 	}
 
 	// nothing hit
-	diagram.setSelection([]);
-	diagram.render();
+	diagram.updateSelection([]);
 });
 
 export const handlePointerUpLeave = action(function handlePointerUpLeave(
@@ -124,10 +120,10 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 
 	if (diagram.entityInCreation) {
 		// add the entity to the stack, and clear temporary state
-		diagram.entities.push(diagram.entityInCreation);
-		diagram.setSelection([diagram.entityInCreation]);
+		const createdEntity = diagram.entityInCreation;
+		diagram.entities.push(createdEntity);
 		diagram.entityInCreation = null;
-		diagram.render();
+		diagram.updateSelection([createdEntity]);
 		// TODO: add tool lock
 		diagram.selectedTool = 'cursor';
 	}

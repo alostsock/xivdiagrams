@@ -81,7 +81,7 @@ class Diagram {
 		}
 	}
 
-	setSelection(selected: Entity[]) {
+	updateSelection(selected: Entity[]) {
 		const selectedIds = new Set(selected.map((s) => s.id));
 		const unselected = this.entities.filter((e) => !selectedIds.has(e.id));
 		unselected.forEach((e) => (e.isSelected = false));
@@ -89,6 +89,7 @@ class Diagram {
 		this.selectedEntities = selected;
 		// bring selected entities up
 		this.entities = [...unselected, ...selected];
+		this.render();
 	}
 }
 
