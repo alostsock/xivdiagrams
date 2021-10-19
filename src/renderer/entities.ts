@@ -1,10 +1,11 @@
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
+import type { Options as RoughOptions } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
 import {
 	BOUNDS_MARGIN,
 	HIT_TEST_TOLERANCE,
-	ROUGH_OPTIONS,
+	DEFAULT_ROUGH_OPTIONS,
 } from 'renderer/constants';
 import {
 	Point,
@@ -30,31 +31,29 @@ import {
 	LinePointControl,
 } from 'renderer/controls';
 
-// 'data' types will be used for json serializing/deserializing
-
-interface BaseEntityData {
+interface BaseData {
 	id: string;
-	seed?: number;
 	type: string;
-	origin: Point;
-	bounds: Bounds;
-	isSelected: boolean;
+	roughOptions?: RoughOptions;
 }
 
-export interface CircleData extends BaseEntityData {
+export interface CircleData extends BaseData {
 	type: 'circle';
+	origin: Point;
 	radius: number;
 }
 
-export interface ConeData extends BaseEntityData {
+export interface ConeData extends BaseData {
 	type: 'cone';
+	origin: Point;
 	radius: number;
 	start: number;
 	end: number;
 }
 
-export interface RectData extends BaseEntityData {
+export interface RectData extends BaseData {
 	type: 'rect';
+	origin: Point;
 	width: number;
 	height: number;
 	rotation: number;
@@ -62,100 +61,55 @@ export interface RectData extends BaseEntityData {
 
 type LineType = 'line' | 'arrow';
 
-export interface LineData extends BaseEntityData {
+export interface LineData extends BaseData {
 	type: LineType;
+	origin: Point;
 	angle: number;
 	length: number;
 }
 
 export type EntityData = CircleData | ConeData | RectData | LineData;
 
-type BaseEntity<T> = T & {
+type ConstructorOptions<T extends BaseData> = PartialBy<T, keyof BaseData>;
+
+type BaseEntity<T extends BaseData> = T & {
+	isSelected: boolean;
 	controls: Control<BaseEntity<T>>[];
+	bounds: Bounds;
 	hitTest: (point: Point) => boolean;
 	draw: (rc: RoughCanvas, ctx: CanvasRenderingContext2D) => void;
+	toJSON: () => T;
 };
 
 export type Entity = Circle | Cone | Rect | Line | Arrow;
 
-const generateId = () => nanoid(8);
-
-export function createEntity(
-	type: Entity['type'],
-	[x0, y0]: Point,
-	[x, y]: Point
-): Entity {
-	switch (type) {
-		case 'rect':
-			return new Rect({
-				origin: [(x0 + x) / 2, (y0 + y) / 2],
-				rotation: 0,
-				width: x - x0,
-				height: y - y0,
-			});
-		case 'circle':
-			return new Circle({
-				origin: [(x0 + x) / 2, (y0 + y) / 2],
-				radius: Math.max((x - x0) / 2, (y - y0) / 2),
-			});
-		case 'cone':
-			const defaultAngle = Math.PI / 6;
-			const angle = calcAngle([x0, y0], [x, y]);
-			return new Cone({
-				origin: [x0, y0],
-				radius: Math.hypot(x - x0, y - y0),
-				start: angle - defaultAngle,
-				end: angle + defaultAngle,
-			});
-		case 'line':
-			return new Line({
-				origin: [x0, y0],
-				angle: calcAngle([x0, y0], [x, y]),
-				length: Math.hypot(x - x0, y - y0),
-			});
-		case 'arrow':
-			return new Arrow({
-				origin: [x0, y0],
-				angle: calcAngle([x0, y0], [x, y]),
-				length: Math.hypot(x - x0, y - y0),
-			});
-	}
-}
-
-function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
-	const { left, right, top, bottom } = bounds;
-	ctx.save();
-
-	ctx.strokeStyle = '#0060DF';
-	ctx.lineWidth = 1;
-
-	ctx.beginPath();
-	ctx.moveTo(left, top);
-	ctx.lineTo(right, top);
-	ctx.lineTo(right, bottom);
-	ctx.lineTo(left, bottom);
-	ctx.closePath();
-
-	ctx.stroke();
-
-	ctx.restore();
-}
-
 export class Circle implements BaseEntity<CircleData> {
-	id = generateId();
+	id;
 	type: 'circle' = 'circle';
-	seed = RoughGenerator.newSeed();
-	isSelected: boolean = false;
+	roughOptions: RoughOptions;
+
 	origin: Point;
 	radius: number;
 
+	isSelected: boolean = false;
 	controls: Control<Circle>[];
 
-	constructor(options: Pick<CircleData, 'origin' | 'radius'>) {
-		const { origin, radius } = options;
-		this.origin = origin;
-		this.radius = radius;
+	constructor(options: ConstructorOptions<CircleData>) {
+		this.id = options.id ?? generateId();
+		this.roughOptions = getRoughOptions(options.roughOptions);
+		this.origin = options.origin;
+		this.radius = options.radius;
 		this.controls = [new CircleRadiusControl(this)];
+	}
+
+	toJSON(): CircleData {
+		return selectProps<Circle, CircleData>(this, [
+			'id',
+			'type',
+			'roughOptions',
+			'origin',
+			'radius',
+		]);
 	}
 
 	get bounds(): Bounds {
@@ -174,10 +128,7 @@ export class Circle implements BaseEntity<CircleData> {
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const [x, y] = this.origin;
-		rc.circle(x, y, 2 * this.radius, {
-			...ROUGH_OPTIONS,
-			seed: this.seed,
-		});
+		rc.circle(x, y, 2 * this.radius, this.roughOptions);
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
@@ -187,27 +138,41 @@ export class Circle implements BaseEntity<CircleData> {
 }
 
 export class Cone implements BaseEntity<ConeData> {
-	id = generateId();
+	id;
 	type: 'cone' = 'cone';
-	seed = RoughGenerator.newSeed();
-	isSelected: boolean = false;
+	roughOptions: RoughOptions;
+
 	origin: Point;
 	radius: number;
 	start: number;
 	end: number;
 
+	isSelected: boolean = false;
 	controls: Control<Cone>[];
 
-	constructor(options: Pick<ConeData, 'origin' | 'radius' | 'start' | 'end'>) {
-		const { origin, radius, start, end } = options;
-		this.origin = origin;
-		this.radius = radius;
-		this.start = start;
-		this.end = end;
+	constructor(options: ConstructorOptions<ConeData>) {
+		this.id = options.id ?? generateId();
+		this.roughOptions = getRoughOptions(options.roughOptions);
+		this.origin = options.origin;
+		this.radius = options.radius;
+		this.start = options.start;
+		this.end = options.end;
 		this.controls = [
 			new ConeRadiusRotationControl(this),
 			new ConeAngleControl(this),
 		];
+	}
+
+	toJSON(): ConeData {
+		return selectProps<Cone, ConeData>(this, [
+			'id',
+			'type',
+			'roughOptions',
+			'origin',
+			'radius',
+			'start',
+			'end',
+		]);
 	}
 
 	get bounds(): Bounds {
@@ -261,22 +226,18 @@ export class Cone implements BaseEntity<ConeData> {
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const [x0, y0] = this.origin;
 		const size = 2 * this.radius;
-		const options = {
-			...ROUGH_OPTIONS,
-			seed: this.seed,
-		};
 
 		// roughjs has a bit of overdrawing for arcs
 		// use lower roughness to mitigate this
 		rc.arc(x0, y0, size, size, this.start, this.end, false, {
-			...options,
-			roughness: 0.35,
+			...this.roughOptions,
+			roughness: (this.roughOptions.roughness ?? 1) / 3,
 		});
 
 		const arcP1 = rotatePoint(this.origin, [x0 + this.radius, y0], this.start);
 		const arcP2 = rotatePoint(this.origin, [x0 + this.radius, y0], this.end);
-		rc.line(x0, y0, arcP1[0], arcP1[1], options);
-		rc.line(x0, y0, arcP2[0], arcP2[1], options);
+		rc.line(x0, y0, arcP1[0], arcP1[1], this.roughOptions);
+		rc.line(x0, y0, arcP2[0], arcP2[1], this.roughOptions);
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
@@ -286,27 +247,39 @@ export class Cone implements BaseEntity<ConeData> {
 }
 
 export class Rect implements BaseEntity<RectData> {
-	id = generateId();
+	id;
 	type: 'rect' = 'rect';
-	seed = RoughGenerator.newSeed();
-	isSelected: boolean = false;
+	roughOptions: RoughOptions;
+
 	origin: Point;
 	width: number;
 	height: number;
 	rotation: number;
 
+	isSelected: boolean = false;
 	controls: Control<Rect>[];
 
-	constructor(
-		options: Pick<RectData, 'origin' | 'width' | 'height' | 'rotation'>
-	) {
-		const { origin, width, height, rotation } = options;
-		this.origin = origin;
-		this.width = width;
-		this.height = height;
-		this.rotation = rotation;
+	constructor(options: ConstructorOptions<RectData>) {
+		this.id = options.id ?? generateId();
+		this.roughOptions = getRoughOptions(options.roughOptions);
+		this.origin = options.origin;
+		this.width = options.width;
+		this.height = options.height;
+		this.rotation = options.rotation;
 		this.controls = [0, 1, 2, 3].map((ix) => new RectCornerControl(this, ix));
 		this.controls.push(new RectRotationControl(this));
+	}
+
+	toJSON(): RectData {
+		return selectProps(this, [
+			'id',
+			'type',
+			'roughOptions',
+			'origin',
+			'width',
+			'height',
+			'rotation',
+		]);
 	}
 
 	get points(): Points {
@@ -329,10 +302,7 @@ export class Rect implements BaseEntity<RectData> {
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		rc.polygon(this.points, {
-			...ROUGH_OPTIONS,
-			seed: this.seed,
-		});
+		rc.polygon(this.points, this.roughOptions);
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
@@ -342,17 +312,20 @@ export class Rect implements BaseEntity<RectData> {
 }
 
 export class Line implements BaseEntity<LineData> {
-	id = generateId();
-	type: 'line' | 'arrow' = 'line';
-	seed = RoughGenerator.newSeed();
-	isSelected: boolean = false;
+	id;
+	type: LineType = 'line';
+	roughOptions: RoughOptions;
+
 	origin: Point;
 	angle: number;
 	length: number;
 
+	isSelected: boolean = false;
 	controls: Control<Line>[];
 
-	constructor(options: Pick<LineData, 'origin' | 'angle' | 'length'>) {
+	constructor(options: ConstructorOptions<LineData>) {
+		this.id = options.id ?? generateId();
+		this.roughOptions = getRoughOptions(options.roughOptions);
 		this.origin = options.origin;
 		this.angle = options.angle;
 		this.length = options.length;
@@ -360,6 +333,17 @@ export class Line implements BaseEntity<LineData> {
 			new LinePointControl(this, true),
 			new LinePointControl(this, false),
 		];
+	}
+
+	toJSON(): LineData {
+		return selectProps(this, [
+			'id',
+			'type',
+			'roughOptions',
+			'origin',
+			'angle',
+			'length',
+		]);
 	}
 
 	get lineTo(): Point {
@@ -388,16 +372,12 @@ export class Line implements BaseEntity<LineData> {
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		const options = {
-			...ROUGH_OPTIONS,
-			seed: this.seed,
-		};
 		rc.line(
 			this.origin[0],
 			this.origin[1],
 			this.lineTo[0],
 			this.lineTo[1],
-			options
+			this.roughOptions
 		);
 
 		if (this.isSelected) {
@@ -445,13 +425,8 @@ export class Arrow extends Line {
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		const options = {
-			...ROUGH_OPTIONS,
-			seed: this.seed,
-		};
-
 		this.segments.forEach(([[x1, y1], [x2, y2]]) => {
-			rc.line(x1, y1, x2, y2, options);
+			rc.line(x1, y1, x2, y2, this.roughOptions);
 		});
 
 		if (this.isSelected) {
@@ -459,4 +434,105 @@ export class Arrow extends Line {
 			this.controls.forEach((c) => c.render(ctx));
 		}
 	}
+}
+
+function generateId() {
+	return nanoid(8);
+}
+
+function getRoughOptions(options?: RoughOptions): RoughOptions {
+	return {
+		seed: options?.seed ?? RoughGenerator.newSeed(),
+		roughness: options?.roughness ?? DEFAULT_ROUGH_OPTIONS.roughness,
+		curveFitting: options?.curveFitting ?? DEFAULT_ROUGH_OPTIONS.curveFitting,
+		strokeWidth: options?.strokeWidth ?? DEFAULT_ROUGH_OPTIONS.strokeWidth,
+		...options,
+	};
+}
+
+function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
+	const { left, right, top, bottom } = bounds;
+	ctx.save();
+
+	ctx.strokeStyle = '#0060DF';
+	ctx.lineWidth = 1;
+
+	ctx.beginPath();
+	ctx.moveTo(left, top);
+	ctx.lineTo(right, top);
+	ctx.lineTo(right, bottom);
+	ctx.lineTo(left, bottom);
+	ctx.closePath();
+
+	ctx.stroke();
+
+	ctx.restore();
+}
+
+export function createEntity(
+	type: Entity['type'],
+	[x0, y0]: Point,
+	[x, y]: Point
+): Entity {
+	switch (type) {
+		case 'rect':
+			return new Rect({
+				origin: [(x0 + x) / 2, (y0 + y) / 2],
+				rotation: 0,
+				width: x - x0,
+				height: y - y0,
+			});
+		case 'circle':
+			return new Circle({
+				origin: [(x0 + x) / 2, (y0 + y) / 2],
+				radius: Math.max((x - x0) / 2, (y - y0) / 2),
+			});
+		case 'cone':
+			const defaultAngle = Math.PI / 6;
+			const angle = calcAngle([x0, y0], [x, y]);
+			return new Cone({
+				origin: [x0, y0],
+				radius: Math.hypot(x - x0, y - y0),
+				start: angle - defaultAngle,
+				end: angle + defaultAngle,
+			});
+		case 'line':
+			return new Line({
+				origin: [x0, y0],
+				angle: calcAngle([x0, y0], [x, y]),
+				length: Math.hypot(x - x0, y - y0),
+			});
+		case 'arrow':
+			return new Arrow({
+				origin: [x0, y0],
+				angle: calcAngle([x0, y0], [x, y]),
+				length: Math.hypot(x - x0, y - y0),
+			});
+	}
+}
+
+function selectProps<T extends U, U>(obj: T, keys: Array<keyof U>): U {
+	const partial = {} as U;
+	return keys.reduce((acc, key) => {
+		acc[key] = obj[key];
+		return acc;
+	}, partial);
+}
+
+export function deserializeEntities(entities: EntityData[]): Entity[] {
+	// eslint-disable-next-line array-callback-return
+	return entities.map((entityData) => {
+		switch (entityData.type) {
+			case 'rect':
+				return new Rect({ ...entityData });
+			case 'circle':
+				return new Circle({ ...entityData });
+			case 'cone':
+				return new Cone({ ...entityData });
+			case 'line':
+				return new Line({ ...entityData });
+			case 'arrow':
+				return new Arrow({ ...entityData });
+		}
+	});
 }

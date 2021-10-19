@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import {
 	handlePointerMove,
 	handlePointerDown,
 	handlePointerUpLeave,
 } from 'renderer/interactions';
-import { Circle, Cone, Rect, Line, Arrow } from 'renderer/entities';
 import Heading from 'components/Heading';
 import Properties from 'components/Properties';
 import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
+
+import testPlan from './testplan';
 
 const App = observer(function App() {
 	const [diagramEl, setDiagramEl] = useState<HTMLCanvasElement | null>(null);
@@ -22,31 +24,7 @@ const App = observer(function App() {
 
 		runInAction(() => {
 			diagram.attach(diagramEl);
-
-			diagram.entities.push(new Circle({ origin: [50, 50], radius: 50 }));
-			diagram.entities.push(
-				new Rect({
-					origin: [50, 150],
-					width: 50,
-					height: 80,
-					rotation: Math.PI / 4,
-				})
-			);
-			diagram.entities.push(
-				new Cone({
-					origin: [50, 250],
-					radius: 90,
-					start: 0,
-					end: Math.PI * 1.5,
-				})
-			);
-			diagram.entities.push(
-				new Line({ origin: [200, 100], angle: Math.PI / 6, length: 100 })
-			);
-			diagram.entities.push(
-				new Arrow({ origin: [200, 200], angle: Math.PI / 6, length: 100 })
-			);
-			diagram.render();
+			plan.loadPlan(testPlan);
 		});
 	}, [diagramEl]);
 

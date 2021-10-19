@@ -2,7 +2,7 @@ import type { Options as RoughOptions } from 'roughjs/bin/core';
 
 export const BASE_CANVAS_SIZE = 540;
 
-export const ROUGH_OPTIONS: RoughOptions = {
+export const DEFAULT_ROUGH_OPTIONS: RoughOptions = {
 	roughness: 1,
 	curveFitting: 0.97,
 	strokeWidth: 1,
