@@ -56,9 +56,9 @@ const App = observer(function App() {
 				></canvas>
 			</div>
 
-			<Notes className="notes" />
-
 			<Properties className="properties" />
+
+			<Notes className="notes" />
 		</div>
 	);
 });
