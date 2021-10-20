@@ -8,8 +8,8 @@
 *,
 ::before,
 ::after {
-  box-sizing: border-box; /* 1 */
-  background-repeat: no-repeat; /* 2 */
+	box-sizing: border-box; /* 1 */
+	background-repeat: no-repeat; /* 2 */
 }
 
 /**
@@ -19,12 +19,11 @@
 
 ::before,
 ::after {
-  text-decoration: inherit; /* 1 */
-  vertical-align: inherit; /* 2 */
+	text-decoration: inherit; /* 1 */
+	vertical-align: inherit; /* 2 */
 }
 
 /**
- * 1. Use the default cursor in all browsers (opinionated).
  * 2. Change the line height in all browsers (opinionated).
  * 3. Breaks words to prevent overflow in all browsers (opinionated).
  * 4. Use a 4-space tab width in all browsers (opinionated).
@@ -33,14 +32,13 @@
  */
 
 :where(:root) {
-  cursor: default; /* 1 */
-  line-height: 1.5; /* 2 */
-  overflow-wrap: break-word; /* 3 */
-  -moz-tab-size: 4; /* 4 */
-  tab-size: 4; /* 4 */
-  -webkit-tap-highlight-color: transparent; /* 5 */
-  -webkit-text-size-adjust: 100%; /* 6 */
-  text-size-adjust: 100%; /* 6 */
+	line-height: 1.5; /* 2 */
+	overflow-wrap: break-word; /* 3 */
+	-moz-tab-size: 4; /* 4 */
+	tab-size: 4; /* 4 */
+	-webkit-tap-highlight-color: transparent; /* 5 */
+	-webkit-text-size-adjust: 100%; /* 6 */
+	text-size-adjust: 100%; /* 6 */
 }
 
 /**
@@ -48,7 +46,7 @@
  */
 
 :where(body) {
-  margin: 0;
+	margin: 0;
 }
 
 /**
@@ -57,8 +55,8 @@
  */
 
 :where(h1) {
-  font-size: 2em;
-  margin: 0.67em 0;
+	font-size: 2em;
+	margin: 0.67em 0;
 }
 
 /**
@@ -66,8 +64,8 @@
  */
 
 :where(nav) :where(ol, ul) {
-  list-style-type: none;
-  padding: 0;
+	list-style-type: none;
+	padding: 0;
 }
 
 /**
@@ -75,8 +73,8 @@
  */
 
 :where(nav li)::before {
-  content: "\200B";
-  float: left;
+	content: '\200B';
+	float: left;
 }
 
 /**
@@ -86,9 +84,9 @@
  */
 
 :where(pre) {
-  font-family: monospace, monospace; /* 1 */
-  font-size: 1em; /* 2 */
-  overflow: auto; /* 3 */
+	font-family: monospace, monospace; /* 1 */
+	font-size: 1em; /* 2 */
+	overflow: auto; /* 3 */
 }
 
 /**
@@ -96,7 +94,7 @@
  */
 
 :where(b, strong) {
-  font-weight: bolder;
+	font-weight: bolder;
 }
 
 /**
@@ -105,8 +103,8 @@
  */
 
 :where(code, kbd, samp) {
-  font-family: monospace, monospace; /* 1 */
-  font-size: 1em; /* 2 */
+	font-family: monospace, monospace; /* 1 */
+	font-size: 1em; /* 2 */
 }
 
 /*
@@ -114,7 +112,7 @@
  */
 
 :where(audio, canvas, iframe, img, svg, video) {
-  vertical-align: middle;
+	vertical-align: middle;
 }
 
 /**
@@ -122,15 +120,15 @@
  */
 
 :where(button, input, select) {
-  margin: 0;
+	margin: 0;
 }
 
 /**
  * Correct the inability to style buttons in iOS and Safari.
  */
 
-:where(button, [type="button" i], [type="reset" i], [type="submit" i]) {
-  -webkit-appearance: button;
+:where(button, [type='button' i], [type='reset' i], [type='submit' i]) {
+	-webkit-appearance: button;
 }
 
 /**
@@ -138,7 +136,7 @@
  */
 
 :where(fieldset) {
-  border: 1px solid #a0a0a0;
+	border: 1px solid #a0a0a0;
 }
 
 /**
@@ -147,8 +145,8 @@
  */
 
 :where(textarea) {
-  margin: 0; /* 1 */
-  resize: vertical; /* 3 */
+	margin: 0; /* 1 */
+	resize: vertical; /* 3 */
 }
 
 /**
@@ -156,9 +154,9 @@
  * 2. Correct the outline style in Safari.
  */
 
-:where([type="search" i]) {
-  -webkit-appearance: textfield; /* 1 */
-  outline-offset: -2px; /* 2 */
+:where([type='search' i]) {
+	-webkit-appearance: textfield; /* 1 */
+	outline-offset: -2px; /* 2 */
 }
 
 /**
@@ -167,7 +165,7 @@
 
 ::-webkit-inner-spin-button,
 ::-webkit-outer-spin-button {
-  height: auto;
+	height: auto;
 }
 
 /**
@@ -175,8 +173,8 @@
  */
 
 ::-webkit-input-placeholder {
-  color: inherit;
-  opacity: 0.54;
+	color: inherit;
+	opacity: 0.54;
 }
 
 /**
@@ -184,7 +182,7 @@
  */
 
 ::-webkit-search-decoration {
-  -webkit-appearance: none;
+	-webkit-appearance: none;
 }
 
 /**
@@ -193,8 +191,8 @@
  */
 
 ::-webkit-file-upload-button {
-  -webkit-appearance: button; /* 1 */
-  font: inherit; /* 2 */
+	-webkit-appearance: button; /* 1 */
+	font: inherit; /* 2 */
 }
 
 /**
@@ -202,8 +200,8 @@
  */
 
 :where(iframe, img, input, video, select, textarea) {
-  height: auto;
-  max-width: 100%;
+	height: auto;
+	max-width: 100%;
 }
 
 /**
@@ -212,12 +210,12 @@
  */
 
 :where(button, input, select, textarea) {
-  background-color: transparent; /* 1 */
-  border: 1px solid WindowFrame; /* 1 */
-  color: inherit; /* 1 */
-  font: inherit; /* 2 */
-  letter-spacing: inherit; /* 2 */
-  padding: 0.25em 0.375em; /* 1 */
+	background-color: transparent; /* 1 */
+	border: 1px solid WindowFrame; /* 1 */
+	color: inherit; /* 1 */
+	font: inherit; /* 2 */
+	letter-spacing: inherit; /* 2 */
+	padding: 0.25em 0.375em; /* 1 */
 }
 
 /**
@@ -225,11 +223,12 @@
  */
 
 :where(select) {
-  -webkit-appearance: none;
-  appearance: none;
-  background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='4'%3E%3Cpath d='M4 0h6L7 4'/%3E%3C/svg%3E") no-repeat right center / 1em;
-  border-radius: 0;
-  padding-right: 1em;
+	-webkit-appearance: none;
+	appearance: none;
+	background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='4'%3E%3Cpath d='M4 0h6L7 4'/%3E%3C/svg%3E")
+		no-repeat right center / 1em;
+	border-radius: 0;
+	padding-right: 1em;
 }
 
 /**
@@ -237,7 +236,7 @@
  */
 
 :where(select[multiple]) {
-  background-image: none;
+	background-image: none;
 }
 
 /*
@@ -248,15 +247,15 @@
  */
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-delay: -1ms !important; /* 1 */
-    animation-duration: 1ms !important; /* 1 */
-    animation-iteration-count: 1 !important; /* 1 */
-    background-attachment: initial !important; /* 2 */
-    scroll-behavior: auto !important; /* 3 */
-    transition-delay: 0s !important; /* 4 */
-    transition-duration: 0s !important; /* 4 */
-  }
+	*,
+	::before,
+	::after {
+		animation-delay: -1ms !important; /* 1 */
+		animation-duration: 1ms !important; /* 1 */
+		animation-iteration-count: 1 !important; /* 1 */
+		background-attachment: initial !important; /* 2 */
+		scroll-behavior: auto !important; /* 3 */
+		transition-delay: 0s !important; /* 4 */
+		transition-duration: 0s !important; /* 4 */
+	}
 }

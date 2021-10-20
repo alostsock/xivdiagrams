@@ -44,16 +44,18 @@ const App = observer(function App() {
 			<Heading className="heading" />
 
 			<div ref={containerRef} className="diagram">
-				<Toolset className="toolset" />
+				<div className="canvas-container">
+					<Toolset className="toolset" />
 
-				<canvas
-					ref={diagramRef}
-					style={{ cursor: diagram.cursorType }}
-					onPointerMove={handlePointerMove}
-					onPointerDown={handlePointerDown}
-					onPointerUp={handlePointerUpLeave}
-					onPointerLeave={handlePointerUpLeave}
-				></canvas>
+					<canvas
+						ref={diagramRef}
+						style={{ cursor: diagram.cursorType }}
+						onPointerMove={handlePointerMove}
+						onPointerDown={handlePointerDown}
+						onPointerUp={handlePointerUpLeave}
+						onPointerLeave={handlePointerUpLeave}
+					></canvas>
+				</div>
 			</div>
 
 			<Properties className="properties" />

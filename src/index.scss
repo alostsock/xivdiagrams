@@ -79,40 +79,16 @@ fieldset > label {
 
 .App {
 	width: 100%;
-	max-width: calc(30rem + 100vh);
 	min-height: 100vh;
-	overflow: hidden;
 
-	display: grid;
-	grid-template-columns: auto 100vh;
-	grid-template-rows: min-content 1fr 1fr;
-	grid-template-areas:
-		'a d'
-		'b d'
-		'c d';
-
-	// smaller than tablets (4/3)
-	@media screen and (max-aspect-ratio: 5/4) {
-		width: 75%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	@media screen and (max-aspect-ratio: 1) {
-		width: 100%;
-	}
-
-	.heading {
-		grid-area: a;
-	}
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 
 	.diagram {
-		grid-area: d;
+		// reserve a square of 100% width in flex layout
 		width: 100%;
 		height: 100%;
-
-		// reserve a square in flex layouts
 		padding-bottom: 100%;
 		display: flex;
 		align-items: center;
@@ -128,21 +104,64 @@ fieldset > label {
 			align-items: center;
 		}
 
-		canvas {
+		.canvas-container {
 			position: absolute;
 			left: 0;
 			right: 0;
 			transform: translateY(50%);
-			background: #fefefe;
+			width: 100%;
+			height: 100%;
+
+			canvas {
+				background: #fefefe;
+			}
 		}
 	}
 
-	.properties {
-		grid-area: b;
+	@media screen and (min-width: 600px) {
+		width: 75%;
 	}
 
-	.notes {
-		grid-area: c;
+	// tablets or larger, must have room for a sidebar
+	@media screen and (min-aspect-ratio: 5/4) and (min-width: calc(100vh + 16rem)) {
+		width: 100%;
+		max-width: calc(100vh + 30rem);
+
+		display: grid;
+		align-items: flex-start;
+		grid-template-columns: 100vh auto;
+		grid-template-rows: min-content repeat(2, minmax(min-content, 1fr));
+		grid-template-areas:
+			'd a'
+			'd b'
+			'd c';
+
+		.diagram {
+			grid-area: d;
+			padding: 0;
+			display: block;
+
+			.canvas-container {
+				height: 100vh;
+				position: sticky;
+				top: 0;
+				left: 0;
+				right: 0;
+				transform: none;
+			}
+		}
+
+		.heading {
+			grid-area: a;
+		}
+
+		.properties {
+			grid-area: b;
+		}
+
+		.notes {
+			grid-area: c;
+		}
 	}
 }
 
