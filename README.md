@@ -6,8 +6,8 @@ Roadmap, listed in priority order:
 
 - entity properties
 - player/enemy markers
-- title, author, notes, steps
 - backend sync (create, edit, view)
+- steps
 - copy/paste
 - keybinds (bksp, del, esc, ctrl+c, ctrl+v)
 - object/mechanic markers
