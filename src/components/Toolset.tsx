@@ -9,7 +9,6 @@ import {
 	LineSvg,
 	ArrowSvg,
 } from 'icons';
-import { createSvgDataUrl } from 'icons';
 import clsx from 'clsx';
 
 const tools: [Tool, JSX.Element][] = [
@@ -33,7 +32,9 @@ const Toolset = observer(function Toolset({ className, style }: Props) {
 				{tools.map(([tool, icon]) => (
 					<label
 						key={tool}
-						className={clsx({ selected: diagram.selectedTool === tool })}
+						className={clsx('icon', {
+							selected: diagram.selectedTool === tool,
+						})}
 					>
 						<input
 							type="radio"

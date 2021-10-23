@@ -21,7 +21,7 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	background: var(--oc-gray-1);
-	color: var(--oc-gray-8);
+	color: var(--oc-gray-9);
 }
 
 #root {
@@ -48,14 +48,18 @@ button,
 fieldset > label {
 	position: relative;
 	width: min-content;
-	padding: 0.3rem;
+	padding: 0.3rem 0.4rem;
 	background: var(--oc-gray-1);
+	border: none;
 	border-radius: 0.2rem;
 
 	display: flex;
 	align-items: center;
 
 	transition: background 150ms, color 150ms;
+
+	user-select: none;
+	pointer-events: auto;
 
 	&:hover {
 		cursor: pointer;
@@ -72,8 +76,27 @@ fieldset > label {
 		color: var(--oc-gray-5);
 	}
 
-	&:focus {
-		outline: 0.2em solid var(--oc-blue-4);
+	&:focus,
+	&:focus-within {
+		outline: 0.2em solid rgba(var(--oc-blue-5-rgb), 0.6);
+	}
+}
+
+fieldset {
+	padding: 0.5rem;
+	border: none;
+	display: flex;
+
+	label.icon {
+		width: 2.4rem;
+		height: 2.4rem;
+		padding: 0.3rem;
+	}
+
+	label > input[type='radio'] {
+		opacity: 0;
+		position: absolute;
+		pointer-events: none;
 	}
 }
 
@@ -95,12 +118,28 @@ fieldset > label {
 
 		position: relative;
 
-		.toolset {
+		.overlay {
 			position: absolute;
 			left: 0;
 			top: 0;
-			right: 0;
+			bottom: 0;
 			z-index: 1;
+			pointer-events: none;
+
+			display: flex;
+
+			button,
+			label {
+				font-weight: bold;
+
+				box-shadow: 1px 1px 0px 1px rgba(10, 10, 10, 0.1),
+					3px 3px 3px rgba(10, 10, 10, 0.15);
+
+				&.selected {
+					box-shadow: 1px 1px rgba(10, 10, 10, 0.1),
+						1px 1px 1px 1px rgba(10, 10, 10, 0.2);
+				}
+			}
 		}
 
 		.canvas-container {
@@ -129,7 +168,7 @@ fieldset > label {
 		display: grid;
 		align-items: flex-start;
 		grid-template-columns: 100vh auto;
-		grid-template-rows: min-content repeat(2, minmax(min-content, 1fr));
+		grid-template-rows: min-content 1fr min-content;
 		grid-template-areas:
 			'd a'
 			'd b'
@@ -154,39 +193,42 @@ fieldset > label {
 			grid-area: a;
 		}
 
-		.properties {
+		.notes {
 			grid-area: b;
 		}
 
-		.notes {
+		.properties {
 			grid-area: c;
 		}
 	}
 }
 
 .Toolset {
-	pointer-events: none;
+	height: 100%;
+	display: flex;
+	align-items: center;
 
 	fieldset {
-		padding: 0.5rem;
-		border: none;
-		display: flex;
+		flex-direction: column;
 
 		label + label {
-			margin-left: 0.5rem;
+			margin-top: 0.5rem;
 		}
+	}
+}
 
-		label {
-			width: 2rem;
-			height: 2rem;
-			pointer-events: auto;
-		}
+.Marks {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
 
-		label > input[type='radio'] {
-			opacity: 0;
-			position: absolute;
-			pointer-events: none;
-		}
+	.categories {
+		padding: 0.5rem;
+		display: flex;
+	}
+
+	.categories button + button {
+		margin-left: 0.5rem;
 	}
 }
 

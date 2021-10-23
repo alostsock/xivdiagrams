@@ -14,6 +14,7 @@ import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
 
 import testPlan from './testplan';
+import Marks from './Marks';
 
 const App = observer(function App() {
 	const [diagramEl, setDiagramEl] = useState<HTMLCanvasElement | null>(null);
@@ -45,7 +46,10 @@ const App = observer(function App() {
 
 			<div ref={containerRef} className="diagram">
 				<div className="canvas-container">
-					<Toolset className="toolset" />
+					<div className="overlay">
+						<Toolset />
+						<Marks />
+					</div>
 
 					<canvas
 						ref={diagramRef}
@@ -58,9 +62,9 @@ const App = observer(function App() {
 				</div>
 			</div>
 
-			<Properties className="properties" />
-
 			<Notes className="notes" />
+
+			<Properties className="properties" />
 		</div>
 	);
 });

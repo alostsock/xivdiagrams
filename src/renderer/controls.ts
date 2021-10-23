@@ -1,4 +1,10 @@
-import { CONTROL_RADIUS, CONTROL_OFFSET } from 'renderer/constants';
+import {
+	CONTROL_RADIUS,
+	CONTROL_OFFSET,
+	CONTROL_STROKE_STYLE,
+	CONTROL_LINE_WIDTH,
+	CONTROL_FILL_STYLE,
+} from 'renderer/constants';
 import {
 	calcAngle,
 	Point,
@@ -7,10 +13,6 @@ import {
 } from 'renderer/geometry';
 import { Circle, Cone, Rect, Line } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
-
-const STROKE_STYLE = '#0060DF';
-const LINE_WIDTH = 2;
-const FILL_STYLE = '#FFF';
 
 export interface Control<T> {
 	parent: T;
@@ -23,12 +25,16 @@ export interface Control<T> {
 function renderCircleControl(ctx: CanvasRenderingContext2D, [x, y]: Point) {
 	ctx.save();
 
-	ctx.strokeStyle = STROKE_STYLE;
-	ctx.lineWidth = LINE_WIDTH;
-	ctx.fillStyle = FILL_STYLE;
+	// divide by the canvas's scale factor to keep control sizes relatively
+	// consistent across devices (i.e. larger for small screens, smaller for
+	// large screens)
+	const radius = CONTROL_RADIUS / diagram.scale;
+	ctx.lineWidth = CONTROL_LINE_WIDTH / diagram.scale;
+	ctx.strokeStyle = CONTROL_STROKE_STYLE;
+	ctx.fillStyle = CONTROL_FILL_STYLE;
 
 	ctx.beginPath();
-	ctx.arc(x, y, CONTROL_RADIUS, 0, Math.PI * 2);
+	ctx.arc(x, y, radius, 0, Math.PI * 2);
 	ctx.fill();
 	ctx.stroke();
 
@@ -36,7 +42,8 @@ function renderCircleControl(ctx: CanvasRenderingContext2D, [x, y]: Point) {
 }
 
 function hitTestCircleControl(point: Point, controlPosition: Point) {
-	return pointInCircle(point, controlPosition, CONTROL_RADIUS);
+	const radius = CONTROL_RADIUS / diagram.scale;
+	return pointInCircle(point, controlPosition, radius);
 }
 
 export class CircleRadiusControl implements Control<Circle> {
