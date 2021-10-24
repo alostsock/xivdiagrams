@@ -74,7 +74,6 @@ export const handlePointerMove = action(function handlePointerMove(
 export const handlePointerDown = action(function handlePointerDown(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
-	e.stopPropagation();
 	const [x, y] = getCanvasCoords(e);
 	diagram.dragAnchor = [x, y];
 

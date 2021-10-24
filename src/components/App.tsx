@@ -12,9 +12,9 @@ import Heading from 'components/Heading';
 import Properties from 'components/Properties';
 import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
+import Marks, { handleMarkDragEnterOver, handleMarkDrop } from './Marks';
 
 import testPlan from './testplan';
-import Marks from './Marks';
 
 const App = observer(function App() {
 	const [diagramEl, setDiagramEl] = useState<HTMLCanvasElement | null>(null);
@@ -58,6 +58,9 @@ const App = observer(function App() {
 						onPointerDown={handlePointerDown}
 						onPointerUp={handlePointerUpLeave}
 						onPointerLeave={handlePointerUpLeave}
+						onDragEnter={handleMarkDragEnterOver}
+						onDragOver={handleMarkDragEnterOver}
+						onDrop={handleMarkDrop}
 					></canvas>
 				</div>
 			</div>

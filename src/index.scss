@@ -48,10 +48,10 @@ button,
 fieldset > label {
 	position: relative;
 	width: min-content;
-	padding: 0.3rem 0.4rem;
-	background: var(--oc-gray-1);
+	padding: 0.3rem 0.6rem;
+	background: var(--oc-gray-0);
 	border: none;
-	border-radius: 0.2rem;
+	border-radius: 0.3rem;
 
 	display: flex;
 	align-items: center;
@@ -63,12 +63,12 @@ fieldset > label {
 
 	&:hover {
 		cursor: pointer;
-		background: var(--oc-gray-3);
+		background: var(--oc-gray-2);
 	}
 
 	&:active,
 	&.selected {
-		background: var(--oc-gray-4);
+		background: var(--oc-gray-3);
 	}
 
 	&:disabled {
@@ -119,6 +119,8 @@ fieldset {
 		position: relative;
 
 		.overlay {
+			width: 100%;
+			height: 100%;
 			position: absolute;
 			left: 0;
 			top: 0;
@@ -130,14 +132,13 @@ fieldset {
 
 			button,
 			label {
+				background: rgba(var(--oc-gray-0-rgb), 0.95);
 				font-weight: bold;
 
-				box-shadow: 1px 1px 0px 1px rgba(10, 10, 10, 0.1),
-					3px 3px 3px rgba(10, 10, 10, 0.15);
-
 				&.selected {
-					box-shadow: 1px 1px rgba(10, 10, 10, 0.1),
-						1px 1px 1px 1px rgba(10, 10, 10, 0.2);
+					background: rgba(var(--oc-gray-2-rgb), 0.95);
+					box-shadow: 1px 1px 0px 1px rgba(60, 60, 60, 0.1),
+						3px 3px 3px rgba(10, 10, 10, 0.25);
 				}
 			}
 		}
@@ -219,16 +220,61 @@ fieldset {
 
 .Marks {
 	width: 100%;
+	height: min-content;
+	margin: 0.5rem;
 	display: flex;
-	flex-direction: column;
 
-	.categories {
-		padding: 0.5rem;
-		display: flex;
+	position: relative;
+
+	* + button {
+		margin-left: 0.5rem;
 	}
 
-	.categories button + button {
-		margin-left: 0.5rem;
+	button.hovered .icons,
+	button.selected .icons {
+		pointer-events: all;
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	// icons drawer appearing should be enough clarity
+	button {
+		&:focus,
+		&:focus-within {
+			outline: 0;
+		}
+	}
+
+	.icons {
+		background: inherit;
+		box-shadow: inherit;
+		border-radius: inherit;
+
+		display: flex;
+		flex-wrap: wrap;
+
+		width: 13rem; // adjust with js later
+		padding: 0.5rem;
+		position: absolute;
+		top: calc(100% + 0.5rem);
+		left: 0;
+		z-index: 1;
+
+		cursor: default;
+
+		// transitioned on select
+		pointer-events: none;
+		opacity: 0;
+		transform-origin: top left;
+		transform: scale(0.97);
+		transition: background 150ms, opacity 150ms ease, transform 150ms ease;
+
+		img {
+			cursor: grab;
+			width: 4rem;
+			height: 4rem;
+			padding: 0.5rem;
+		}
 	}
 }
 
