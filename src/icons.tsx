@@ -55,9 +55,12 @@ export const ArrowSvg = () => (
 // render to DOM -> load -> ctx.drawImage
 export function createSvgDataUrl(name: IconName) {
 	const { viewBox, path } = iconData[name];
-	const attrs = 'xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"';
+	// must use 'px' and not '%' for svg width/height
+	// https://bugzilla.mozilla.org/show_bug.cgi?id=700533
+	const attrs =
+		'xmlns="http://www.w3.org/2000/svg" width="100px" height="100px"';
 	const svgSrc = `<svg ${attrs} viewBox="${viewBox}"><path d="${path}" /></svg>`;
-	return `data:image/svg+xml,${encodeURIComponent(svgSrc)}`;
+	return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgSrc)}`;
 }
 
 export type IconName = keyof typeof iconData;

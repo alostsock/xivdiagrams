@@ -162,7 +162,10 @@ fieldset {
 	}
 
 	// tablets or larger, must have room for a sidebar
-	@media screen and (min-aspect-ratio: 5/4) and (min-width: calc(100vh + 16rem)) {
+	// can't mix calc units in the media query to account for the sidebar:
+	// https://bugs.chromium.org/p/chromium/issues/detail?id=843584
+	// as a workaround, use fixed width instead
+	@media screen and (min-aspect-ratio: 5/4) and (min-width: 800px) {
 		width: 100%;
 		max-width: calc(100vh + 30rem);
 

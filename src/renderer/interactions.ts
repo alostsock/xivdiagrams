@@ -1,10 +1,10 @@
-import { PointerEvent } from 'react';
+import { PointerEvent, DragEvent } from 'react';
 import { action } from 'mobx';
 import { diagram } from 'renderer/diagram';
 import { Entity, createEntity } from 'renderer/entities';
 import { Point, pointInBounds } from 'renderer/geometry';
 
-function getCanvasCoords(e: PointerEvent<HTMLCanvasElement>): Point {
+export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
 	const { left, top } = e.currentTarget.getBoundingClientRect();
 	const x = ((e.clientX - left) * window.devicePixelRatio) / diagram.scale;
 	const y = ((e.clientY - top) * window.devicePixelRatio) / diagram.scale;

@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { action } from 'mobx';
 import clsx from 'clsx';
 import { IconName, createSvgDataUrl } from 'icons';
 import { useOnPointerDownOutside } from 'hooks';
+import { MarkType, createEntity } from 'renderer/entities';
+import { diagram } from 'renderer/diagram';
+import { getCanvasCoords } from 'renderer/interactions';
 
 const roles: IconName[] = ['tank', 'healer', 'dps'];
 const tanks: IconName[] = ['pld', 'war', 'drk', 'gnb'];
@@ -10,9 +14,9 @@ const melee: IconName[] = ['mnk', 'drg', 'nin', 'sam', 'rpr'];
 const ranged: IconName[] = ['brd', 'mch', 'dnc'];
 const caster: IconName[] = ['blm', 'smn', 'rdm', 'blu'];
 
-type MarkData = { value: string; label: string; icons: IconName[] };
+type MarkDrawerData = { value: string; label: string; icons: IconName[] };
 
-const marks: MarkData[] = [
+const marks: MarkDrawerData[] = [
 	{
 		value: 'players',
 		label: 'Players',
@@ -26,7 +30,7 @@ const marks: MarkData[] = [
 ];
 
 interface MarkDrawerProps {
-	mark: MarkData;
+	mark: MarkDrawerData;
 }
 
 const MarkDrawer = function MarkDrawer({ mark }: MarkDrawerProps) {
@@ -51,7 +55,7 @@ const MarkDrawer = function MarkDrawer({ mark }: MarkDrawerProps) {
 						draggable
 						key={icon}
 						// the id is used for drag and drop
-						id={`draggable-${icon}`}
+						id={`mark-${icon}`}
 						alt={icon}
 						src={createSvgDataUrl(icon)}
 						onDragStart={handleMarkDragStart}
@@ -91,7 +95,13 @@ export function handleMarkDragEnterOver(e: React.DragEvent) {
 	e.dataTransfer.dropEffect = 'copy';
 }
 
-export function handleMarkDrop(e: React.DragEvent) {
+export const handleMarkDrop = action(function handleMarkDrop(
+	e: React.DragEvent
+) {
 	e.preventDefault();
-	const markId = e.dataTransfer.getData('text/plain');
-}
+	const [x, y] = getCanvasCoords(e);
+	const markId = e.dataTransfer.getData('text/plain') as MarkType;
+	const markEntity = createEntity(markId, [x - 15, y - 15], [x + 20, y + 20]);
+	diagram.entities.push(markEntity);
+	diagram.updateSelection([markEntity]);
+});

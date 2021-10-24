@@ -21,6 +21,7 @@ import {
 	distToCone,
 	distToPolygon,
 	distToSegments,
+	pointInBounds,
 } from 'renderer/geometry';
 import {
 	Control,
@@ -31,6 +32,7 @@ import {
 	ConeAngleControl,
 	LinePointControl,
 } from 'renderer/controls';
+import { createSvgDataUrl, IconName } from 'icons';
 
 interface BaseData {
 	id: string;
@@ -69,7 +71,15 @@ export interface LineData extends BaseData {
 	length: number;
 }
 
-export type EntityData = CircleData | ConeData | RectData | LineData;
+export type MarkType = `mark-${IconName}`;
+
+export interface MarkData extends BaseData {
+	type: MarkType;
+	origin: Point;
+	size: number;
+}
+
+export type EntityData = CircleData | ConeData | RectData | LineData | MarkData;
 
 type ConstructorOptions<T extends BaseData> = PartialBy<T, keyof BaseData>;
 
@@ -82,7 +92,7 @@ type BaseEntity<T extends BaseData> = T & {
 	toJSON: () => T;
 };
 
-export type Entity = Circle | Cone | Rect | Line;
+export type Entity = Circle | Cone | Rect | Line | Mark;
 
 export class Circle implements BaseEntity<CircleData> {
 	id;
@@ -409,6 +419,58 @@ export class Line implements BaseEntity<LineData> {
 	}
 }
 
+export class Mark implements BaseEntity<MarkData> {
+	id;
+	type: MarkType;
+
+	origin: Point;
+	size: number;
+
+	isSelected: boolean = false;
+	controls: Control<Mark>[];
+
+	constructor(options: ConstructorOptions<MarkData> & { type: MarkType }) {
+		makeAutoObservable(this);
+		this.id = options.id ?? generateId();
+		this.type = options.type;
+		this.origin = options.origin;
+		this.size = options.size;
+		this.controls = [];
+	}
+
+	toJSON(): MarkData {
+		return selectProps(this, ['id', 'type', 'origin', 'size']);
+	}
+
+	get points(): Points {
+		return calcRectPoints(this.origin, this.size, this.size, 0);
+	}
+
+	get bounds(): Bounds {
+		return calcBoundsFromPoints(this.points);
+	}
+
+	hitTest(point: Point) {
+		return pointInBounds(point, this.bounds);
+	}
+
+	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+		const img = document.getElementById(this.type) as HTMLImageElement;
+		ctx.drawImage(
+			img,
+			this.origin[0] - this.size / 2,
+			this.origin[1] - this.size / 2,
+			this.size,
+			this.size
+		);
+
+		if (this.isSelected) {
+			drawBounds(ctx, this.bounds);
+			this.controls.forEach((c) => c.render(ctx));
+		}
+	}
+}
+
 function generateId() {
 	return nanoid(8);
 }
@@ -477,6 +539,12 @@ export function createEntity(
 				angle: calcAngle([x0, y0], [x, y]),
 				length: Math.hypot(x - x0, y - y0),
 			});
+		default:
+			return new Mark({
+				type,
+				origin: [(x0 + x) / 2, (y0 + y) / 2],
+				size: Math.max(x - x0, y - y0),
+			});
 	}
 }
 
@@ -501,6 +569,8 @@ export function deserializeEntities(entities: EntityData[]): Entity[] {
 			case 'line':
 			case 'arrow':
 				return new Line({ ...entityData });
+			default:
+				return new Mark({ ...entityData });
 		}
 	});
 }
