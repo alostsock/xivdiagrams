@@ -1,39 +1,39 @@
 import React, { useState } from 'react';
 import { action } from 'mobx';
 import clsx from 'clsx';
-import { IconName, createSvgDataUrl } from 'icons';
+import {
+	IconName,
+	createSvgDataUrl,
+	roles,
+	tanks,
+	healers,
+	physical,
+	ranged,
+	magical,
+} from 'icons';
 import { useOnPointerDownOutside } from 'hooks';
 import { MarkType, createEntity } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { getCanvasCoords } from 'renderer/interactions';
 
-const roles: IconName[] = ['tank', 'healer', 'dps'];
-const tanks: IconName[] = ['pld', 'war', 'drk', 'gnb'];
-const healers: IconName[] = ['whm', 'sch', 'ast', 'sge'];
-const melee: IconName[] = ['mnk', 'drg', 'nin', 'sam', 'rpr'];
-const ranged: IconName[] = ['brd', 'mch', 'dnc'];
-const caster: IconName[] = ['blm', 'smn', 'rdm', 'blu'];
+type MarkGroup = { name: string; icons: IconName[] };
 
-type MarkDrawerData = { value: string; label: string; icons: IconName[] };
-
-const marks: MarkDrawerData[] = [
+const markGroups: MarkGroup[] = [
 	{
-		value: 'players',
-		label: 'Players',
-		icons: [...roles, ...tanks, ...healers, ...melee, ...ranged, ...caster],
+		name: 'General',
+		icons: ['mob', ...roles],
 	},
 	{
-		value: 'enemies',
-		label: 'Enemies',
-		icons: ['mob'],
+		name: 'Jobs',
+		icons: [...tanks, ...healers, ...physical, ...ranged, ...magical],
 	},
 ];
 
 interface MarkDrawerProps {
-	mark: MarkDrawerData;
+	markGroup: MarkGroup;
 }
 
-const MarkDrawer = function MarkDrawer({ mark }: MarkDrawerProps) {
+const MarkDrawer = function MarkDrawer({ markGroup }: MarkDrawerProps) {
 	const [isSelected, setIsSelected] = useState(false);
 
 	const pointerOutsideRef = useOnPointerDownOutside(() => {
@@ -43,14 +43,14 @@ const MarkDrawer = function MarkDrawer({ mark }: MarkDrawerProps) {
 	return (
 		<button
 			ref={pointerOutsideRef}
-			key={mark.value}
+			key={markGroup.name}
 			className={clsx({ selected: isSelected })}
 			onClick={() => setIsSelected(true)}
 		>
-			{mark.label}
+			{markGroup.name}
 
 			<div className="icons">
-				{mark.icons.map((icon) => (
+				{markGroup.icons.map((icon) => (
 					<img
 						draggable
 						key={icon}
@@ -74,8 +74,8 @@ interface Props {
 const Marks = ({ className, style }: Props) => {
 	return (
 		<div className={clsx('Marks', className)} style={style}>
-			{marks.map((mark) => (
-				<MarkDrawer key={mark.value} mark={mark} />
+			{markGroups.map((markGroup) => (
+				<MarkDrawer key={markGroup.name} markGroup={markGroup} />
 			))}
 		</div>
 	);
@@ -101,7 +101,12 @@ export const handleMarkDrop = action(function handleMarkDrop(
 	e.preventDefault();
 	const [x, y] = getCanvasCoords(e);
 	const markId = e.dataTransfer.getData('text/plain') as MarkType;
-	const markEntity = createEntity(markId, [x - 15, y - 15], [x + 20, y + 20]);
+	const size = 35;
+	const markEntity = createEntity(
+		markId,
+		[x - size / 2, y - size / 2],
+		[x + size / 2, y + size / 2]
+	);
 	diagram.entities.push(markEntity);
 	diagram.updateSelection([markEntity]);
 });

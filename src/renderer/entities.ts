@@ -32,7 +32,7 @@ import {
 	ConeAngleControl,
 	LinePointControl,
 } from 'renderer/controls';
-import { createSvgDataUrl, IconName } from 'icons';
+import { IconName } from 'icons';
 
 interface BaseData {
 	id: string;

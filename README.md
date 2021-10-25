@@ -5,7 +5,6 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 Roadmap, listed in priority order:
 
 - entity properties
-- player/enemy markers
 - backend sync (create, edit, view)
 - steps
 - copy/paste
@@ -17,3 +16,9 @@ Roadmap, listed in priority order:
 - ? fight-specific bg
 - ? undo/redo
 - ? scale selected items
+
+## Copyright
+
+All art, text, and images from FFXIV are registered trademarks of Square Enix Holdings Co., Ltd.
+
+© SQUARE ENIX CO., LTD. All Rights Reserved.

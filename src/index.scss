@@ -256,7 +256,7 @@ fieldset {
 		display: flex;
 		flex-wrap: wrap;
 
-		width: 13rem; // adjust with js later
+		width: 11.5rem; // adjust with js later
 		padding: 0.5rem;
 		position: absolute;
 		top: calc(100% + 0.5rem);
@@ -274,9 +274,9 @@ fieldset {
 
 		img {
 			cursor: grab;
-			width: 4rem;
-			height: 4rem;
-			padding: 0.5rem;
+			width: 3.5rem;
+			height: 3.5rem;
+			padding: 0.25rem;
 		}
 	}
 }
