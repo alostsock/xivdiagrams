@@ -33,7 +33,7 @@ interface MarkDrawerProps {
 	markGroup: MarkGroup;
 }
 
-const MarkDrawer = function MarkDrawer({ markGroup }: MarkDrawerProps) {
+const PopupButton = function MarkDrawer({ markGroup }: MarkDrawerProps) {
 	const [isSelected, setIsSelected] = useState(false);
 
 	const pointerOutsideRef = useOnPointerDownOutside(() => {
@@ -49,7 +49,7 @@ const MarkDrawer = function MarkDrawer({ markGroup }: MarkDrawerProps) {
 		>
 			{markGroup.name}
 
-			<div className="icons">
+			<div className="popup">
 				{markGroup.icons.map((icon) => (
 					<img
 						draggable
@@ -75,7 +75,7 @@ const Marks = ({ className, style }: Props) => {
 	return (
 		<div className={clsx('Marks', className)} style={style}>
 			{markGroups.map((markGroup) => (
-				<MarkDrawer key={markGroup.name} markGroup={markGroup} />
+				<PopupButton key={markGroup.name} markGroup={markGroup} />
 			))}
 		</div>
 	);

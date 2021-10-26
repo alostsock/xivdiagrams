@@ -5,6 +5,7 @@ import type { Options as RoughOptions } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
 import {
 	BOUNDS_MARGIN,
+	BOUNDS_STYLE,
 	HIT_TEST_TOLERANCE,
 	DEFAULT_ROUGH_OPTIONS,
 } from 'renderer/constants';
@@ -33,6 +34,7 @@ import {
 	LinePointControl,
 } from 'renderer/controls';
 import { IconName } from 'icons';
+import { diagram } from './diagram';
 
 interface BaseData {
 	id: string;
@@ -489,8 +491,8 @@ function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
 	const { left, right, top, bottom } = bounds;
 	ctx.save();
 
-	ctx.strokeStyle = '#0060DF';
-	ctx.lineWidth = 1;
+	ctx.strokeStyle = BOUNDS_STYLE;
+	ctx.lineWidth = 1 / diagram.scale;
 
 	ctx.beginPath();
 	ctx.moveTo(left, top);

@@ -62,23 +62,20 @@ export function createSvgDataUrl(name: IconName) {
 	let fill = '#212529';
 
 	if (name === 'tank' || tanks.includes(name)) {
-		bgPath = `<circle fill="#125ea4" cx="6.35" cy="6.35" r="6.3" />`;
-		fill = '#eef8ff';
+		bgPath = `<circle fill="#1764ab" cx="6.35" cy="6.35" r="6.3" />`;
+		fill = '#f4faff';
 	} else if (name === 'healer' || healers.includes(name)) {
-		bgPath = `<circle fill="#09a375" cx="6.35" cy="6.35" r="6.3" />`;
-		fill = '#f2fcf8';
+		bgPath = `<circle fill="#3ea47b" cx="6.35" cy="6.35" r="6.3" />`;
+		fill = '#f5fcf9';
 	} else if (name.startsWith('dps') || dps.includes(name)) {
-		bgPath = `<circle fill="#bb2732" cx="6.35" cy="6.35" r="6.3" />`;
+		bgPath = `<circle fill="#b4434a" cx="6.35" cy="6.35" r="6.3" />`;
+		fill = '#fff9f9';
+	} else if (name === 'mob') {
+		bgPath = `<circle fill="#e93b5f" cx="6.35" cy="6.35" r="6.3" />`;
 		fill = '#fff5f5';
 	}
 
-	let iconPath = `
-		<path
-			fill="${fill}"
-			filter="drop-shadow(0px 0px 0.75px rgba(10, 10, 10, 0.3))"
-			d="${path}"
-		/>
-	`;
+	let iconPath = `<path fill="${fill}" d="${path}" />`;
 
 	// must use 'px' and not '%' for svg width/height
 	// https://bugzilla.mozilla.org/show_bug.cgi?id=700533

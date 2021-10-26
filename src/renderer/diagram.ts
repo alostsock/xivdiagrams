@@ -63,23 +63,21 @@ class Diagram {
 	}
 
 	render(): void {
-		requestAnimationFrame(() => {
-			if (!this.canvas || !this.roughCanvas || !this.context) return;
-			this.context.clearRect(
-				0,
-				0,
-				this.canvas.width / this.scale,
-				this.canvas.height / this.scale
-			);
+		if (!this.canvas || !this.roughCanvas || !this.context) return;
+		this.context.clearRect(
+			0,
+			0,
+			this.canvas.width / this.scale,
+			this.canvas.height / this.scale
+		);
 
-			for (const entity of this.entities) {
-				entity.draw(this.roughCanvas, this.context);
-			}
+		for (const entity of this.entities) {
+			entity.draw(this.roughCanvas, this.context);
+		}
 
-			if (this.entityInCreation) {
-				this.entityInCreation.draw(this.roughCanvas, this.context);
-			}
-		});
+		if (this.entityInCreation) {
+			this.entityInCreation.draw(this.roughCanvas, this.context);
+		}
 	}
 
 	updateSelection(selected: Entity[]) {

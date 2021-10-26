@@ -65,9 +65,9 @@ const App = observer(function App() {
 				</div>
 			</div>
 
-			<Notes className="notes" />
-
 			<Properties className="properties" />
+
+			<Notes className="notes" />
 		</div>
 	);
 });

@@ -1,5 +1,5 @@
 @import './sanitize.css';
-@import './open-color.css';
+@import './variables.css';
 
 :where(svg:not([fill])) {
 	fill: currentColor;
@@ -9,19 +9,13 @@
 	stroke: currentColor;
 }
 
-html,
-body {
-	width: 100%;
-	height: 100%;
-}
-
 body {
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
 		sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	background: var(--oc-gray-1);
-	color: var(--oc-gray-9);
+	background: var(--gray-1);
+	color: var(--gray-8);
 }
 
 #root {
@@ -48,10 +42,11 @@ button,
 fieldset > label {
 	position: relative;
 	width: min-content;
-	padding: 0.3rem 0.6rem;
-	background: var(--oc-gray-0);
-	border: none;
-	border-radius: 0.3rem;
+	color: var(--gray-6);
+	background: var(--gray-0);
+	border: 1px solid var(--gray-2);
+	border-radius: 0.4rem;
+	padding: 0.25rem 0.5rem;
 
 	display: flex;
 	align-items: center;
@@ -63,22 +58,23 @@ fieldset > label {
 
 	&:hover {
 		cursor: pointer;
-		background: var(--oc-gray-2);
+		background: var(--gray-2);
 	}
 
 	&:active,
 	&.selected {
-		background: var(--oc-gray-3);
+		color: var(--gray-9);
+		background: var(--gray-2);
 	}
 
 	&:disabled {
 		cursor: default;
-		color: var(--oc-gray-5);
+		color: var(--gray-5);
 	}
 
 	&:focus,
 	&:focus-within {
-		outline: 0.2em solid rgba(var(--oc-blue-5-rgb), 0.6);
+		outline: 0.2em solid rgba(var(--blue-4-rgb), 0.65);
 	}
 }
 
@@ -88,9 +84,9 @@ fieldset {
 	display: flex;
 
 	label.icon {
-		width: 2.4rem;
-		height: 2.4rem;
-		padding: 0.3rem;
+		width: 2.5rem;
+		height: 2.5rem;
+		padding: 0.25rem;
 	}
 
 	label > input[type='radio'] {
@@ -106,7 +102,15 @@ fieldset {
 
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	align-items: stretch;
+
+	& > *:not(.diagram) {
+		margin: 0 0.5rem;
+	}
+
+	& > * + * {
+		margin-top: 0.5rem;
+	}
 
 	.diagram {
 		// reserve a square of 100% width in flex layout
@@ -132,14 +136,7 @@ fieldset {
 
 			button,
 			label {
-				background: rgba(var(--oc-gray-0-rgb), 0.95);
 				font-weight: bold;
-
-				&.selected {
-					background: rgba(var(--oc-gray-2-rgb), 0.95);
-					box-shadow: 1px 1px 0px 1px rgba(60, 60, 60, 0.1),
-						3px 3px 3px rgba(10, 10, 10, 0.25);
-				}
 			}
 		}
 
@@ -152,13 +149,18 @@ fieldset {
 			height: 100%;
 
 			canvas {
-				background: #fefefe;
+				background: var(--gray-0);
 			}
 		}
 	}
 
 	@media screen and (min-width: 600px) {
 		width: 75%;
+
+		.diagram .canvas-container canvas {
+			border-radius: 0.3rem;
+			outline: 1px solid var(--gray-2);
+		}
 	}
 
 	// tablets or larger, must have room for a sidebar
@@ -171,15 +173,16 @@ fieldset {
 
 		display: grid;
 		align-items: flex-start;
-		grid-template-columns: 100vh auto;
-		grid-template-rows: min-content 1fr min-content;
+		grid-template-columns: 100vh 1fr;
+		grid-template-rows: min-content min-content 1fr;
 		grid-template-areas:
-			'd a'
-			'd b'
-			'd c';
+			'diagram a'
+			'diagram b'
+			'diagram c';
 
 		.diagram {
-			grid-area: d;
+			grid-area: diagram;
+			margin: 0;
 			padding: 0;
 			display: block;
 
@@ -190,6 +193,10 @@ fieldset {
 				left: 0;
 				right: 0;
 				transform: none;
+
+				canvas {
+					border-radius: 0;
+				}
 			}
 		}
 
@@ -197,11 +204,11 @@ fieldset {
 			grid-area: a;
 		}
 
-		.notes {
+		.properties {
 			grid-area: b;
 		}
 
-		.properties {
+		.notes {
 			grid-area: c;
 		}
 	}
@@ -233,30 +240,23 @@ fieldset {
 		margin-left: 0.5rem;
 	}
 
-	button.hovered .icons,
-	button.selected .icons {
+	button.hovered .popup,
+	button.selected .popup {
 		pointer-events: all;
 		opacity: 1;
 		transform: scale(1);
 	}
 
-	// icons drawer appearing should be enough clarity
-	button {
-		&:focus,
-		&:focus-within {
-			outline: 0;
-		}
-	}
-
-	.icons {
-		background: inherit;
-		box-shadow: inherit;
+	.popup {
+		background: rgba(255, 255, 255, 0.97);
+		box-shadow: var(--shadow-high);
 		border-radius: inherit;
+		outline: 1px solid var(--gray-2);
 
 		display: flex;
 		flex-wrap: wrap;
 
-		width: 11.5rem; // adjust with js later
+		width: 8.5rem; // adjust with js later
 		padding: 0.5rem;
 		position: absolute;
 		top: calc(100% + 0.5rem);
@@ -274,22 +274,22 @@ fieldset {
 
 		img {
 			cursor: grab;
-			width: 3.5rem;
-			height: 3.5rem;
+			width: 2.5rem;
+			height: 2.5rem;
 			padding: 0.25rem;
 		}
 	}
 }
 
-.Heading,
-.Properties,
-.Notes {
-	width: 100%;
-	padding: 0.5rem;
+.Heading {
+	padding: 0 0.5rem;
+
+	h2 {
+		color: var(--gray-6);
+	}
 }
 
-.Heading {
-	h2 {
-		color: var(--oc-gray-7);
-	}
+.Properties,
+.Notes {
+	padding: 0.5rem;
 }

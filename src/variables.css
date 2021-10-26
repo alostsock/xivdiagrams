@@ -1,0 +1,77 @@
+:root {
+	--shadow-low: 1px 1px 0 rgba(10, 10, 10, 0.075),
+		2px 2px 2px rgba(10, 10, 10, 0.1);
+	--shadow-medium: 3px 3px 4px rgba(10, 10, 10, 0.2);
+	--shadow-high: 6px 6px 12px rgba(10, 10, 10, 0.3);
+
+	--gray-0: #fffefc;
+	--gray-0-rgb: 255, 254, 252;
+	--gray-1: #faf9f7;
+	--gray-1-rgb: 250, 249, 247;
+	--gray-2: #ecebea;
+	--gray-2-rgb: 236, 235, 234;
+	--gray-3: #d6d6d6;
+	--gray-3-rgb: 214, 214, 214;
+	--gray-4: #bababc;
+	--gray-4-rgb: 186, 186, 188;
+	--gray-5: #97999c;
+	--gray-5-rgb: 151, 153, 156;
+	--gray-6: #707377;
+	--gray-6-rgb: 112, 115, 119;
+	--gray-7: #46494f;
+	--gray-7-rgb: 70, 73, 79;
+	--gray-8: #1a1f26;
+	--gray-8-rgb: 26, 31, 38;
+
+	--blue-0: #f4faff;
+	--blue-0-rgb: 244, 250, 255;
+	--blue-1: #b9defd;
+	--blue-1-rgb: 185, 222, 253;
+	--blue-2: #80c1f9;
+	--blue-2-rgb: 128, 193, 249;
+	--blue-3: #4ba3f1;
+	--blue-3-rgb: 75, 163, 241;
+	--blue-4: #1885e7;
+	--blue-4-rgb: 24, 133, 231;
+	--blue-5: #1764ab;
+	--blue-5-rgb: 23, 100, 171;
+
+	--green-0: #f5fcf9;
+	--green-0-rgb: 245, 252, 249;
+	--green-1: #bdead7;
+	--green-1-rgb: 189, 234, 215;
+	--green-2: #94dbbd;
+	--green-2-rgb: 148, 219, 189;
+	--green-3: #70cda7;
+	--green-3-rgb: 112, 205, 167;
+	--green-4: #4fbf92;
+	--green-4-rgb: 79, 191, 146;
+	--green-5: #3ea47b;
+	--green-5-rgb: 62, 164, 123;
+
+	--red-0: #fff9f9;
+	--red-0-rgb: 255, 249, 249;
+	--red-1: #fcc9c9;
+	--red-1-rgb: 252, 201, 201;
+	--red-2: #f39ea0;
+	--red-2-rgb: 243, 158, 160;
+	--red-3: #e5797d;
+	--red-3-rgb: 229, 121, 125;
+	--red-4: #d1595f;
+	--red-4-rgb: 209, 89, 95;
+	--red-5: #b4434a;
+	--red-5-rgb: 180, 67, 74;
+
+	--pink-0: #fff5f5;
+	--pink-0-rgb: 255, 245, 245;
+	--pink-1: #fdbdc1;
+	--pink-1-rgb: 253, 189, 193;
+	--pink-2: #fa96a0;
+	--pink-2-rgb: 250, 150, 160;
+	--pink-3: #f57586;
+	--pink-3-rgb: 245, 117, 134;
+	--pink-4: #ef5771;
+	--pink-4-rgb: 239, 87, 113;
+	--pink-5: #e93b5f;
+	--pink-5-rgb: 233, 59, 95;
+}
