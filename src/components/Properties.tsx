@@ -12,6 +12,9 @@ const Properties = observer(function Properties({ className, style }: Props) {
 		<div className={clsx('Properties', className)} style={style}>
 			Properties
 			<pre>
+				<code># of entities: {diagram.entities.length}</code>
+			</pre>
+			<pre>
 				<code>{JSON.stringify(diagram.selectedEntities[0], null, 2)}</code>
 			</pre>
 		</div>

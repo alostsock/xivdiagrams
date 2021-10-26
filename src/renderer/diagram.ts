@@ -1,11 +1,19 @@
 import { makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
-import { BASE_CANVAS_SIZE } from 'renderer/constants';
+import {
+	BASE_CANVAS_SIZE,
+	MIN_RADIUS,
+	MIN_DIMENSION,
+	MIN_LINE_LEN,
+	MIN_ARROW_LEN,
+} from 'renderer/constants';
 import type { Entity } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import type { Point } from 'renderer/geometry';
 
 export type Tool = 'cursor' | Entity['type'];
+
+type CursorType = 'default' | 'crosshair' | 'move' | 'grab' | 'grabbing';
 
 class Diagram {
 	canvas: HTMLCanvasElement | null = null;
@@ -18,7 +26,7 @@ class Diagram {
 
 	// ui state
 	selectedTool: Tool = 'cursor';
-	cursorType: 'default' | 'crosshair' | 'move' | 'grab' = 'default';
+	cursorType: CursorType = 'default';
 
 	// interaction state
 	selectedEntities: Entity[] = [];
@@ -89,6 +97,51 @@ class Diagram {
 		// bring selected entities up
 		this.entities = [...unselected, ...selected];
 		this.render();
+	}
+
+	addEntities(entities: Entity[]) {
+		const selectAfterAdd: Entity[] = [];
+
+		for (const entity of entities) {
+			if (this.validateEntity(entity)) {
+				this.entities.push(entity);
+				selectAfterAdd.push(entity);
+			}
+		}
+
+		this.updateSelection(selectAfterAdd);
+	}
+
+	deleteEntities(toRemove: Entity[]) {
+		const idsToRemove = new Set(toRemove.map((e) => e.id));
+		this.entities = this.entities.filter((e) => !idsToRemove.has(e.id));
+		this.updateSelection([]);
+	}
+
+	validateEntity(entity: Entity): boolean {
+		let isValid = false;
+
+		switch (entity.type) {
+			case 'circle':
+				isValid = entity.radius > MIN_RADIUS;
+				break;
+			case 'cone':
+				isValid = entity.radius > MIN_RADIUS * 2;
+				break;
+			case 'rect':
+				isValid = entity.width > MIN_DIMENSION || entity.height > MIN_DIMENSION;
+				break;
+			case 'line':
+				isValid = entity.length > MIN_LINE_LEN;
+				break;
+			case 'arrow':
+				isValid = entity.length > MIN_ARROW_LEN;
+				break;
+			default:
+				isValid = entity.type.startsWith('mark');
+		}
+
+		return isValid;
 	}
 }
 

@@ -8,6 +8,8 @@ import {
 	BOUNDS_STYLE,
 	HIT_TEST_TOLERANCE,
 	DEFAULT_ROUGH_OPTIONS,
+	ARROWHEAD_LEN,
+	ARROWHEAD_ANGLE,
 } from 'renderer/constants';
 import {
 	Point,
@@ -372,12 +374,10 @@ export class Line implements BaseEntity<LineData> {
 	}
 
 	get arrowPoints() {
-		const length = 30;
-		const spread = Math.PI / 7;
-		const base: Point = [this.lineTo[0] + length, this.lineTo[1]];
+		const base: Point = [this.lineTo[0] + ARROWHEAD_LEN, this.lineTo[1]];
 		return [
-			rotatePoint(this.lineTo, base, this.angle + Math.PI + spread),
-			rotatePoint(this.lineTo, base, this.angle + Math.PI - spread),
+			rotatePoint(this.lineTo, base, this.angle + Math.PI + ARROWHEAD_ANGLE),
+			rotatePoint(this.lineTo, base, this.angle + Math.PI - ARROWHEAD_ANGLE),
 		];
 	}
 

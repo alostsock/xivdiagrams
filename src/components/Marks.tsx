@@ -107,6 +107,5 @@ export const handleMarkDrop = action(function handleMarkDrop(
 		[x - size / 2, y - size / 2],
 		[x + size / 2, y + size / 2]
 	);
-	diagram.entities.push(markEntity);
-	diagram.updateSelection([markEntity]);
+	diagram.addEntities([markEntity]);
 });

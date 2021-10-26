@@ -37,6 +37,7 @@ export const handlePointerMove = action(function handlePointerMove(
 	if (diagram.entityControlInUse) {
 		// dragging a control
 		diagram.entityControlInUse.handleDrag([x, y]);
+		diagram.cursorType = 'grabbing';
 		return;
 	}
 
@@ -93,7 +94,7 @@ export const handlePointerDown = action(function handlePointerDown(
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
 				diagram.entityControlInUse = control;
-				diagram.cursorType = 'crosshair';
+				diagram.cursorType = 'grabbing';
 				return;
 			}
 		}
@@ -113,16 +114,31 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
 	e.stopPropagation();
+	if (diagram.dragAnchor && diagram.selectedEntities.length > 0) {
+		// must have been dragging something
+		diagram.cursorType = 'move';
+	}
+
 	diagram.dragAnchor = null;
-	diagram.entityControlInUse = null;
-	diagram.cursorType = 'default';
+
+	if (diagram.entityControlInUse) {
+		const modifiedEntity = diagram.entityControlInUse.parent;
+		diagram.entityControlInUse = null;
+		if (!diagram.validateEntity(modifiedEntity)) {
+			diagram.deleteEntities([modifiedEntity]);
+		} else {
+			diagram.cursorType = 'grab';
+		}
+	}
 
 	if (diagram.entityInCreation) {
 		// add the entity to the stack, and clear temporary state
 		const createdEntity = diagram.entityInCreation;
-		diagram.entities.push(createdEntity);
 		diagram.entityInCreation = null;
-		diagram.updateSelection([createdEntity]);
+		if (diagram.validateEntity(createdEntity)) {
+			diagram.addEntities([createdEntity]);
+		}
+		diagram.render();
 		// TODO: add tool lock
 		diagram.selectedTool = 'cursor';
 	}

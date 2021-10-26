@@ -240,11 +240,18 @@ fieldset {
 		margin-left: 0.5rem;
 	}
 
-	button.hovered .popup,
-	button.selected .popup {
-		pointer-events: all;
-		opacity: 1;
-		transform: scale(1);
+	button {
+		&:focus,
+		&:focus-within {
+			outline: none;
+		}
+
+		&.hovered .popup,
+		&.selected .popup {
+			pointer-events: all;
+			opacity: 1;
+			transform: scale(1);
+		}
 	}
 
 	.popup {

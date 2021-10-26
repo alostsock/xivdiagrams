@@ -15,6 +15,13 @@ export const HIT_TEST_TOLERANCE = 8;
 // or else a hit on a shape's edge will be rejected early
 export const BOUNDS_MARGIN = 8;
 export const BOUNDS_STYLE = '#4ba3f1';
+export const ARROWHEAD_LEN = 16;
+export const ARROWHEAD_ANGLE = Math.PI / 8;
+// entities will be auto-deleted if under a certain size
+export const MIN_RADIUS = 5;
+export const MIN_DIMENSION = 8;
+export const MIN_LINE_LEN = 10;
+export const MIN_ARROW_LEN = 16;
 
 // controls
 
