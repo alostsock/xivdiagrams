@@ -480,9 +480,7 @@ function generateId() {
 function getRoughOptions(options?: RoughOptions): RoughOptions {
 	return {
 		seed: options?.seed ?? RoughGenerator.newSeed(),
-		roughness: options?.roughness ?? DEFAULT_ROUGH_OPTIONS.roughness,
-		curveFitting: options?.curveFitting ?? DEFAULT_ROUGH_OPTIONS.curveFitting,
-		strokeWidth: options?.strokeWidth ?? DEFAULT_ROUGH_OPTIONS.strokeWidth,
+		...DEFAULT_ROUGH_OPTIONS,
 		...options,
 	};
 }
