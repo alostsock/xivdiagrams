@@ -15,18 +15,33 @@ import { useOnPointerDownOutside } from 'hooks';
 import { MarkType, createEntity } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { getCanvasCoords } from 'renderer/interactions';
+import './Marks.scss';
 
-type MarkGroup = { name: string; icons: IconName[] };
+type MarkGroup = {
+	name: string;
+	icons: Array<IconName | 'spacer'>;
+	width: number;
+};
+
+function createMarkGroup(
+	name: string,
+	iconGroups: Array<IconName | 'spacer'>[]
+): MarkGroup {
+	let width = 0;
+	const icons: Array<IconName | 'spacer'> = [];
+
+	iconGroups.forEach((group, i) => {
+		width = Math.max(width, group.length);
+		if (i > 0) icons.push('spacer');
+		icons.push(...group);
+	});
+
+	return { name, icons, width };
+}
 
 const markGroups: MarkGroup[] = [
-	{
-		name: 'General',
-		icons: ['mob', ...roles],
-	},
-	{
-		name: 'Jobs',
-		icons: [...tanks, ...healers, ...physical, ...ranged, ...magical],
-	},
+	createMarkGroup('General', [['mob', ...roles]]),
+	createMarkGroup('Jobs', [tanks, healers, physical, ranged, magical]),
 ];
 
 interface MarkDrawerProps {
@@ -41,28 +56,39 @@ const PopupButton = function MarkDrawer({ markGroup }: MarkDrawerProps) {
 	});
 
 	return (
-		<button
-			ref={pointerOutsideRef}
-			key={markGroup.name}
-			className={clsx({ selected: isSelected })}
-			onClick={() => setIsSelected(true)}
-		>
-			{markGroup.name}
+		<>
+			<button
+				ref={pointerOutsideRef}
+				key={markGroup.name}
+				className={clsx({ selected: isSelected })}
+				onClick={() => setIsSelected(true)}
+			>
+				{markGroup.name}
+			</button>
 
-			<div className="popup">
-				{markGroup.icons.map((icon) => (
-					<img
-						draggable
-						key={icon}
-						// the id is used for drag and drop
-						id={`mark-${icon}`}
-						alt={icon}
-						src={createSvgDataUrl(icon)}
-						onDragStart={handleMarkDragStart}
-					/>
-				))}
+			<div
+				className="popup"
+				style={{ width: `${markGroup.width * 2.5 + 0.5}rem` }}
+			>
+				{markGroup.icons.map((icon) => {
+					if (icon === 'spacer') {
+						return <span className="spacer" />;
+					} else {
+						return (
+							<img
+								draggable
+								key={icon}
+								// the id is used for drag and drop
+								id={`mark-${icon}`}
+								alt={icon}
+								src={createSvgDataUrl(icon)}
+								onDragStart={handleMarkDragStart}
+							/>
+						);
+					}
+				})}
 			</div>
-		</button>
+		</>
 	);
 };
 

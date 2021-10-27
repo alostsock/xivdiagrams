@@ -42,10 +42,11 @@ button,
 fieldset > label {
 	position: relative;
 	width: min-content;
+	height: min-content;
 	color: var(--gray-6);
 	background: var(--gray-0);
 	border: 1px solid var(--gray-2);
-	border-radius: 0.4rem;
+	border-radius: var(--border-radius);
 	padding: 0.25rem 0.5rem;
 
 	display: flex;
@@ -158,7 +159,7 @@ fieldset {
 		width: 75%;
 
 		.diagram .canvas-container canvas {
-			border-radius: 0.3rem;
+			border-radius: var(--border-radius);
 			outline: 1px solid var(--gray-2);
 		}
 	}
@@ -224,66 +225,6 @@ fieldset {
 
 		label + label {
 			margin-top: 0.5rem;
-		}
-	}
-}
-
-.Marks {
-	width: 100%;
-	height: min-content;
-	margin: 0.5rem;
-	display: flex;
-
-	position: relative;
-
-	* + button {
-		margin-left: 0.5rem;
-	}
-
-	button {
-		&:focus,
-		&:focus-within {
-			outline: none;
-		}
-
-		&.hovered .popup,
-		&.selected .popup {
-			pointer-events: all;
-			opacity: 1;
-			transform: scale(1);
-		}
-	}
-
-	.popup {
-		background: rgba(255, 255, 255, 0.97);
-		box-shadow: var(--shadow-high);
-		border-radius: inherit;
-		outline: 1px solid var(--gray-2);
-
-		display: flex;
-		flex-wrap: wrap;
-
-		width: 8.5rem; // adjust with js later
-		padding: 0.5rem;
-		position: absolute;
-		top: calc(100% + 0.5rem);
-		left: 0;
-		z-index: 1;
-
-		cursor: default;
-
-		// transitioned on select
-		pointer-events: none;
-		opacity: 0;
-		transform-origin: top left;
-		transform: scale(0.97);
-		transition: background 150ms, opacity 150ms ease, transform 150ms ease;
-
-		img {
-			cursor: grab;
-			width: 2.5rem;
-			height: 2.5rem;
-			padding: 0.25rem;
 		}
 	}
 }
