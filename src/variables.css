@@ -64,14 +64,14 @@
 
 	--pink-0: #fff5f5;
 	--pink-0-rgb: 255, 245, 245;
-	--pink-1: #fdbdc1;
-	--pink-1-rgb: 253, 189, 193;
-	--pink-2: #fa96a0;
-	--pink-2-rgb: 250, 150, 160;
-	--pink-3: #f57586;
-	--pink-3-rgb: 245, 117, 134;
-	--pink-4: #ef5771;
-	--pink-4-rgb: 239, 87, 113;
-	--pink-5: #e93b5f;
-	--pink-5-rgb: 233, 59, 95;
+	--pink-1: #ffa2a9;
+	--pink-1-rgb: 255, 162, 169;
+	--pink-2: #ff6478;
+	--pink-2-rgb: 255, 100, 120;
+	--pink-3: #ff2c52;
+	--pink-3-rgb: 255, 44, 82;
+	--pink-4: #f70037;
+	--pink-4-rgb: 247, 0, 55;
+	--pink-5: #c60035;
+	--pink-5-rgb: 198, 0, 53;
 }

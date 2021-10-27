@@ -71,7 +71,7 @@ export function createSvgDataUrl(name: IconName) {
 		bgPath = `<circle fill="#b4434a" cx="6.35" cy="6.35" r="6.3" />`;
 		fill = '#fff9f9';
 	} else if (name === 'mob') {
-		bgPath = `<circle fill="#e93b5f" cx="6.35" cy="6.35" r="6.3" />`;
+		bgPath = `<circle fill="#c60035" cx="6.35" cy="6.35" r="6.3" />`;
 		fill = '#fff5f5';
 	}
 
