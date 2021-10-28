@@ -89,14 +89,29 @@ class Diagram {
 	}
 
 	updateSelection(selected: Entity[]) {
-		const selectedIds = new Set(selected.map((s) => s.id));
-		const unselected = this.entities.filter((e) => !selectedIds.has(e.id));
-		unselected.forEach((e) => (e.isSelected = false));
-		selected.forEach((e) => (e.isSelected = true));
-		this.selectedEntities = selected;
-		// bring selected entities up
-		this.entities = [...unselected, ...selected];
+		const selectedIds = new Set(selected.map((e) => e.id));
+		this.entities.forEach((e) => (e.isSelected = selectedIds.has(e.id)));
+		this.sortEntities();
+		this.selectedEntities = this.entities.filter((e) => e.isSelected);
 		this.render();
+	}
+
+	private sortEntities() {
+		this.entities.sort((a, b) => {
+			if (a.isSelected === b.isSelected) {
+				// marks should be rendered on top
+				// maybe add z-index/layer properties to `Entity` classes later
+				const aIsMark = a.type.startsWith('mark');
+				const bIsMark = b.type.startsWith('mark');
+				if (aIsMark === bIsMark) {
+					return 0;
+				} else {
+					return aIsMark ? 1 : -1;
+				}
+			} else {
+				return a.isSelected ? 1 : -1;
+			}
+		});
 	}
 
 	addEntities(entities: Entity[]) {

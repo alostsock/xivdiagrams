@@ -152,9 +152,6 @@ function hitTest(point: Point, entities: Entity[]): Entity | false {
 		// bypass detailed hit testing if out of bounds
 		if (!pointInBounds(point, entity.bounds)) continue;
 
-		// selection should bypass detailed hit testing
-		if (entity.isSelected) return entity;
-
 		if (entity.hitTest(point)) return entity;
 	}
 

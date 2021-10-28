@@ -11,10 +11,10 @@ export const DEFAULT_ROUGH_OPTIONS: RoughOptions = {
 
 // entities
 
-export const HIT_TEST_TOLERANCE = 8;
+export const HIT_TEST_TOLERANCE = 10;
 // bounds should be >= hit test tolerance,
 // or else a hit on a shape's edge will be rejected early
-export const BOUNDS_MARGIN = 8;
+export const BOUNDS_MARGIN = 10;
 export const BOUNDS_STYLE = '#4ba3f1';
 export const ARROWHEAD_LEN = 16;
 export const ARROWHEAD_ANGLE = Math.PI / 8;

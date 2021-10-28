@@ -44,11 +44,11 @@ const markGroups: MarkGroup[] = [
 	createMarkGroup('Jobs', [tanks, healers, physical, ranged, magical]),
 ];
 
-interface MarkDrawerProps {
+interface PopupButtonProps {
 	markGroup: MarkGroup;
 }
 
-const PopupButton = function MarkDrawer({ markGroup }: MarkDrawerProps) {
+const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 	const [isSelected, setIsSelected] = useState(false);
 
 	const pointerOutsideRef = useOnPointerDownOutside(() => {
@@ -59,7 +59,6 @@ const PopupButton = function MarkDrawer({ markGroup }: MarkDrawerProps) {
 		<>
 			<button
 				ref={pointerOutsideRef}
-				key={markGroup.name}
 				className={clsx({ selected: isSelected })}
 				onClick={() => setIsSelected(true)}
 			>
@@ -70,9 +69,9 @@ const PopupButton = function MarkDrawer({ markGroup }: MarkDrawerProps) {
 				className="popup"
 				style={{ width: `${markGroup.width * 2.5 + 0.5}rem` }}
 			>
-				{markGroup.icons.map((icon) => {
+				{markGroup.icons.map((icon, i) => {
 					if (icon === 'spacer') {
-						return <span className="spacer" />;
+						return <span key={`spacer${i}`} className="spacer" />;
 					} else {
 						return (
 							<img
