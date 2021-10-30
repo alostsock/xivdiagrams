@@ -478,6 +478,7 @@ function generateId() {
 function getRoughOptions(options?: RoughOptions): RoughOptions {
 	return {
 		seed: options?.seed ?? RoughGenerator.newSeed(),
+		hachureAngle: Math.floor(Math.random() * 90),
 		...DEFAULT_ROUGH_OPTIONS,
 		...options,
 	};
