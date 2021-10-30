@@ -245,14 +245,21 @@ export class Cone implements BaseEntity<ConeData> {
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const [x0, y0] = this.origin;
-		const size = 2 * this.radius;
 
-		// roughjs has a bit of overdrawing for arcs
-		// use lower roughness to mitigate this
-		rc.arc(x0, y0, size, size, this.start, this.end, true, {
-			...this.roughOptions,
-			roughness: (this.roughOptions.roughness ?? 1) / 3,
-		});
+		// use `rc.path` instead of `rc.arc`. advantages:
+		// 1) it looks more similar to other shapes
+		// 2) roughjs has a bug with 'solid' fills for arcs
+		// 3) allows us to add donut shapes later (with an inner radius)
+		const p1 = rotatePoint(this.origin, [x0 + this.radius, y0], this.start);
+		const p2 = rotatePoint(this.origin, [x0 + this.radius, y0], this.end);
+		const path =
+			`M ${p1[0]} ${p1[1]}` +
+			` A ${this.radius} ${this.radius}` +
+			` 0 ${this.end - this.start > Math.PI ? 1 : 0} 1` +
+			` ${p2[0]} ${p2[1]}` +
+			` L ${x0} ${y0} Z`;
+
+		rc.path(path, this.roughOptions);
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);

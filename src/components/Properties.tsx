@@ -90,8 +90,7 @@ const ColorPicker = observer(function ColorPicker({ entity }: PickerProps) {
 
 const fills = [
 	{ style: 'none', label: 'No Fill' },
-	// bug in rough.js with solid fills
-	// { style: 'solid', label: 'Solid' },
+	{ style: 'solid', label: 'Solid' },
 	{ style: 'hachure', label: 'Hachure' },
 	{ style: 'cross-hatch', label: 'Cross Hatch' },
 ] as const;
