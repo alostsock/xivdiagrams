@@ -12,18 +12,16 @@ export const DEFAULT_ROUGH_OPTIONS: RoughOptions = {
 // entities
 
 export const HIT_TEST_TOLERANCE = 10;
-// bounds should be >= hit test tolerance,
-// or else a hit on a shape's edge will be rejected early
-export const BOUNDS_MARGIN = 10;
 export const BOUNDS_STYLE = '#4ba3f1';
 export const ARROWHEAD_LEN = 16;
 export const ARROWHEAD_ANGLE = Math.PI / 8;
+export const DEFAULT_MARK_SIZE = 35;
+
 // entities will be auto-deleted if under a certain size
 export const MIN_RADIUS = 5;
 export const MIN_DIMENSION = 8;
 export const MIN_LINE_LEN = 10;
 export const MIN_ARROW_LEN = 16;
-export const DEFAULT_MARK_SIZE = 35;
 
 // controls
 

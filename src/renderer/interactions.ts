@@ -1,8 +1,9 @@
 import { PointerEvent, DragEvent } from 'react';
 import { action } from 'mobx';
+import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { diagram } from 'renderer/diagram';
 import { Entity, createEntity } from 'renderer/entities';
-import { Point, pointInBounds } from 'renderer/geometry';
+import { Bounds, Point, pointInBounds } from 'renderer/geometry';
 
 export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
 	const { left, top } = e.currentTarget.getBoundingClientRect();
@@ -150,7 +151,14 @@ function hitTest(point: Point, entities: Entity[]): Entity | false {
 		const entity = entities[i];
 
 		// bypass detailed hit testing if out of bounds
-		if (!pointInBounds(point, entity.bounds)) continue;
+		const entityBounds = entity.bounds;
+		const boundsMargin: Bounds = {
+			left: entityBounds.left - HIT_TEST_TOLERANCE,
+			right: entityBounds.right + HIT_TEST_TOLERANCE,
+			top: entityBounds.top - HIT_TEST_TOLERANCE,
+			bottom: entityBounds.bottom + HIT_TEST_TOLERANCE,
+		};
+		if (!pointInBounds(point, boundsMargin)) continue;
 
 		if (entity.hitTest(point)) return entity;
 	}

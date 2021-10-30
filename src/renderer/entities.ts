@@ -4,7 +4,6 @@ import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
 import {
-	BOUNDS_MARGIN,
 	BOUNDS_STYLE,
 	HIT_TEST_TOLERANCE,
 	DEFAULT_ROUGH_OPTIONS,
@@ -134,10 +133,10 @@ export class Circle implements BaseEntity<CircleData> {
 	get bounds(): Bounds {
 		const [x, y] = this.origin;
 		return {
-			left: x - this.radius - BOUNDS_MARGIN,
-			right: x + this.radius + BOUNDS_MARGIN,
-			top: y - this.radius - BOUNDS_MARGIN,
-			bottom: y + this.radius + BOUNDS_MARGIN,
+			left: x - this.radius,
+			right: x + this.radius,
+			top: y - this.radius,
+			bottom: y + this.radius,
 		};
 	}
 
@@ -226,14 +225,7 @@ export class Cone implements BaseEntity<ConeData> {
 			points.push([x0, y0 - this.radius]);
 		}
 
-		const bounds = calcBoundsFromPoints(points);
-
-		return {
-			left: bounds.left - BOUNDS_MARGIN,
-			right: bounds.right + BOUNDS_MARGIN,
-			top: bounds.top - BOUNDS_MARGIN,
-			bottom: bounds.bottom + BOUNDS_MARGIN,
-		};
+		return calcBoundsFromPoints(points);
 	}
 
 	hitTest(point: Point) {
@@ -313,8 +305,8 @@ export class Rect implements BaseEntity<RectData> {
 		return calcBoundsFromPoints(
 			calcRectPoints(
 				this.origin,
-				this.width + 2 * BOUNDS_MARGIN,
-				this.height + 2 * BOUNDS_MARGIN,
+				this.width + 2,
+				this.height + 2,
 				this.rotation
 			)
 		);
@@ -403,10 +395,10 @@ export class Line implements BaseEntity<LineData> {
 		}
 		const bounds = calcBoundsFromPoints(points);
 		return {
-			left: bounds.left - BOUNDS_MARGIN,
-			right: bounds.right + BOUNDS_MARGIN,
-			top: bounds.top - BOUNDS_MARGIN,
-			bottom: bounds.bottom + BOUNDS_MARGIN,
+			left: bounds.left,
+			right: bounds.right,
+			top: bounds.top,
+			bottom: bounds.bottom,
 		};
 	}
 
