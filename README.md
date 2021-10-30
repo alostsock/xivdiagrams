@@ -4,7 +4,6 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 
 Roadmap, listed in priority order:
 
-- entity properties
 - backend sync (create, edit, view)
 - steps
 - copy/paste

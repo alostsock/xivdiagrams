@@ -38,11 +38,27 @@ h2 {
 	font-size: 1.5rem;
 }
 
+fieldset {
+	padding: 0.5rem;
+	border: none;
+	display: flex;
+
+	label.icon {
+		width: 2.5rem;
+		height: 2.5rem;
+		padding: 0.25rem;
+	}
+
+	label > input[type='radio'] {
+		opacity: 0;
+		position: absolute;
+		pointer-events: none;
+	}
+}
+
 button,
 fieldset > label {
 	position: relative;
-	width: min-content;
-	height: min-content;
 	color: var(--gray-6);
 	background: var(--gray-0);
 	border: 1px solid var(--gray-2);
@@ -51,6 +67,7 @@ fieldset > label {
 
 	display: flex;
 	align-items: center;
+	white-space: nowrap;
 
 	transition: background 150ms, color 150ms;
 
@@ -75,26 +92,43 @@ fieldset > label {
 
 	&:focus,
 	&:focus-within {
-		outline: 0.2em solid rgba(var(--blue-4-rgb), 0.65);
+		outline: var(--outline-emphasis);
 	}
 }
 
-fieldset {
-	padding: 0.5rem;
-	border: none;
+button.selected + .popup {
+	visibility: visible;
+	pointer-events: all;
+	opacity: 1;
+	transform: scale(1);
+}
+
+.popup {
+	background: #fff;
+	box-shadow: var(--shadow-high);
+	border-radius: var(--border-radius);
+	outline: 1px solid var(--gray-2);
+
 	display: flex;
+	flex-wrap: wrap;
 
-	label.icon {
-		width: 2.5rem;
-		height: 2.5rem;
-		padding: 0.25rem;
-	}
+	padding: 0.25rem;
+	// width is set via js
+	max-width: 100%;
+	overflow: auto;
+	position: absolute;
+	top: calc(100% + 0.5rem);
+	z-index: 1;
 
-	label > input[type='radio'] {
-		opacity: 0;
-		position: absolute;
-		pointer-events: none;
-	}
+	cursor: default;
+
+	// transitioned on select
+	visibility: hidden;
+	pointer-events: none;
+	opacity: 0;
+	transform-origin: top left;
+	transform: scale(0.97);
+	transition: background 150ms, opacity 150ms ease, transform 150ms ease;
 }
 
 .App {
@@ -133,7 +167,13 @@ fieldset {
 
 			button,
 			label {
+				background: rgba(var(--gray-0-rgb), 0.95);
 				font-weight: bold;
+
+				&:active,
+				&.selected {
+					background: rgba(var(--gray-2-rgb), 0.95);
+				}
 			}
 		}
 
@@ -170,11 +210,10 @@ fieldset {
 
 		display: grid;
 		grid-template-columns: 100vh 1fr;
-		grid-template-rows: min-content min-content 1fr;
+		grid-template-rows: min-content 1fr;
 		grid-template-areas:
 			'diagram a'
-			'diagram b'
-			'diagram c';
+			'diagram b';
 
 		.diagram {
 			grid-area: diagram;
@@ -200,12 +239,8 @@ fieldset {
 			grid-area: a;
 		}
 
-		.properties {
-			grid-area: b;
-		}
-
 		.notes {
-			grid-area: c;
+			grid-area: b;
 		}
 	}
 }
@@ -232,7 +267,6 @@ fieldset {
 	}
 }
 
-.Properties,
 .Notes {
 	padding: 0.5rem;
 }

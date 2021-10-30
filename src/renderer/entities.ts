@@ -41,17 +41,18 @@ import { diagram } from './diagram';
 interface BaseData {
 	id: string;
 	type: string;
-	roughOptions?: RoughOptions;
 }
 
 export interface CircleData extends BaseData {
 	type: 'circle';
+	roughOptions: RoughOptions;
 	origin: Point;
 	radius: number;
 }
 
 export interface ConeData extends BaseData {
 	type: 'cone';
+	roughOptions: RoughOptions;
 	origin: Point;
 	radius: number;
 	start: number;
@@ -60,6 +61,7 @@ export interface ConeData extends BaseData {
 
 export interface RectData extends BaseData {
 	type: 'rect';
+	roughOptions: RoughOptions;
 	origin: Point;
 	width: number;
 	height: number;
@@ -70,6 +72,7 @@ type LineType = 'line' | 'arrow';
 
 export interface LineData extends BaseData {
 	type: LineType;
+	roughOptions: RoughOptions;
 	origin: Point;
 	angle: number;
 	length: number;
@@ -246,15 +249,10 @@ export class Cone implements BaseEntity<ConeData> {
 
 		// roughjs has a bit of overdrawing for arcs
 		// use lower roughness to mitigate this
-		rc.arc(x0, y0, size, size, this.start, this.end, false, {
+		rc.arc(x0, y0, size, size, this.start, this.end, true, {
 			...this.roughOptions,
 			roughness: (this.roughOptions.roughness ?? 1) / 3,
 		});
-
-		const arcP1 = rotatePoint(this.origin, [x0 + this.radius, y0], this.start);
-		const arcP2 = rotatePoint(this.origin, [x0 + this.radius, y0], this.end);
-		rc.line(x0, y0, arcP1[0], arcP1[1], this.roughOptions);
-		rc.line(x0, y0, arcP2[0], arcP2[1], this.roughOptions);
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
@@ -516,11 +514,13 @@ export function createEntity(
 				rotation: 0,
 				width: x - x0,
 				height: y - y0,
+				roughOptions: getRoughOptions(),
 			});
 		case 'circle':
 			return new Circle({
 				origin: [(x0 + x) / 2, (y0 + y) / 2],
 				radius: Math.max((x - x0) / 2, (y - y0) / 2),
+				roughOptions: getRoughOptions(),
 			});
 		case 'cone':
 			const defaultAngle = Math.PI / 6;
@@ -530,6 +530,7 @@ export function createEntity(
 				radius: Math.hypot(x - x0, y - y0),
 				start: angle - defaultAngle,
 				end: angle + defaultAngle,
+				roughOptions: getRoughOptions(),
 			});
 		case 'line':
 		case 'arrow':
@@ -538,6 +539,7 @@ export function createEntity(
 				origin: [x0, y0],
 				angle: calcAngle([x0, y0], [x, y]),
 				length: Math.hypot(x - x0, y - y0),
+				roughOptions: getRoughOptions(),
 			});
 		default:
 			return new Mark({

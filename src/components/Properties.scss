@@ -1,0 +1,66 @@
+.Properties {
+	height: min-content;
+	margin: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+
+	.container + .container {
+		margin-top: 0.5rem;
+	}
+
+	.container {
+		width: min-content;
+		height: min-content;
+		position: relative;
+	}
+
+	button {
+		&:focus,
+		&:focus-within {
+			outline: none;
+		}
+	}
+
+	.popup {
+		&.swatches {
+			min-width: 12.5rem;
+			right: 0;
+		}
+
+		&.options {
+			min-width: min-content;
+			right: 0;
+			display: flex;
+			flex-direction: column;
+
+			button {
+				border: none;
+				margin: 0.25rem;
+			}
+		}
+	}
+
+	.swatch {
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		margin: 0.5rem;
+		border: none;
+		border-radius: var(--border-radius);
+		box-shadow: var(--shadow-low);
+
+		transition: background 150ms;
+
+		&.current {
+			height: 1em;
+			width: 1em;
+			margin: 0 0.5rem 0 0;
+		}
+
+		&.selected {
+			outline: 2px solid var(--blue-1);
+			box-shadow: var(--shadow-emphasis);
+		}
+	}
+}

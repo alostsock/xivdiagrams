@@ -12,6 +12,7 @@ import {
 	magical,
 } from 'icons';
 import { useOnPointerDownOutside } from 'hooks';
+import { DEFAULT_MARK_SIZE } from 'renderer/constants';
 import { MarkType, createEntity } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { getCanvasCoords } from 'renderer/interactions';
@@ -51,21 +52,21 @@ interface PopupButtonProps {
 const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 	const [isSelected, setIsSelected] = useState(false);
 
-	const pointerOutsideRef = useOnPointerDownOutside(() => {
+	const addPointerOutsideRef = useOnPointerDownOutside(() => {
 		setIsSelected(false);
 	});
 
 	return (
 		<>
 			<button
-				ref={pointerOutsideRef}
+				ref={addPointerOutsideRef}
 				className={clsx({ selected: isSelected })}
-				onClick={() => setIsSelected(true)}
+				onClick={() => setIsSelected(!isSelected)}
 			>
 				{markGroup.name}
 			</button>
-
 			<div
+				ref={addPointerOutsideRef}
 				className="popup"
 				style={{ width: `${markGroup.width * 2.5 + 0.5}rem` }}
 			>
@@ -126,7 +127,7 @@ export const handleMarkDrop = action(function handleMarkDrop(
 	e.preventDefault();
 	const [x, y] = getCanvasCoords(e);
 	const markId = e.dataTransfer.getData('text/plain') as MarkType;
-	const size = 35;
+	const size = DEFAULT_MARK_SIZE;
 	const markEntity = createEntity(
 		markId,
 		[x - size / 2, y - size / 2],

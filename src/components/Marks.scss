@@ -15,41 +15,11 @@
 		&:focus-within {
 			outline: none;
 		}
-
-		&.hovered + .popup,
-		&.selected + .popup {
-			pointer-events: all;
-			opacity: 1;
-			transform: scale(1);
-		}
 	}
 
 	.popup {
-		background: rgba(255, 255, 255, 0.97);
-		box-shadow: var(--shadow-high);
-		border-radius: var(--border-radius);
-		outline: 1px solid var(--gray-2);
-
-		display: flex;
-		flex-wrap: wrap;
-
-		padding: 0.25rem;
 		// width is set via js
-		max-width: 100%;
-		overflow: auto;
-		position: absolute;
-		top: calc(100% + 0.5rem);
 		left: 0;
-		z-index: 1;
-
-		cursor: default;
-
-		// transitioned on select
-		pointer-events: none;
-		opacity: 0;
-		transform-origin: top left;
-		transform: scale(0.97);
-		transition: background 150ms, opacity 150ms ease, transform 150ms ease;
 
 		.spacer {
 			width: 100%;

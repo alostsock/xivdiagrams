@@ -23,11 +23,12 @@ export const MIN_RADIUS = 5;
 export const MIN_DIMENSION = 8;
 export const MIN_LINE_LEN = 10;
 export const MIN_ARROW_LEN = 16;
+export const DEFAULT_MARK_SIZE = 35;
 
 // controls
 
 export const CONTROL_RADIUS = 9;
 export const CONTROL_OFFSET = 24;
-export const CONTROL_STROKE_STYLE = '#1764ab';
+export const CONTROL_STROKE_STYLE = '#1885e7';
 export const CONTROL_LINE_WIDTH = 3;
 export const CONTROL_FILL_STYLE = '#fff';

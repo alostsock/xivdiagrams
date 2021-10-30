@@ -49,6 +49,7 @@ const App = observer(function App() {
 					<div className="overlay">
 						<Toolset />
 						<Marks />
+						<Properties />
 					</div>
 
 					<canvas
@@ -64,8 +65,6 @@ const App = observer(function App() {
 					></canvas>
 				</div>
 			</div>
-
-			<Properties className="properties" />
 
 			<Notes className="notes" />
 		</div>
