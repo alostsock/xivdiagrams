@@ -1,9 +1,14 @@
 .Properties {
 	height: min-content;
 	margin: 0.5rem;
+	padding: 0.5rem;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
+	border: 1px solid var(--gray-2);
+	border-radius: var(--border-radius);
+
+	pointer-events: all;
 
 	.container + .container {
 		margin-top: 0.5rem;
@@ -16,6 +21,8 @@
 	}
 
 	button {
+		border: none;
+
 		&:focus,
 		&:focus-within {
 			outline: none;

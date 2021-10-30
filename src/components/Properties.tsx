@@ -95,7 +95,6 @@ const fills = [
 	{ style: 'cross-hatch', label: 'Cross Hatch' },
 ] as const;
 type FillStyle = typeof fills[number]['style'];
-type FillLabel = typeof fills[number]['label'];
 
 const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 	const [isOpen, setIsOpen] = useState(false);
@@ -183,7 +182,7 @@ const SizePicker = observer(function SizePicker({ entity }: PickerProps) {
 				className={clsx({ selected: isOpen })}
 				onClick={() => setIsOpen(!isOpen)}
 			>
-				{getCurrentSizeLabel()}
+				{getCurrentSizeLabel()} Size
 			</button>
 
 			<div className="popup options">
