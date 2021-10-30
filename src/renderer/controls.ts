@@ -11,7 +11,7 @@ import {
 	pointInCircle,
 	rotatePoint,
 } from 'renderer/geometry';
-import { Circle, Cone, Rect, Line } from 'renderer/entities';
+import { Circle, Cone, Rect, Line, Mark } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 
 export interface Control<T> {
@@ -248,6 +248,36 @@ export class LinePointControl implements Control<Line> {
 				point[1] - anchor[1]
 			);
 		}
+		diagram.render();
+	}
+}
+
+export class MarkSizeControl implements Control<Mark> {
+	angle: number = -Math.PI / 4;
+
+	constructor(public parent: Mark) {}
+
+	get position(): Point {
+		const [x0, y0] = this.parent.origin;
+		return [
+			x0 + this.parent.size * 0.5 * Math.cos(this.angle),
+			y0 + this.parent.size * 0.5 * Math.sin(this.angle),
+		];
+	}
+
+	render(ctx: CanvasRenderingContext2D) {
+		renderCircleControl(ctx, this.position);
+	}
+
+	hitTest(point: Point) {
+		return hitTestCircleControl(point, this.position);
+	}
+
+	handleDrag([x, y]: Point) {
+		const [x0, y0] = this.parent.origin;
+		this.angle = calcAngle([x0, y0], [x, y]);
+		this.parent.size = 2 * Math.hypot(x - x0, y - y0);
+		console.log(this.parent.size);
 		diagram.render();
 	}
 }

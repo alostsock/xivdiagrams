@@ -6,7 +6,6 @@ import type { Entity } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { useOnPointerDownOutside } from 'hooks';
 import './Properties.scss';
-import { DEFAULT_MARK_SIZE } from 'renderer/constants';
 
 interface Props {
 	className?: string;
@@ -23,7 +22,6 @@ const Properties = observer(function Properties({ className, style }: Props) {
 		<div className={clsx('Properties', className)} style={style}>
 			<ColorPicker entity={selectedEntity} />
 			<FillPicker entity={selectedEntity} />
-			<SizePicker entity={selectedEntity} />
 		</div>
 	);
 });
@@ -147,52 +145,6 @@ const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 						onClick={() => modifyFill(fill.style)}
 					>
 						{fill.label}
-					</button>
-				))}
-			</div>
-		</div>
-	);
-});
-
-const sizes = [
-	{ value: 20, label: 'Small' },
-	{ value: DEFAULT_MARK_SIZE, label: 'Normal' },
-	{ value: 50, label: 'Large' },
-] as const;
-
-// TODO: change to a slider instead
-const SizePicker = observer(function SizePicker({ entity }: PickerProps) {
-	const [isOpen, setIsOpen] = useState(false);
-	const addRef = useOnPointerDownOutside(() => setIsOpen(false));
-
-	if (!entity.type.startsWith('mark') || !('size' in entity)) return null;
-
-	const getCurrentSizeLabel = () => {
-		const size = sizes.find((s) => entity.size === s.value);
-		return size!.label;
-	};
-	const modifySize = (size: number) => {
-		runInAction(() => (entity.size = size));
-		diagram.render();
-	};
-
-	return (
-		<div ref={addRef} className="container">
-			<button
-				className={clsx({ selected: isOpen })}
-				onClick={() => setIsOpen(!isOpen)}
-			>
-				{getCurrentSizeLabel()} Size
-			</button>
-
-			<div className="popup options">
-				{sizes.map((size) => (
-					<button
-						key={size.label}
-						className={clsx({ selected: size.label === getCurrentSizeLabel() })}
-						onClick={() => modifySize(size.value)}
-					>
-						{size.label}
 					</button>
 				))}
 			</div>

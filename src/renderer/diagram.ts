@@ -6,6 +6,7 @@ import {
 	MIN_DIMENSION,
 	MIN_LINE_LEN,
 	MIN_ARROW_LEN,
+	MIN_MARK_SIZE,
 } from 'renderer/constants';
 import type { Entity } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
@@ -153,7 +154,7 @@ class Diagram {
 				isValid = entity.length > MIN_ARROW_LEN;
 				break;
 			default:
-				isValid = entity.type.startsWith('mark');
+				isValid = entity.size > MIN_MARK_SIZE;
 		}
 
 		return isValid;

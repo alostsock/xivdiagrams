@@ -33,6 +33,7 @@ import {
 	ConeRadiusRotationControl,
 	ConeAngleControl,
 	LinePointControl,
+	MarkSizeControl,
 } from 'renderer/controls';
 import { IconName } from 'icons';
 import { diagram } from './diagram';
@@ -434,7 +435,7 @@ export class Mark implements BaseEntity<MarkData> {
 		this.type = options.type;
 		this.origin = options.origin;
 		this.size = options.size;
-		this.controls = [];
+		this.controls = [new MarkSizeControl(this)];
 	}
 
 	toJSON(): MarkData {

@@ -12,7 +12,6 @@ import {
 	magical,
 } from 'icons';
 import { useOnPointerDownOutside } from 'hooks';
-import { DEFAULT_MARK_SIZE } from 'renderer/constants';
 import { MarkType, createEntity } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { getCanvasCoords } from 'renderer/interactions';
@@ -127,7 +126,7 @@ export const handleMarkDrop = action(function handleMarkDrop(
 	e.preventDefault();
 	const [x, y] = getCanvasCoords(e);
 	const markId = e.dataTransfer.getData('text/plain') as MarkType;
-	const size = DEFAULT_MARK_SIZE;
+	const size = getDefaultSize(markId);
 	const markEntity = createEntity(
 		markId,
 		[x - size / 2, y - size / 2],
@@ -135,3 +134,9 @@ export const handleMarkDrop = action(function handleMarkDrop(
 	);
 	diagram.addEntities([markEntity]);
 });
+
+function getDefaultSize(markType: MarkType): number {
+	const iconName = markType.split('-', 2).pop() as IconName;
+	if (iconName === 'mob') return 50;
+	return 30;
+}
