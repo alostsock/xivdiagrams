@@ -71,7 +71,10 @@ export class CircleRadiusControl implements Control<Circle> {
 	handleDrag([x, y]: Point) {
 		const [x0, y0] = this.parent.origin;
 		this.angle = calcAngle([x0, y0], [x, y]);
-		this.parent.radius = Math.hypot(x - x0, y - y0);
+		this.parent.radius = Math.max(
+			this.parent.innerRadius + MIN_RADIUS,
+			Math.hypot(x - x0, y - y0)
+		);
 		diagram.render();
 	}
 }
@@ -154,7 +157,10 @@ export class ConeRadiusRotationControl implements Control<Cone> {
 
 	handleDrag([x, y]: Point) {
 		const [x0, y0] = this.parent.origin;
-		this.parent.radius = Math.hypot(x - x0, y - y0);
+		this.parent.radius = Math.max(
+			this.parent.innerRadius + MIN_RADIUS,
+			Math.hypot(x - x0, y - y0)
+		);
 
 		const angleWidth = this.parent.end - this.parent.start;
 		const midAngle = calcAngle(this.parent.origin, [x, y]);
