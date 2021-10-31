@@ -88,8 +88,6 @@ const ColorPicker = observer(function ColorPicker({ entity }: PickerProps) {
 
 const fills = [
 	{ style: 'none', label: 'No Fill' },
-	// bug with solid fills, related:
-	// https://github.com/rough-stuff/rough/issues/183
 	{ style: 'solid', label: 'Solid' },
 	{ style: 'hachure', label: 'Hachure' },
 	{ style: 'cross-hatch', label: 'Cross Hatch' },

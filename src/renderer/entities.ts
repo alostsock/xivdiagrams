@@ -186,7 +186,29 @@ export class Circle implements BaseEntity<CircleData> {
 				`  0 ${end - start > Math.PI ? 1 : 0} 0` +
 				`  ${p3[0]} ${p3[1]} Z`;
 
-			rc.path(path, { ...this.roughOptions, combineNestedSvgPaths: true });
+			if (this.roughOptions.fillStyle === 'solid') {
+				// workaround for a bug with the 'solid' fill style.
+				// kind of related: https://github.com/rough-stuff/rough/issues/183
+
+				// render just the fill, with a perfect circle
+				rc.path(path, {
+					...this.roughOptions,
+					stroke: 'none',
+					maxRandomnessOffset: 0,
+					combineNestedSvgPaths: true,
+				});
+				// render just the stroke
+				rc.path(path, {
+					...this.roughOptions,
+					fill: undefined,
+					combineNestedSvgPaths: true,
+				});
+			} else {
+				rc.path(path, {
+					...this.roughOptions,
+					combineNestedSvgPaths: true,
+				});
+			}
 		}
 
 		if (this.isSelected) {
