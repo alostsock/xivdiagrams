@@ -4,7 +4,7 @@ import {
 	CONTROL_STROKE_STYLE,
 	CONTROL_LINE_WIDTH,
 	CONTROL_FILL_STYLE,
-	MIN_RADIUS,
+	MIN_DIMENSION,
 } from 'renderer/constants';
 import {
 	calcAngle,
@@ -72,7 +72,7 @@ export class CircleRadiusControl implements Control<Circle> {
 		const [x0, y0] = this.parent.origin;
 		this.angle = calcAngle([x0, y0], [x, y]);
 		this.parent.radius = Math.max(
-			this.parent.innerRadius + MIN_RADIUS,
+			this.parent.innerRadius + MIN_DIMENSION,
 			Math.hypot(x - x0, y - y0)
 		);
 		diagram.render();
@@ -128,7 +128,7 @@ export class CircleInnerRadiusControl implements Control<Circle> {
 		} else {
 			this.parent.innerRadius = Math.min(
 				Math.hypot(x - x0, y - y0),
-				this.parent.radius - MIN_RADIUS
+				this.parent.radius - MIN_DIMENSION
 			);
 		}
 		diagram.render();
@@ -158,7 +158,7 @@ export class ConeRadiusRotationControl implements Control<Cone> {
 	handleDrag([x, y]: Point) {
 		const [x0, y0] = this.parent.origin;
 		this.parent.radius = Math.max(
-			this.parent.innerRadius + MIN_RADIUS,
+			this.parent.innerRadius + MIN_DIMENSION,
 			Math.hypot(x - x0, y - y0)
 		);
 
@@ -210,7 +210,7 @@ export class ConeInnerRadiusControl implements Control<Cone> {
 		} else {
 			this.parent.innerRadius = Math.min(
 				Math.hypot(x - x0, y - y0),
-				this.parent.radius - MIN_RADIUS
+				this.parent.radius - MIN_DIMENSION
 			);
 		}
 		diagram.render();
@@ -390,7 +390,6 @@ export class MarkSizeControl implements Control<Mark> {
 		const [x0, y0] = this.parent.origin;
 		this.angle = calcAngle([x0, y0], [x, y]);
 		this.parent.size = 2 * Math.hypot(x - x0, y - y0);
-		console.log(this.parent.size);
 		diagram.render();
 	}
 }
