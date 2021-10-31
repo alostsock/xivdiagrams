@@ -28,9 +28,11 @@ import {
 import {
 	Control,
 	CircleRadiusControl,
+	CircleInnerRadiusControl,
 	RectCornerControl,
 	RectRotationControl,
 	ConeRadiusRotationControl,
+	ConeInnerRadiusControl,
 	ConeAngleControl,
 	LinePointControl,
 	MarkSizeControl,
@@ -48,6 +50,8 @@ export interface CircleData extends BaseData {
 	roughOptions: RoughOptions;
 	origin: Point;
 	radius: number;
+	innerRadius: number;
+	innerRadiusDrawingStartAngle: number;
 }
 
 export interface ConeData extends BaseData {
@@ -55,6 +59,7 @@ export interface ConeData extends BaseData {
 	roughOptions: RoughOptions;
 	origin: Point;
 	radius: number;
+	innerRadius: number;
 	start: number;
 	end: number;
 }
@@ -108,6 +113,8 @@ export class Circle implements BaseEntity<CircleData> {
 
 	origin: Point;
 	radius: number;
+	innerRadius: number;
+	innerRadiusDrawingStartAngle: number;
 
 	isSelected: boolean = false;
 	controls: Control<Circle>[];
@@ -118,7 +125,12 @@ export class Circle implements BaseEntity<CircleData> {
 		this.roughOptions = getRoughOptions(options.roughOptions);
 		this.origin = options.origin;
 		this.radius = options.radius;
-		this.controls = [new CircleRadiusControl(this)];
+		this.innerRadius = options.innerRadius;
+		this.innerRadiusDrawingStartAngle = options.innerRadiusDrawingStartAngle;
+		this.controls = [
+			new CircleRadiusControl(this),
+			new CircleInnerRadiusControl(this),
+		];
 	}
 
 	toJSON(): CircleData {
@@ -128,6 +140,8 @@ export class Circle implements BaseEntity<CircleData> {
 			'roughOptions',
 			'origin',
 			'radius',
+			'innerRadius',
+			'innerRadiusDrawingStartAngle',
 		]);
 	}
 
@@ -142,12 +156,38 @@ export class Circle implements BaseEntity<CircleData> {
 	}
 
 	hitTest(point: Point) {
-		return distToCircle(point, this.origin, this.radius) <= HIT_TEST_TOLERANCE;
+		return (
+			distToCircle(point, this.origin, this.radius) <= HIT_TEST_TOLERANCE ||
+			distToCircle(point, this.origin, this.innerRadius) <= HIT_TEST_TOLERANCE
+		);
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		const [x, y] = this.origin;
-		rc.circle(x, y, 2 * this.radius, this.roughOptions);
+		if (this.innerRadius === 0) {
+			rc.circle(x, y, 2 * this.radius, this.roughOptions);
+		} else {
+			const start = this.innerRadiusDrawingStartAngle;
+			const end = start + Math.PI * 2 - 0.000001;
+			// outer arc, clockwise
+			const p1 = rotatePoint(this.origin, [x + this.radius, y], start);
+			const p2 = rotatePoint([x, y], [x + this.radius, y], end);
+			// inner arc, counter-clockwise
+			const p3 = rotatePoint([x, y], [x + this.innerRadius, y], start);
+			const p4 = rotatePoint([x, y], [x + this.innerRadius, y], end);
+
+			const path =
+				`M ${p1[0]} ${p1[1]}` +
+				`A ${this.radius} ${this.radius}` +
+				`  0 ${end - start > Math.PI ? 1 : 0} 1` +
+				`  ${p2[0]} ${p2[1]} Z` +
+				`M ${p4[0]} ${p4[1]}` +
+				`A ${this.innerRadius} ${this.innerRadius}` +
+				`  0 ${end - start > Math.PI ? 1 : 0} 0` +
+				`  ${p3[0]} ${p3[1]} Z`;
+
+			rc.path(path, { ...this.roughOptions, combineNestedSvgPaths: true });
+		}
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
@@ -163,6 +203,7 @@ export class Cone implements BaseEntity<ConeData> {
 
 	origin: Point;
 	radius: number;
+	innerRadius: number;
 	start: number;
 	end: number;
 
@@ -175,10 +216,12 @@ export class Cone implements BaseEntity<ConeData> {
 		this.roughOptions = getRoughOptions(options.roughOptions);
 		this.origin = options.origin;
 		this.radius = options.radius;
+		this.innerRadius = options.innerRadius;
 		this.start = options.start;
 		this.end = options.end;
 		this.controls = [
 			new ConeRadiusRotationControl(this),
+			new ConeInnerRadiusControl(this),
 			new ConeAngleControl(this),
 		];
 	}
@@ -190,6 +233,7 @@ export class Cone implements BaseEntity<ConeData> {
 			'roughOptions',
 			'origin',
 			'radius',
+			'innerRadius',
 			'start',
 			'end',
 		]);
@@ -231,8 +275,14 @@ export class Cone implements BaseEntity<ConeData> {
 
 	hitTest(point: Point) {
 		return (
-			distToCone(point, this.origin, this.radius, this.start, this.end) <=
-			HIT_TEST_TOLERANCE
+			distToCone(
+				point,
+				this.origin,
+				this.radius,
+				this.innerRadius,
+				this.start,
+				this.end
+			) <= HIT_TEST_TOLERANCE
 		);
 	}
 
@@ -245,14 +295,42 @@ export class Cone implements BaseEntity<ConeData> {
 		// 3) allows us to add donut shapes later (with an inner radius)
 		const p1 = rotatePoint(this.origin, [x0 + this.radius, y0], this.start);
 		const p2 = rotatePoint(this.origin, [x0 + this.radius, y0], this.end);
-		const path =
-			`M ${p1[0]} ${p1[1]}` +
-			` A ${this.radius} ${this.radius}` +
-			` 0 ${this.end - this.start > Math.PI ? 1 : 0} 1` +
-			` ${p2[0]} ${p2[1]}` +
-			` L ${x0} ${y0} Z`;
 
-		rc.path(path, this.roughOptions);
+		if (this.innerRadius === 0) {
+			const path =
+				`M ${p1[0]} ${p1[1]}` +
+				`A ${this.radius} ${this.radius}` +
+				`  0 ${this.end - this.start > Math.PI ? 1 : 0} 1` +
+				`  ${p2[0]} ${p2[1]}` +
+				`L ${x0} ${y0} Z`;
+
+			rc.path(path, this.roughOptions);
+		} else {
+			// inner arc, counter-clockwise
+
+			const p3 = rotatePoint(
+				this.origin,
+				[x0 + this.innerRadius, y0],
+				this.end
+			);
+			const p4 = rotatePoint(
+				this.origin,
+				[x0 + this.innerRadius, y0],
+				this.start
+			);
+
+			const path =
+				`M ${p1[0]} ${p1[1]}` +
+				`A ${this.radius} ${this.radius}` +
+				`  0 ${this.end - this.start > Math.PI ? 1 : 0} 1` +
+				`  ${p2[0]} ${p2[1]}` +
+				`L ${p3[0]} ${p3[1]}` +
+				`A ${this.innerRadius} ${this.innerRadius}` +
+				`  0 ${this.end - this.start > Math.PI ? 1 : 0} 0` +
+				`  ${p4[0]} ${p4[1]} Z`;
+
+			rc.path(path, { ...this.roughOptions, combineNestedSvgPaths: true });
+		}
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);
@@ -521,6 +599,8 @@ export function createEntity(
 			return new Circle({
 				origin: [(x0 + x) / 2, (y0 + y) / 2],
 				radius: Math.max((x - x0) / 2, (y - y0) / 2),
+				innerRadius: 0,
+				innerRadiusDrawingStartAngle: Math.random() * Math.PI * 2,
 				roughOptions: getRoughOptions(),
 			});
 		case 'cone':
@@ -529,6 +609,7 @@ export function createEntity(
 			return new Cone({
 				origin: [x0, y0],
 				radius: Math.hypot(x - x0, y - y0),
+				innerRadius: 0,
 				start: angle - defaultAngle,
 				end: angle + defaultAngle,
 				roughOptions: getRoughOptions(),

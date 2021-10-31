@@ -136,6 +136,7 @@ export function distToCone(
 	point: Point,
 	origin: Point,
 	radius: number,
+	innerRadius: number,
 	startAngle: number,
 	endAngle: number
 ): number {
@@ -144,9 +145,17 @@ export function distToCone(
 	// get shortest distance to each side of the cone
 	const arcP1 = rotatePoint(origin, [x0 + radius, y0], startAngle);
 	const arcP2 = rotatePoint(origin, [x0 + radius, y0], endAngle);
+	const arcP1inner =
+		innerRadius > 0
+			? rotatePoint(origin, [x0 + innerRadius, y0], startAngle)
+			: origin;
+	const arcP2inner =
+		innerRadius > 0
+			? rotatePoint(origin, [x0 + innerRadius, y0], endAngle)
+			: origin;
 	const distances = [
-		distToSegment(point, origin, arcP1),
-		distToSegment(point, origin, arcP2),
+		distToSegment(point, arcP1inner, arcP1),
+		distToSegment(point, arcP2inner, arcP2),
 	];
 	// only check distance to arc if the point falls within the angle,
 	// otherwise the point is closer to a segment
@@ -159,6 +168,9 @@ export function distToCone(
 		(pointAngleNPi2 > startAngle && pointAngleNPi2 < endAngle)
 	) {
 		distances.push(Math.abs(Math.hypot(x - x0, y - y0) - radius));
+		if (innerRadius > 0) {
+			distances.push(Math.abs(Math.hypot(x - x0, y - y0) - innerRadius));
+		}
 	}
 	return Math.min(...distances);
 }

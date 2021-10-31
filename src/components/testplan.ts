@@ -17,6 +17,8 @@ const testPlan: PlanData = {
 					},
 					origin: [50, 50],
 					radius: 50,
+					innerRadius: 25,
+					innerRadiusDrawingStartAngle: Math.random() * Math.PI * 2,
 				},
 				{
 					id: 'di5FfiBt',
@@ -43,6 +45,7 @@ const testPlan: PlanData = {
 					},
 					origin: [50, 250],
 					radius: 90,
+					innerRadius: 40,
 					start: 0,
 					end: 4.71238898038469,
 				},

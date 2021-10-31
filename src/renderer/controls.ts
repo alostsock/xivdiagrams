@@ -4,6 +4,7 @@ import {
 	CONTROL_STROKE_STYLE,
 	CONTROL_LINE_WIDTH,
 	CONTROL_FILL_STYLE,
+	MIN_RADIUS,
 } from 'renderer/constants';
 import {
 	calcAngle,
@@ -75,6 +76,62 @@ export class CircleRadiusControl implements Control<Circle> {
 	}
 }
 
+export class CircleInnerRadiusControl implements Control<Circle> {
+	angle: number = -Math.PI / 4;
+
+	constructor(public parent: Circle) {}
+
+	get radiusControl(): CircleRadiusControl | null {
+		const control = this.parent.controls.find(
+			(c) => c instanceof CircleRadiusControl
+		);
+		return control instanceof CircleRadiusControl ? control : null;
+	}
+
+	get position(): Point {
+		const [x0, y0] = this.parent.origin;
+		const angle = this.radiusControl?.angle ?? this.angle;
+		return [
+			x0 + this.parent.innerRadius * Math.cos(angle),
+			y0 + this.parent.innerRadius * Math.sin(angle),
+		];
+	}
+
+	render(ctx: CanvasRenderingContext2D) {
+		renderCircleControl(ctx, this.position);
+	}
+
+	hitTest(point: Point) {
+		return hitTestCircleControl(point, this.position);
+	}
+
+	handleDrag([x, y]: Point) {
+		const [x0, y0] = this.parent.origin;
+
+		const outerMidPoint = this.radiusControl
+			? this.radiusControl.position
+			: rotatePoint(
+					this.parent.origin,
+					[x0 + this.parent.radius, y0],
+					this.angle + Math.PI
+			  );
+
+		const isPastMiddle =
+			Math.hypot(outerMidPoint[0] - x, outerMidPoint[1] - y) >
+			this.parent.radius;
+
+		if (isPastMiddle) {
+			this.parent.innerRadius = 0;
+		} else {
+			this.parent.innerRadius = Math.min(
+				Math.hypot(x - x0, y - y0),
+				this.parent.radius - MIN_RADIUS
+			);
+		}
+		diagram.render();
+	}
+}
+
 export class ConeRadiusRotationControl implements Control<Cone> {
 	constructor(public parent: Cone) {}
 
@@ -107,14 +164,64 @@ export class ConeRadiusRotationControl implements Control<Cone> {
 	}
 }
 
+export class ConeInnerRadiusControl implements Control<Cone> {
+	constructor(public parent: Cone) {}
+
+	get position(): Point {
+		const midAngle = (this.parent.start + this.parent.end) / 2;
+		const [x0, y0] = this.parent.origin;
+		return [
+			x0 + this.parent.innerRadius * Math.cos(midAngle),
+			y0 + this.parent.innerRadius * Math.sin(midAngle),
+		];
+	}
+
+	render(ctx: CanvasRenderingContext2D) {
+		renderCircleControl(ctx, this.position);
+	}
+
+	hitTest(point: Point) {
+		return hitTestCircleControl(point, this.position);
+	}
+
+	handleDrag([x, y]: Point) {
+		const [x0, y0] = this.parent.origin;
+
+		const midAngle = (this.parent.start + this.parent.end) / 2;
+		const outerMidPoint = rotatePoint(
+			this.parent.origin,
+			[x0 + this.parent.radius, y0],
+			midAngle
+		);
+
+		const isPastCenter =
+			Math.hypot(outerMidPoint[0] - x, outerMidPoint[1] - y) >
+			this.parent.radius;
+
+		// test if the control is dragged past the middle
+		if (isPastCenter) {
+			this.parent.innerRadius = 0;
+		} else {
+			this.parent.innerRadius = Math.min(
+				Math.hypot(x - x0, y - y0),
+				this.parent.radius - MIN_RADIUS
+			);
+		}
+		diagram.render();
+	}
+}
+
 export class ConeAngleControl implements Control<Cone> {
 	constructor(public parent: Cone) {}
 
 	get position(): Point {
 		const [x0, y0] = this.parent.origin;
+		const distFromCenter =
+			this.parent.innerRadius +
+			(this.parent.radius - this.parent.innerRadius) / 2;
 		return [
-			x0 + this.parent.radius * 0.5 * Math.cos(this.parent.end),
-			y0 + this.parent.radius * 0.5 * Math.sin(this.parent.end),
+			x0 + distFromCenter * Math.cos(this.parent.end),
+			y0 + distFromCenter * Math.sin(this.parent.end),
 		];
 	}
 
