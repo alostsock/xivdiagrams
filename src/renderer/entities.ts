@@ -613,8 +613,8 @@ export function createEntity(
 			return new Rect({
 				origin: [(x0 + x) / 2, (y0 + y) / 2],
 				rotation: 0,
-				width: x - x0,
-				height: y - y0,
+				width: Math.abs(x - x0),
+				height: Math.abs(y - y0),
 				roughOptions: getRoughOptions(),
 			});
 		case 'circle':
