@@ -620,7 +620,7 @@ export function createEntity(
 		case 'circle':
 			return new Circle({
 				origin: [(x0 + x) / 2, (y0 + y) / 2],
-				radius: Math.max((x - x0) / 2, (y - y0) / 2),
+				radius: Math.max(Math.abs((x - x0) / 2), Math.abs((y - y0) / 2)),
 				innerRadius: 0,
 				innerRadiusDrawingStartAngle: Math.random() * Math.PI * 2,
 				roughOptions: getRoughOptions(),
