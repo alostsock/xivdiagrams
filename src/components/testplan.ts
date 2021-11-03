@@ -12,7 +12,7 @@ const testPlan: PlanData = {
 					roughOptions: {
 						seed: 337247443,
 						roughness: 1,
-						curveFitting: 0.97,
+						curveFitting: 0.98,
 						strokeWidth: 1,
 					},
 					origin: [50, 50],
@@ -26,7 +26,7 @@ const testPlan: PlanData = {
 					roughOptions: {
 						seed: 671732269,
 						roughness: 1,
-						curveFitting: 0.97,
+						curveFitting: 0.98,
 						strokeWidth: 1,
 					},
 					origin: [50, 150],
@@ -40,7 +40,7 @@ const testPlan: PlanData = {
 					roughOptions: {
 						seed: 462144498,
 						roughness: 1,
-						curveFitting: 0.97,
+						curveFitting: 0.98,
 						strokeWidth: 1,
 					},
 					origin: [50, 250],
@@ -55,7 +55,7 @@ const testPlan: PlanData = {
 					roughOptions: {
 						seed: 643861523,
 						roughness: 1,
-						curveFitting: 0.97,
+						curveFitting: 0.98,
 						strokeWidth: 1,
 					},
 					origin: [200, 100],
@@ -68,7 +68,7 @@ const testPlan: PlanData = {
 					roughOptions: {
 						seed: 1036878533,
 						roughness: 1,
-						curveFitting: 0.97,
+						curveFitting: 0.98,
 						strokeWidth: 1,
 					},
 					origin: [200, 200],
@@ -80,5 +80,7 @@ const testPlan: PlanData = {
 		},
 	],
 };
+
+console.log(testPlan);
 
 export default testPlan;

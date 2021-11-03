@@ -4,7 +4,7 @@ export const BASE_CANVAS_SIZE = 540;
 
 export const DEFAULT_ROUGH_OPTIONS: RoughOptions = {
 	roughness: 1,
-	curveFitting: 0.97,
+	curveFitting: 0.98,
 	strokeWidth: 1,
 	stroke: '#1a1f26',
 };
