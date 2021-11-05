@@ -67,6 +67,14 @@ const App = observer(function App() {
 			</div>
 
 			<Notes className="notes" />
+
+			<footer>
+				<p>
+					All art, text, and images from FFXIV are registered trademarks of
+					Square Enix Holdings Co., Ltd.
+				</p>
+				<p>© SQUARE ENIX CO., LTD. All Rights Reserved.</p>
+			</footer>
 		</div>
 	);
 });

@@ -61,7 +61,7 @@ fieldset > label {
 	position: relative;
 	color: var(--gray-6);
 	background: var(--gray-0);
-	border: 1px solid var(--gray-2);
+	border: var(--border);
 	border-radius: var(--border-radius);
 	padding: 0.25rem 0.5rem;
 
@@ -107,7 +107,7 @@ button.selected + .popup {
 	background: #fff;
 	box-shadow: var(--shadow-high);
 	border-radius: var(--border-radius);
-	outline: 1px solid var(--gray-2);
+	outline: var(--border);
 
 	display: flex;
 	flex-wrap: wrap;
@@ -196,7 +196,7 @@ button.selected + .popup {
 
 		.diagram .canvas-container canvas {
 			border-radius: var(--border-radius);
-			outline: 1px solid var(--gray-2);
+			outline: var(--border);
 		}
 	}
 
@@ -210,10 +210,11 @@ button.selected + .popup {
 
 		display: grid;
 		grid-template-columns: 100vh 1fr;
-		grid-template-rows: min-content 1fr;
+		grid-template-rows: min-content 1fr min-content;
 		grid-template-areas:
 			'diagram a'
-			'diagram b';
+			'diagram b'
+			'diagram c';
 
 		.diagram {
 			grid-area: diagram;
@@ -242,6 +243,10 @@ button.selected + .popup {
 		.notes {
 			grid-area: b;
 		}
+
+		footer {
+			grid-area: c;
+		}
 	}
 }
 
@@ -269,4 +274,48 @@ button.selected + .popup {
 
 .Notes {
 	padding: 0.5rem;
+
+	.title {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	h3 {
+		color: var(--gray-7);
+		font-size: 1rem;
+		font-weight: bold;
+		margin: 0;
+	}
+
+	.charcount {
+		color: var(--gray-6);
+	}
+
+	textarea {
+		background: var(--gray-0);
+		width: 100%;
+		margin-top: 0.5rem;
+		border: var(--border);
+		border-radius: var(--border-radius);
+		resize: none;
+
+		&:focus-visible {
+			border: var(--border);
+			box-shadow: var(--shadow-emphasis);
+		}
+	}
+}
+
+footer {
+	color: var(--gray-6);
+	font-size: 0.9rem;
+	padding: 0.5rem;
+
+	p {
+		margin: 0;
+	}
+
+	p + p {
+		margin-top: 0.5rem;
+	}
 }

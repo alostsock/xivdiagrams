@@ -81,6 +81,4 @@ const testPlan: PlanData = {
 	],
 };
 
-console.log(testPlan);
-
 export default testPlan;
