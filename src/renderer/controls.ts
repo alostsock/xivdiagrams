@@ -26,11 +26,9 @@ export interface Control<T> {
 function renderCircleControl(ctx: CanvasRenderingContext2D, [x, y]: Point) {
 	ctx.save();
 
-	// divide by the canvas's scale factor to keep control sizes relatively
-	// consistent across devices (i.e. larger for small screens, smaller for
-	// large screens)
-	const radius = CONTROL_RADIUS / diagram.scale;
-	ctx.lineWidth = CONTROL_LINE_WIDTH / diagram.scale;
+	// keep control size similar across different devices/screens
+	const radius = CONTROL_RADIUS * diagram.windowScaleFactor;
+	ctx.lineWidth = CONTROL_LINE_WIDTH * diagram.windowScaleFactor;
 	ctx.strokeStyle = CONTROL_STROKE_STYLE;
 	ctx.fillStyle = CONTROL_FILL_STYLE;
 
@@ -43,7 +41,7 @@ function renderCircleControl(ctx: CanvasRenderingContext2D, [x, y]: Point) {
 }
 
 function hitTestCircleControl(point: Point, controlPosition: Point) {
-	const radius = CONTROL_RADIUS / diagram.scale;
+	const radius = CONTROL_RADIUS * diagram.windowScaleFactor;
 	return pointInCircle(point, controlPosition, radius);
 }
 

@@ -152,11 +152,12 @@ function hitTest(point: Point, entities: Entity[]): Entity | false {
 
 		// bypass detailed hit testing if out of bounds
 		const entityBounds = entity.bounds;
+		const tolerance = HIT_TEST_TOLERANCE * diagram.windowScaleFactor;
 		const boundsMargin: Bounds = {
-			left: entityBounds.left - HIT_TEST_TOLERANCE,
-			right: entityBounds.right + HIT_TEST_TOLERANCE,
-			top: entityBounds.top - HIT_TEST_TOLERANCE,
-			bottom: entityBounds.bottom + HIT_TEST_TOLERANCE,
+			left: entityBounds.left - tolerance,
+			right: entityBounds.right + tolerance,
+			top: entityBounds.top - tolerance,
+			bottom: entityBounds.bottom + tolerance,
 		};
 		if (!pointInBounds(point, boundsMargin)) continue;
 

@@ -589,7 +589,7 @@ function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
 	ctx.save();
 
 	ctx.strokeStyle = BOUNDS_STYLE;
-	ctx.lineWidth = 1 / diagram.scale;
+	ctx.lineWidth = 1 * diagram.windowScaleFactor;
 
 	ctx.beginPath();
 	ctx.moveTo(left, top);

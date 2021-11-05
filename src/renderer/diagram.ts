@@ -39,6 +39,10 @@ class Diagram {
 		makeAutoObservable(this);
 	}
 
+	get windowScaleFactor() {
+		return window.devicePixelRatio / this.scale;
+	}
+
 	attach(el: HTMLCanvasElement) {
 		if (this.canvas) {
 			console.warn('canvas already attached');
