@@ -5,6 +5,7 @@ import reportWebVitals from './reportWebVitals';
 
 import App from './components/App';
 import './index.scss';
+import '@fontsource/lato';
 
 configureMobx({
 	enforceActions: 'always',
