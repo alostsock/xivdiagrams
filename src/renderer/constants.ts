@@ -15,6 +15,7 @@ export const HIT_TEST_TOLERANCE = 10;
 export const BOUNDS_STYLE = '#4ba3f1';
 export const ARROWHEAD_LEN = 16;
 export const ARROWHEAD_ANGLE = Math.PI / 8;
+export const FREEHAND_SIZE = 3;
 
 // entities will be auto-deleted if under a certain size
 export const MIN_RADIUS = 6;

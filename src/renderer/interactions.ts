@@ -2,7 +2,7 @@ import { PointerEvent, DragEvent } from 'react';
 import { action } from 'mobx';
 import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { diagram } from 'renderer/diagram';
-import { Entity, createEntity } from 'renderer/entities';
+import { Entity, Freehand, createFromAnchorPoints } from 'renderer/entities';
 import { Bounds, Point, pointInBounds } from 'renderer/geometry';
 
 export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
@@ -22,13 +22,17 @@ export const handlePointerMove = action(function handlePointerMove(
 		// either about to create, or creating an entity
 		diagram.cursorType = 'crosshair';
 
-		if (diagram.dragAnchor) {
-			// TODO: modify entity instead of creating a new one
-			diagram.entityInCreation = createEntity(
-				diagram.selectedTool,
-				diagram.dragAnchor,
-				[x, y]
-			);
+		if (diagram.dragAnchor && diagram.entityInCreation) {
+			if (diagram.entityInCreation instanceof Freehand) {
+				diagram.entityInCreation.addPoint([x, y]);
+			} else {
+				// TODO: modify entity instead of creating a new one
+				diagram.entityInCreation = createFromAnchorPoints(
+					diagram.entityInCreation.type,
+					diagram.dragAnchor,
+					[x, y]
+				);
+			}
 			diagram.render();
 		}
 
@@ -81,11 +85,17 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	if (diagram.selectedTool !== 'cursor') {
 		// start creating an entity
-		diagram.entityInCreation = createEntity(
-			diagram.selectedTool,
-			diagram.dragAnchor,
-			diagram.dragAnchor
-		);
+		diagram.entityInCreation =
+			diagram.selectedTool === 'freehand'
+				? new Freehand({
+						origin: diagram.dragAnchor,
+						points: [[0, 0]],
+				  })
+				: createFromAnchorPoints(
+						diagram.selectedTool,
+						diagram.dragAnchor,
+						diagram.dragAnchor
+				  );
 		diagram.render();
 		return;
 	}
@@ -140,8 +150,9 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 			diagram.addEntities([createdEntity]);
 		}
 		diagram.render();
-		// TODO: add tool lock
-		diagram.selectedTool = 'cursor';
+		if (diagram.selectedTool !== 'freehand') {
+			diagram.selectedTool = 'cursor';
+		}
 	}
 });
 

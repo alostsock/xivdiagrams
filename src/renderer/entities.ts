@@ -1,14 +1,16 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
 import { RoughGenerator } from 'roughjs/bin/generator';
+import { getStroke } from 'perfect-freehand';
 import {
 	BOUNDS_STYLE,
 	HIT_TEST_TOLERANCE,
 	DEFAULT_ROUGH_OPTIONS,
 	ARROWHEAD_LEN,
 	ARROWHEAD_ANGLE,
+	FREEHAND_SIZE,
 } from 'renderer/constants';
 import {
 	Point,
@@ -24,6 +26,7 @@ import {
 	distToPolygon,
 	distToSegments,
 	pointInBounds,
+	Segment,
 } from 'renderer/geometry';
 import {
 	Control,
@@ -91,7 +94,19 @@ export interface MarkData extends BaseData {
 	size: number;
 }
 
-export type EntityData = CircleData | ConeData | RectData | LineData | MarkData;
+export interface FreehandData extends BaseData {
+	type: 'freehand';
+	origin: Point;
+	points: Points;
+}
+
+export type EntityData =
+	| CircleData
+	| ConeData
+	| RectData
+	| LineData
+	| MarkData
+	| FreehandData;
 
 type ConstructorOptions<T extends BaseData> = PartialBy<T, keyof BaseData>;
 
@@ -104,7 +119,7 @@ type BaseEntity<T extends BaseData> = T & {
 	toJSON: () => T;
 };
 
-export type Entity = Circle | Cone | Rect | Line | Mark;
+export type Entity = Circle | Cone | Rect | Line | Mark | Freehand;
 
 export class Circle implements BaseEntity<CircleData> {
 	id;
@@ -571,6 +586,83 @@ export class Mark implements BaseEntity<MarkData> {
 	}
 }
 
+export class Freehand implements BaseEntity<FreehandData> {
+	id;
+	type: 'freehand' = 'freehand';
+
+	origin: Point;
+	points: Points;
+
+	isSelected: boolean = false;
+	controls: Control<Freehand>[];
+
+	constructor(options: ConstructorOptions<FreehandData>) {
+		makeAutoObservable(this);
+		this.id = options.id ?? generateId();
+		this.origin = options.origin;
+		this.points = options.points;
+		this.controls = [];
+	}
+
+	toJSON(): FreehandData {
+		return selectProps(this, ['id', 'type', 'origin', 'points']);
+	}
+
+	addPoint([x, y]: Point) {
+		this.points.push([x - this.origin[0], y - this.origin[1]]);
+	}
+
+	get displacedPoints() {
+		const [dx, dy] = this.origin;
+		return this.points.map(([x, y]) => [x + dx, y + dy]);
+	}
+
+	get strokePoints(): Points {
+		return getStroke(toJS(this.displacedPoints), {
+			size: FREEHAND_SIZE,
+			simulatePressure: true,
+		}) as Points;
+	}
+
+	get bounds(): Bounds {
+		return calcBoundsFromPoints(this.strokePoints);
+	}
+
+	hitTest(point: Point) {
+		const segments = this.displacedPoints.map(
+			(p, i, arr) => [p, arr[(i + 1) % arr.length]] as Segment
+		);
+		return distToSegments(point, segments) <= HIT_TEST_TOLERANCE;
+	}
+
+	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+		const path = getSvgPathFromStroke(this.strokePoints);
+
+		ctx.fill(new Path2D(path));
+
+		if (this.isSelected) {
+			drawBounds(ctx, this.bounds);
+			this.controls.forEach((c) => c.render(ctx));
+		}
+	}
+}
+
+function getSvgPathFromStroke(stroke: Points) {
+	if (!stroke.length) return '';
+
+	const d = stroke.reduce(
+		(acc, [x0, y0], i, arr) => {
+			const [x1, y1] = arr[(i + 1) % arr.length];
+			acc.push(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+			return acc;
+		},
+		['M', ...stroke[0], 'Q']
+	);
+
+	d.push('Z');
+	return d.join(' ');
+}
+
 function generateId() {
 	return nanoid(8);
 }
@@ -603,11 +695,11 @@ function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
 	ctx.restore();
 }
 
-export function createEntity(
-	type: Entity['type'],
+export function createFromAnchorPoints(
+	type: Extract<Entity['type'], 'rect' | 'circle' | 'cone' | LineType>,
 	[x0, y0]: Point,
 	[x, y]: Point
-): Entity {
+) {
 	switch (type) {
 		case 'rect':
 			return new Rect({
@@ -645,12 +737,6 @@ export function createEntity(
 				length: Math.hypot(x - x0, y - y0),
 				roughOptions: getRoughOptions(),
 			});
-		default:
-			return new Mark({
-				type,
-				origin: [(x0 + x) / 2, (y0 + y) / 2],
-				size: Math.max(x - x0, y - y0),
-			});
 	}
 }
 
@@ -675,6 +761,8 @@ export function deserializeEntities(entities: EntityData[]): Entity[] {
 			case 'line':
 			case 'arrow':
 				return new Line({ ...entityData });
+			case 'freehand':
+				return new Freehand({ ...entityData });
 			default:
 				return new Mark({ ...entityData });
 		}

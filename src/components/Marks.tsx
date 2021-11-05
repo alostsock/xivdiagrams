@@ -12,7 +12,7 @@ import {
 	magical,
 } from 'icons';
 import { useOnPointerDownOutside } from 'hooks';
-import { MarkType, createEntity } from 'renderer/entities';
+import { MarkType, Mark } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { getCanvasCoords } from 'renderer/interactions';
 import './Marks.scss';
@@ -124,14 +124,10 @@ export const handleMarkDrop = action(function handleMarkDrop(
 	e: React.DragEvent
 ) {
 	e.preventDefault();
-	const [x, y] = getCanvasCoords(e);
+	const origin = getCanvasCoords(e);
 	const markId = e.dataTransfer.getData('text/plain') as MarkType;
 	const size = getDefaultSize(markId);
-	const markEntity = createEntity(
-		markId,
-		[x - size / 2, y - size / 2],
-		[x + size / 2, y + size / 2]
-	);
+	const markEntity = new Mark({ type: markId, origin, size });
 	diagram.addEntities([markEntity]);
 });
 

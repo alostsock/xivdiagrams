@@ -8,11 +8,10 @@ import {
 	MIN_ARROW_LEN,
 	MIN_MARK_SIZE,
 } from 'renderer/constants';
-import type { Entity } from 'renderer/entities';
+import type { Entity, Mark } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import type { Point } from 'renderer/geometry';
-
-export type Tool = 'cursor' | Entity['type'];
+import type { Tool } from 'components/Toolset';
 
 type CursorType = 'default' | 'crosshair' | 'move' | 'grab' | 'grabbing';
 
@@ -33,7 +32,7 @@ class Diagram {
 	selectedEntities: Entity[] = [];
 	dragAnchor: Point | null = null;
 	entityControlInUse: Control<any> | null = null;
-	entityInCreation: Entity | null = null;
+	entityInCreation: Exclude<Entity, Mark> | null = null;
 
 	constructor() {
 		makeAutoObservable(this);
@@ -156,6 +155,9 @@ class Diagram {
 				break;
 			case 'arrow':
 				isValid = entity.length > MIN_ARROW_LEN;
+				break;
+			case 'freehand':
+				isValid = entity.points.length > 0;
 				break;
 			default:
 				isValid = entity.size > MIN_MARK_SIZE;

@@ -1,6 +1,7 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { Tool, diagram } from 'renderer/diagram';
+import { Entity } from 'renderer/entities';
+import { diagram } from 'renderer/diagram';
 import {
 	CursorSvg,
 	CircleSvg,
@@ -11,6 +12,13 @@ import {
 } from 'icons';
 import clsx from 'clsx';
 
+export type Tool =
+	| 'cursor'
+	| Extract<
+			Entity['type'],
+			'rect' | 'circle' | 'cone' | 'line' | 'arrow' | 'freehand'
+	  >;
+
 const tools: [Tool, JSX.Element][] = [
 	['cursor', <CursorSvg />],
 	['rect', <RectSvg />],
@@ -18,6 +26,7 @@ const tools: [Tool, JSX.Element][] = [
 	['cone', <ConeSvg />],
 	['line', <LineSvg />],
 	['arrow', <ArrowSvg />],
+	['freehand', <div>F</div>],
 ];
 
 interface Props {
