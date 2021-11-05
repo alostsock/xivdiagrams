@@ -64,8 +64,9 @@ fieldset {
 button,
 fieldset > label {
 	position: relative;
+	font-weight: bold;
 	color: var(--gray-6);
-	background: var(--gray-0);
+	background: rgba(var(--gray-0-rgb), 0.95);
 	border: var(--border);
 	border-radius: var(--border-radius);
 	padding: 0.25rem 0.5rem;
@@ -81,13 +82,13 @@ fieldset > label {
 
 	&:hover {
 		cursor: pointer;
-		background: var(--gray-2);
+		background: rgba(var(--gray-2-rgb), 0.95);
 	}
 
 	&:active,
 	&.selected {
-		color: var(--gray-9);
-		background: var(--gray-2);
+		color: var(--gray-8);
+		background: rgba(var(--gray-2-rgb), 0.95);
 	}
 
 	&:disabled {
@@ -171,17 +172,6 @@ button.selected + .popup {
 			pointer-events: none;
 
 			display: flex;
-
-			button,
-			label {
-				background: rgba(var(--gray-0-rgb), 0.95);
-				font-weight: bold;
-
-				&:active,
-				&.selected {
-					background: rgba(var(--gray-2-rgb), 0.95);
-				}
-			}
 		}
 
 		.canvas-container {
