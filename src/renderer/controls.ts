@@ -8,6 +8,7 @@ import {
 } from 'renderer/constants';
 import {
 	calcAngle,
+	distance,
 	Point,
 	pointInCircle,
 	rotatePoint,
@@ -66,12 +67,11 @@ export class CircleRadiusControl implements Control<Circle> {
 		return hitTestCircleControl(point, this.position);
 	}
 
-	handleDrag([x, y]: Point) {
-		const [x0, y0] = this.parent.origin;
-		this.angle = calcAngle([x0, y0], [x, y]);
+	handleDrag(point: Point) {
+		this.angle = calcAngle(this.parent.origin, point);
 		this.parent.radius = Math.max(
 			this.parent.innerRadius + MIN_DIMENSION,
-			Math.hypot(x - x0, y - y0)
+			distance(this.parent.origin, point)
 		);
 		diagram.render();
 	}
@@ -117,15 +117,13 @@ export class CircleInnerRadiusControl implements Control<Circle> {
 					this.angle + Math.PI
 			  );
 
-		const isPastMiddle =
-			Math.hypot(outerMidPoint[0] - x, outerMidPoint[1] - y) >
-			this.parent.radius;
+		const isPastMiddle = distance(outerMidPoint, [x, y]) > this.parent.radius;
 
 		if (isPastMiddle) {
 			this.parent.innerRadius = 0;
 		} else {
 			this.parent.innerRadius = Math.min(
-				Math.hypot(x - x0, y - y0),
+				distance([x, y], [x0, y0]),
 				this.parent.radius - MIN_DIMENSION
 			);
 		}
@@ -153,15 +151,14 @@ export class ConeRadiusRotationControl implements Control<Cone> {
 		return hitTestCircleControl(point, this.position);
 	}
 
-	handleDrag([x, y]: Point) {
-		const [x0, y0] = this.parent.origin;
+	handleDrag(point: Point) {
 		this.parent.radius = Math.max(
 			this.parent.innerRadius + MIN_DIMENSION,
-			Math.hypot(x - x0, y - y0)
+			distance(this.parent.origin, point)
 		);
 
 		const angleWidth = this.parent.end - this.parent.start;
-		const midAngle = calcAngle(this.parent.origin, [x, y]);
+		const midAngle = calcAngle(this.parent.origin, point);
 		this.parent.start = midAngle - angleWidth / 2;
 		this.parent.end = midAngle + angleWidth / 2;
 		diagram.render();
@@ -188,7 +185,7 @@ export class ConeInnerRadiusControl implements Control<Cone> {
 		return hitTestCircleControl(point, this.position);
 	}
 
-	handleDrag([x, y]: Point) {
+	handleDrag(point: Point) {
 		const [x0, y0] = this.parent.origin;
 
 		const midAngle = (this.parent.start + this.parent.end) / 2;
@@ -198,16 +195,14 @@ export class ConeInnerRadiusControl implements Control<Cone> {
 			midAngle
 		);
 
-		const isPastCenter =
-			Math.hypot(outerMidPoint[0] - x, outerMidPoint[1] - y) >
-			this.parent.radius;
+		const isPastCenter = distance(outerMidPoint, point) > this.parent.radius;
 
 		// test if the control is dragged past the middle
 		if (isPastCenter) {
 			this.parent.innerRadius = 0;
 		} else {
 			this.parent.innerRadius = Math.min(
-				Math.hypot(x - x0, y - y0),
+				distance(this.parent.origin, point),
 				this.parent.radius - MIN_DIMENSION
 			);
 		}
@@ -346,18 +341,12 @@ export class LinePointControl implements Control<Line> {
 		if (this.isHead) {
 			const anchor = this.parent.origin;
 			this.parent.angle = calcAngle(anchor, point);
-			this.parent.length = Math.hypot(
-				point[0] - anchor[0],
-				point[1] - anchor[1]
-			);
+			this.parent.length = distance(anchor, point);
 		} else {
 			const anchor = this.parent.lineTo;
 			this.parent.origin = point;
 			this.parent.angle = calcAngle(point, anchor);
-			this.parent.length = Math.hypot(
-				point[0] - anchor[0],
-				point[1] - anchor[1]
-			);
+			this.parent.length = distance(point, anchor);
 		}
 		diagram.render();
 	}
@@ -384,10 +373,9 @@ export class MarkSizeControl implements Control<Mark> {
 		return hitTestCircleControl(point, this.position);
 	}
 
-	handleDrag([x, y]: Point) {
-		const [x0, y0] = this.parent.origin;
-		this.angle = calcAngle([x0, y0], [x, y]);
-		this.parent.size = 2 * Math.hypot(x - x0, y - y0);
+	handleDrag(point: Point) {
+		this.angle = calcAngle(this.parent.origin, point);
+		this.parent.size = 2 * distance(this.parent.origin, point);
 		diagram.render();
 	}
 }

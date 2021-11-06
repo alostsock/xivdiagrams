@@ -10,8 +10,12 @@ export type Bounds = {
 	bottom: number;
 };
 
-export function dist2([x0, y0]: Point, [x1, y1]: Point) {
+export function distance2([x0, y0]: Point, [x1, y1]: Point) {
 	return (x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0);
+}
+
+export function distance([x0, y0]: Point, [x1, y1]: Point) {
+	return Math.hypot(x0 - x1, y0 - y1);
 }
 
 export function dot(u: number[], v: number[]): number {
@@ -83,7 +87,7 @@ export function pointInCircle(
 	origin: Point,
 	radius: number
 ): boolean {
-	return dist2(point, origin) < radius * radius;
+	return distance2(point, origin) < radius * radius;
 }
 
 export function pointInPolygon([x, y]: Point, points: Points): boolean {
@@ -104,15 +108,15 @@ export function pointInPolygon([x, y]: Point, points: Points): boolean {
 	return isInside;
 }
 
-export function distToCircle([x, y]: Point, [x0, y0]: Point, radius: number) {
-	return Math.abs(Math.hypot(x - x0, y - y0) - radius);
+export function distToCircle(point: Point, origin: Point, radius: number) {
+	return Math.abs(distance(point, origin) - radius);
 }
 
-export function distToSegment(p: Point, v: Point, w: Point) {
+function squaredDistToSegment(p: Point, v: Point, w: Point) {
 	// https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
-	const l2 = dist2(v, w);
+	const l2 = distance2(v, w);
 	// 0-length segment
-	if (l2 === 0) return Math.hypot(v[0] - p[0], v[1] - p[1]);
+	if (l2 === 0) return distance(p, v);
 	// find projection of p onto line defined by v-w
 	// t = dot(p-v, w-v) / |w-v|^2
 	let t = dot([p[0] - v[0], p[1] - v[1]], [w[0] - v[0], w[1] - v[1]]) / l2;
@@ -120,16 +124,22 @@ export function distToSegment(p: Point, v: Point, w: Point) {
 	t = Math.max(0, Math.min(1, t));
 	// projection = v + t * (w-v)
 	const proj: Point = [v[0] + t * (w[0] - v[0]), v[1] + t * (w[1] - v[1])];
-	return Math.hypot(proj[0] - p[0], proj[1] - p[1]);
+	return distance2(proj, p);
+}
+
+export function distToSegment(p: Point, v: Point, w: Point) {
+	return Math.sqrt(squaredDistToSegment(p, v, w));
 }
 
 export function distToSegments(p: Point, segments: Segments) {
-	let min = Infinity;
-	segments.forEach(([s1, s2]) => {
-		const d = distToSegment(p, s1, s2);
-		if (d < min) min = d;
-	});
-	return min;
+	let min2 = Infinity;
+
+	for (const [p1, p2] of segments) {
+		const d2 = squaredDistToSegment(p, p1, p2);
+		min2 = d2 < min2 ? d2 : min2;
+	}
+
+	return Math.sqrt(min2);
 }
 
 export function distToCone(
@@ -140,7 +150,6 @@ export function distToCone(
 	startAngle: number,
 	endAngle: number
 ): number {
-	const [x, y] = point;
 	const [x0, y0] = origin;
 	// get shortest distance to each side of the cone
 	const arcP1 = rotatePoint(origin, [x0 + radius, y0], startAngle);
@@ -167,9 +176,10 @@ export function distToCone(
 		(pointAnglePi2 > startAngle && pointAnglePi2 < endAngle) ||
 		(pointAngleNPi2 > startAngle && pointAngleNPi2 < endAngle)
 	) {
-		distances.push(Math.abs(Math.hypot(x - x0, y - y0) - radius));
+		const distFromOrigin = distance(point, origin);
+		distances.push(Math.abs(distFromOrigin - radius));
 		if (innerRadius > 0) {
-			distances.push(Math.abs(Math.hypot(x - x0, y - y0) - innerRadius));
+			distances.push(Math.abs(distFromOrigin - innerRadius));
 		}
 	}
 	return Math.min(...distances);
@@ -187,4 +197,13 @@ export function distToPolygon(point: Point, points: Points): number {
 		if (dist < minDist) minDist = dist;
 	}
 	return minDist;
+}
+
+export function distToPoints(point: Point, points: Points): number {
+	const min2 = points.reduce<number>((min, current, i) => {
+		const d2 = distance2(point, current);
+		return d2 < min ? d2 : min;
+	}, Infinity);
+
+	return Math.sqrt(min2);
 }

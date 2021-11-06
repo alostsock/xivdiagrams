@@ -10,7 +10,7 @@ import {
 	DEFAULT_ROUGH_OPTIONS,
 	ARROWHEAD_LEN,
 	ARROWHEAD_ANGLE,
-	FREEHAND_SIZE,
+	FREEHAND_OPTIONS,
 } from 'renderer/constants';
 import {
 	Point,
@@ -27,6 +27,7 @@ import {
 	distToSegments,
 	pointInBounds,
 	Segment,
+	distToPoints,
 } from 'renderer/geometry';
 import {
 	Control,
@@ -609,19 +610,21 @@ export class Freehand implements BaseEntity<FreehandData> {
 	}
 
 	addPoint([x, y]: Point) {
-		this.points.push([x - this.origin[0], y - this.origin[1]]);
+		const newPoint: Point = [
+			Number((x - this.origin[0]).toPrecision(4)),
+			Number((y - this.origin[1]).toPrecision(4)),
+		];
+		this.points.push(newPoint);
+		// this.points.push([x - this.origin[0], y - this.origin[1]]);
 	}
 
-	get displacedPoints() {
+	get displacedPoints(): Points {
 		const [dx, dy] = this.origin;
 		return this.points.map(([x, y]) => [x + dx, y + dy]);
 	}
 
 	get strokePoints(): Points {
-		return getStroke(toJS(this.displacedPoints), {
-			size: FREEHAND_SIZE,
-			simulatePressure: true,
-		}) as Points;
+		return getStroke(toJS(this.displacedPoints), FREEHAND_OPTIONS) as Points;
 	}
 
 	get bounds(): Bounds {
@@ -629,10 +632,7 @@ export class Freehand implements BaseEntity<FreehandData> {
 	}
 
 	hitTest(point: Point) {
-		const segments = this.displacedPoints.map(
-			(p, i, arr) => [p, arr[(i + 1) % arr.length]] as Segment
-		);
-		return distToSegments(point, segments) <= HIT_TEST_TOLERANCE;
+		return distToPoints(point, this.displacedPoints) <= HIT_TEST_TOLERANCE;
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
@@ -647,7 +647,7 @@ export class Freehand implements BaseEntity<FreehandData> {
 	}
 }
 
-function getSvgPathFromStroke(stroke: Points) {
+export function getSvgPathFromStroke(stroke: Points) {
 	if (!stroke.length) return '';
 
 	const d = stroke.reduce(
