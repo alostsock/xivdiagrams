@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { plan } from 'renderer/plan';
+import { usePlanContext } from 'data/PlanContext';
 import { diagram } from 'renderer/diagram';
 import {
 	handlePointerMove,
@@ -14,20 +13,8 @@ import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
 import Marks, { handleMarkDragEnterOver, handleMarkDrop } from './Marks';
 
-import testPlan from './testplan';
-
 const App = observer(function App() {
-	const [diagramEl, setDiagramEl] = useState<HTMLCanvasElement | null>(null);
-	const diagramRef = (element: HTMLCanvasElement) => setDiagramEl(element);
-
-	useEffect(() => {
-		if (!diagramEl) return;
-
-		runInAction(() => {
-			diagram.attach(diagramEl);
-			plan.loadPlan(testPlan);
-		});
-	}, [diagramEl]);
+	const { setCanvasElement } = usePlanContext();
 
 	const [containerEl, setContainerEl] = useState<HTMLElement | null>(null);
 	const containerRef = (element: HTMLElement | null) => setContainerEl(element);
@@ -53,7 +40,7 @@ const App = observer(function App() {
 					</div>
 
 					<canvas
-						ref={diagramRef}
+						ref={setCanvasElement}
 						style={{ cursor: diagram.cursorType }}
 						onPointerMove={handlePointerMove}
 						onPointerDown={handlePointerDown}

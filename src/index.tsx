@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { configure as configureMobx } from 'mobx';
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from 'data/reportWebVitals';
 
-import App from './components/App';
+import { PlanProvider } from 'data/PlanContext';
+import App from 'components/App';
+
 import './index.scss';
 import '@fontsource/lato';
 
@@ -15,7 +17,9 @@ configureMobx({
 
 ReactDOM.render(
 	<React.StrictMode>
-		<App />
+		<PlanProvider>
+			<App />
+		</PlanProvider>
 	</React.StrictMode>,
 	document.getElementById('root')
 );

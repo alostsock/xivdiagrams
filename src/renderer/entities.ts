@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, toJS } from 'mobx';
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
@@ -637,7 +637,10 @@ export class Freehand implements BaseEntity<FreehandData> {
 	// eagerly calculate stroke points ahead of time, otherwise `draw` has to do
 	// a lot of work on every diagram rerender.
 	calculatePath(): void {
-		this.strokePoints = getStroke(this.points, FREEHAND_OPTIONS) as Points;
+		this.strokePoints = getStroke(
+			toJS(this.points),
+			FREEHAND_OPTIONS
+		) as Points;
 		this.path = getSvgPathFromStroke(this.strokePoints);
 	}
 

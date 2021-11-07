@@ -18,8 +18,8 @@ export interface Step {
 	notes: string;
 }
 
-export class Plan {
-	title: string = 'Untitled';
+class Plan {
+	title: string = 'untitled';
 	author: string = 'anonymous';
 	steps: Step[] = [
 		{
@@ -38,13 +38,16 @@ export class Plan {
 		return this.steps[this.currentStepIndex];
 	}
 
-	loadPlan(planData: PlanData) {
-		this.title = planData.title;
-		this.author = planData.author;
-		this.steps = planData.steps.map((step) => ({
-			...step,
-			entities: deserializeEntities(step.entities),
-		}));
+	loadPlan(planData?: PlanData) {
+		this.title = planData?.title ?? this.title;
+		this.author = planData?.author ?? this.author;
+
+		if (planData?.steps) {
+			this.steps = planData?.steps.map((step) => ({
+				...step,
+				entities: deserializeEntities(step.entities),
+			}));
+		}
 
 		diagram.entities = this.steps[this.currentStepIndex].entities;
 		diagram.render();
