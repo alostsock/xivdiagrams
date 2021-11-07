@@ -96,7 +96,6 @@ export interface MarkData extends BaseData {
 
 export interface FreehandData extends BaseData {
 	type: 'freehand';
-	origin: Point;
 	points: Points;
 }
 
@@ -590,41 +589,55 @@ export class Freehand implements BaseEntity<FreehandData> {
 	id;
 	type: 'freehand' = 'freehand';
 
-	origin: Point;
 	points: Points;
+	strokePoints: Points = [];
+	path: string = '';
 
 	isSelected: boolean = false;
 	controls: Control<Freehand>[];
 
 	constructor(options: ConstructorOptions<FreehandData>) {
-		makeAutoObservable(this);
+		// explicitly untrack huge data structures.
+		makeAutoObservable(this, {
+			strokePoints: false,
+			path: false,
+		});
 		this.id = options.id ?? generateId();
-		this.origin = options.origin;
 		this.points = options.points;
 		this.controls = [];
 	}
 
+	get origin() {
+		return this.points[0];
+	}
+
+	set origin([x, y]) {
+		const offset: Point = [x - this.points[0][0], y - this.points[0][1]];
+
+		this.points = this.points.map(
+			(p) => [p[0] + offset[0], p[1] + offset[1]] as Point
+		);
+		this.calculatePath();
+	}
+
 	toJSON(): FreehandData {
-		return selectProps(this, ['id', 'type', 'origin', 'points']);
+		return selectProps(this, ['id', 'type', 'points']);
 	}
 
 	addPoint([x, y]: Point) {
 		const newPoint: Point = [
-			Number((x - this.origin[0]).toPrecision(FREEHAND_POINT_PRECISION)),
-			Number((y - this.origin[1]).toPrecision(FREEHAND_POINT_PRECISION)),
+			Number(x.toPrecision(FREEHAND_POINT_PRECISION)),
+			Number(y.toPrecision(FREEHAND_POINT_PRECISION)),
 		];
 		this.points.push(newPoint);
+		this.calculatePath();
 	}
 
-	get displacedPoints(): Points {
-		return this.points.map(([x, y]) => [
-			x + this.origin[0],
-			y + this.origin[1],
-		]);
-	}
-
-	get strokePoints(): Points {
-		return getStroke(this.displacedPoints, FREEHAND_OPTIONS) as Points;
+	// eagerly calculate stroke points ahead of time, otherwise `draw` has to do
+	// a lot of work on every diagram rerender.
+	calculatePath(): void {
+		this.strokePoints = getStroke(this.points, FREEHAND_OPTIONS) as Points;
+		this.path = getSvgPathFromStroke(this.strokePoints);
 	}
 
 	get bounds(): Bounds {
@@ -637,10 +650,6 @@ export class Freehand implements BaseEntity<FreehandData> {
 			segments.push([this.strokePoints[i], this.strokePoints[i + 1]]);
 		}
 		return distToSegments(point, segments) <= HIT_TEST_TOLERANCE;
-	}
-
-	get path() {
-		return getSvgPathFromStroke(this.strokePoints);
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {

@@ -87,10 +87,7 @@ export const handlePointerDown = action(function handlePointerDown(
 		// start creating an entity
 		diagram.entityInCreation =
 			diagram.selectedTool === 'freehand'
-				? new Freehand({
-						origin: diagram.dragAnchor,
-						points: [[0, 0]],
-				  })
+				? new Freehand({ points: [[x, y]] })
 				: createFromAnchorPoints(
 						diagram.selectedTool,
 						diagram.dragAnchor,
