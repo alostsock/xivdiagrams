@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { action } from 'mobx';
+import { plan } from 'renderer/plan';
 import {
 	IconName,
 	createSvgDataUrl,
@@ -97,6 +98,8 @@ interface Props {
 }
 
 const Marks = ({ className, style }: Props) => {
+	if (!plan.editable) return null;
+
 	return (
 		<div className={clsx('Marks', className)} style={style}>
 			{markGroups.map((markGroup) => (

@@ -6,6 +6,7 @@ import type { Entity } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { useOnPointerDownOutside } from 'hooks';
 import './Properties.scss';
+import { plan } from 'renderer/plan';
 
 interface Props {
 	className?: string;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 const Properties = observer(function Properties({ className, style }: Props) {
+	if (!plan.editable) return null;
+
 	const selectedEntity: Entity | null =
 		diagram.selectedEntities.length === 1 ? diagram.selectedEntities[0] : null;
 

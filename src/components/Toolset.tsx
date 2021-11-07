@@ -1,6 +1,7 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { Entity } from 'renderer/entities';
+import { plan } from 'renderer/plan';
+import type { Entity } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import {
 	CursorSvg,
@@ -36,6 +37,8 @@ interface Props {
 }
 
 const Toolset = observer(function Toolset({ className, style }: Props) {
+	if (!plan.editable) return null;
+
 	return (
 		<div className={clsx('Toolset', className)} style={style}>
 			<fieldset>

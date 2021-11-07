@@ -1,7 +1,8 @@
 import { PointerEvent, DragEvent } from 'react';
 import { action } from 'mobx';
-import { HIT_TEST_TOLERANCE } from 'renderer/constants';
+import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
+import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { Entity, Freehand, createFromAnchorPoints } from 'renderer/entities';
 import { Bounds, Point, pointInBounds } from 'renderer/geometry';
 
@@ -16,6 +17,8 @@ export const handlePointerMove = action(function handlePointerMove(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
 	e.stopPropagation();
+	if (!plan.editable) return;
+
 	const [x, y] = getCanvasCoords(e);
 
 	if (diagram.selectedTool !== 'cursor') {
@@ -80,6 +83,8 @@ export const handlePointerMove = action(function handlePointerMove(
 export const handlePointerDown = action(function handlePointerDown(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
+	if (!plan.editable) return;
+
 	const [x, y] = getCanvasCoords(e);
 	diagram.dragAnchor = [x, y];
 
@@ -122,6 +127,8 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
 	e.stopPropagation();
+	if (!plan.editable) return;
+
 	if (diagram.dragAnchor && diagram.selectedEntities.length > 0) {
 		// must have been dragging something
 		diagram.cursorType = 'move';

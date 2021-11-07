@@ -14,6 +14,16 @@ interface Props {
 const Notes = observer(function Notes({ className, style }: Props) {
 	return (
 		<div className={clsx('Notes', className)} style={style}>
+			{plan.editable ? <NotesEditable /> : <NotesDisplay />}
+		</div>
+	);
+});
+
+export default Notes;
+
+const NotesEditable = observer(function NotesEditable() {
+	return (
+		<>
 			<div className="title">
 				<h3>Notes</h3>
 
@@ -21,7 +31,6 @@ const Notes = observer(function Notes({ className, style }: Props) {
 					{plan.currentStep.notes.length}/{MAX_CHARS}
 				</div>
 			</div>
-
 			<textarea
 				rows={8}
 				value={plan.currentStep.notes}
@@ -29,8 +38,17 @@ const Notes = observer(function Notes({ className, style }: Props) {
 					plan.currentStep.notes = e.target.value.slice(0, MAX_CHARS);
 				})}
 			/>
-		</div>
+		</>
 	);
 });
 
-export default Notes;
+const NotesDisplay = observer(function NotesDisplay() {
+	return !plan.currentStep.notes ? null : (
+		<>
+			<div className="title">
+				<h3>Notes</h3>
+			</div>
+			<div>{plan.currentStep.notes}</div>
+		</>
+	);
+});

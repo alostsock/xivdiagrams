@@ -28,6 +28,7 @@ class Plan {
 		},
 	];
 
+	editable: boolean = false;
 	currentStepIndex: number = 0;
 
 	constructor() {

@@ -10,6 +10,7 @@ import useSwr from 'swr';
 import type { PlanData } from 'renderer/plan';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
+import { runInAction } from 'mobx';
 
 const envApiUrl = process.env.REACT_APP_API_URL;
 const apiUrl = envApiUrl ? `${envApiUrl}/plan` : '/plan';
@@ -70,6 +71,10 @@ export function PlanProvider(props: { children: ReactNode }) {
 	const [planId, editKey] = usePlanRoute();
 
 	const { data: planData, error } = useSwr<PlanData, string>(planId, getPlan);
+
+	useEffect(() => {
+		runInAction(() => (plan.editable = !!editKey));
+	}, [editKey]);
 
 	useEffect(() => {
 		const planIsLoading = planId && !planData && !error;
