@@ -604,6 +604,7 @@ export class Freehand implements BaseEntity<FreehandData> {
 		});
 		this.id = options.id ?? generateId();
 		this.points = options.points;
+		this.calculatePath();
 		this.controls = [];
 	}
 
