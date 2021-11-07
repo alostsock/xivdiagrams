@@ -9,6 +9,7 @@ import {
 	RectSvg,
 	LineSvg,
 	ArrowSvg,
+	FreehandSvg,
 } from 'icons';
 import clsx from 'clsx';
 
@@ -26,7 +27,7 @@ const tools: [Tool, JSX.Element][] = [
 	['cone', <ConeSvg />],
 	['line', <LineSvg />],
 	['arrow', <ArrowSvg />],
-	['freehand', <div>F</div>],
+	['freehand', <FreehandSvg />],
 ];
 
 interface Props {

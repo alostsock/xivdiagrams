@@ -124,7 +124,9 @@ class Diagram {
 		for (const entity of entities) {
 			if (this.validateEntity(entity)) {
 				this.entities.push(entity);
-				selectAfterAdd.push(entity);
+				if (entity.type !== 'freehand') {
+					selectAfterAdd.push(entity);
+				}
 			}
 		}
 

@@ -1,4 +1,4 @@
-import { makeAutoObservable, toJS } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
@@ -10,6 +10,7 @@ import {
 	DEFAULT_ROUGH_OPTIONS,
 	ARROWHEAD_LEN,
 	ARROWHEAD_ANGLE,
+	FREEHAND_POINT_PRECISION,
 	FREEHAND_OPTIONS,
 } from 'renderer/constants';
 import {
@@ -26,8 +27,6 @@ import {
 	distToPolygon,
 	distToSegments,
 	pointInBounds,
-	Segment,
-	distToPoints,
 } from 'renderer/geometry';
 import {
 	Control,
@@ -611,20 +610,21 @@ export class Freehand implements BaseEntity<FreehandData> {
 
 	addPoint([x, y]: Point) {
 		const newPoint: Point = [
-			Number((x - this.origin[0]).toPrecision(4)),
-			Number((y - this.origin[1]).toPrecision(4)),
+			Number((x - this.origin[0]).toPrecision(FREEHAND_POINT_PRECISION)),
+			Number((y - this.origin[1]).toPrecision(FREEHAND_POINT_PRECISION)),
 		];
 		this.points.push(newPoint);
-		// this.points.push([x - this.origin[0], y - this.origin[1]]);
 	}
 
 	get displacedPoints(): Points {
-		const [dx, dy] = this.origin;
-		return this.points.map(([x, y]) => [x + dx, y + dy]);
+		return this.points.map(([x, y]) => [
+			x + this.origin[0],
+			y + this.origin[1],
+		]);
 	}
 
 	get strokePoints(): Points {
-		return getStroke(toJS(this.displacedPoints), FREEHAND_OPTIONS) as Points;
+		return getStroke(this.displacedPoints, FREEHAND_OPTIONS) as Points;
 	}
 
 	get bounds(): Bounds {
@@ -632,13 +632,19 @@ export class Freehand implements BaseEntity<FreehandData> {
 	}
 
 	hitTest(point: Point) {
-		return distToPoints(point, this.displacedPoints) <= HIT_TEST_TOLERANCE;
+		const segments: Segments = [];
+		for (let i = 0; i < this.strokePoints.length - 1; i++) {
+			segments.push([this.strokePoints[i], this.strokePoints[i + 1]]);
+		}
+		return distToSegments(point, segments) <= HIT_TEST_TOLERANCE;
+	}
+
+	get path() {
+		return getSvgPathFromStroke(this.strokePoints);
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		const path = getSvgPathFromStroke(this.strokePoints);
-
-		ctx.fill(new Path2D(path));
+		ctx.fill(new Path2D(this.path));
 
 		if (this.isSelected) {
 			drawBounds(ctx, this.bounds);

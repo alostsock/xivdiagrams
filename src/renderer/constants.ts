@@ -16,13 +16,12 @@ export const HIT_TEST_TOLERANCE = 10;
 export const BOUNDS_STYLE = '#4ba3f1';
 export const ARROWHEAD_LEN = 16;
 export const ARROWHEAD_ANGLE = Math.PI / 8;
+// limit # of decimal points, mainly for json serialization
+export const FREEHAND_POINT_PRECISION = 5;
 export const FREEHAND_OPTIONS: StrokeOptions = {
-	size: 3.5,
+	size: 3,
 	simulatePressure: true,
-	thinning: 0.65,
-	streamline: 0.6,
 	smoothing: 0.7,
-	easing: (x) => Math.pow(x, 0.8),
 };
 
 // entities will be auto-deleted if under a certain size
