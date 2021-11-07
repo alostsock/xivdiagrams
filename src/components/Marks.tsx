@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { action } from 'mobx';
-import clsx from 'clsx';
 import {
 	IconName,
 	createSvgDataUrl,
@@ -10,11 +9,12 @@ import {
 	physical,
 	ranged,
 	magical,
-} from 'icons';
+} from 'data/icons';
 import { useOnPointerDownOutside } from 'hooks';
 import { MarkType, Mark } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { getCanvasCoords } from 'renderer/interactions';
+import clsx from 'clsx';
 import './Marks.scss';
 
 type MarkGroup = {

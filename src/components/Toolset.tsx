@@ -10,7 +10,7 @@ import {
 	LineSvg,
 	ArrowSvg,
 	FreehandSvg,
-} from 'icons';
+} from 'data/icons';
 import clsx from 'clsx';
 
 export type Tool =

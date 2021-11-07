@@ -40,8 +40,8 @@ import {
 	LinePointControl,
 	MarkSizeControl,
 } from 'renderer/controls';
-import { IconName } from 'icons';
-import { diagram } from './diagram';
+import { diagram } from 'renderer/diagram';
+import { IconName } from 'data/icons';
 
 interface BaseData {
 	id: string;
