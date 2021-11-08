@@ -21,12 +21,7 @@ export interface Step {
 class Plan {
 	title: string = 'untitled';
 	author: string = 'anonymous';
-	steps: Step[] = [
-		{
-			entities: [],
-			notes: '',
-		},
-	];
+	steps: Step[] = [{ entities: [], notes: '' }];
 
 	editable: boolean = false;
 	currentStepIndex: number = 0;
@@ -40,14 +35,20 @@ class Plan {
 	}
 
 	loadPlan(planData?: PlanData) {
-		this.title = planData?.title ?? this.title;
-		this.author = planData?.author ?? this.author;
+		if (!planData) {
+			this.title = 'untitled';
+			this.author = 'anonymous';
+			this.steps = [{ entities: [], notes: '' }];
+		} else {
+			this.title = planData.title;
+			this.author = planData.author;
 
-		if (planData?.steps) {
-			this.steps = planData?.steps.map((step) => ({
-				...step,
-				entities: deserializeEntities(step.entities),
-			}));
+			if (planData.steps) {
+				this.steps = planData.steps.map((step) => ({
+					...step,
+					entities: deserializeEntities(step.entities),
+				}));
+			}
 		}
 
 		diagram.entities = this.steps[this.currentStepIndex].entities;

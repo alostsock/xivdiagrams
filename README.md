@@ -2,19 +2,16 @@
 
 An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excalidraw](https://excalidraw.com/), Fabric.js, Figma, and others.
 
-Roadmap, listed in priority order:
+Feature roadmap, listed in priority order:
 
-- backend sync (create, edit, view)
-- steps
-- copy/paste
-- keybinds (bksp, del, esc, ctrl+c, ctrl+v)
+- multiple steps per plan
 - object/mechanic markers
-- freehand tool
+- keybinds (bksp, del, esc, ctrl+c, ctrl+v)
+- copy/paste
+- undo/redo
 - grid, snap-to
-- ? searchable debuffs for players
 - ? fight-specific bg
-- ? undo/redo
-- ? scale selected items
+- ? searchable debuffs for players
 
 ## Copyright
 

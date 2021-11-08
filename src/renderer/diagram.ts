@@ -43,10 +43,7 @@ class Diagram {
 	}
 
 	attach(el: HTMLCanvasElement) {
-		if (this.canvas) {
-			console.warn('canvas already attached');
-			return;
-		}
+		if (this.canvas) return;
 
 		this.canvas = el;
 		this.roughCanvas = new RoughCanvas(el);
