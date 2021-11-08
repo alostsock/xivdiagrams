@@ -33,6 +33,7 @@ const NotesEditable = observer(function NotesEditable() {
 			</div>
 			<textarea
 				rows={8}
+				placeholder="Write something here! (as if people actually read this stuff...)"
 				value={plan.currentStep.notes}
 				onChange={action((e) => {
 					plan.currentStep.notes = e.target.value.slice(0, MAX_CHARS);

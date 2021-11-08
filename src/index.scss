@@ -80,12 +80,12 @@ fieldset > label {
 	user-select: none;
 	pointer-events: auto;
 
-	&:hover {
+	&:hover:not(:disabled) {
 		cursor: pointer;
 		background: rgba(var(--gray-2-rgb), 0.95);
 	}
 
-	&:active,
+	&:active:not(:disabled),
 	&.selected {
 		color: var(--gray-8);
 		background: rgba(var(--gray-2-rgb), 0.95);
@@ -94,6 +94,7 @@ fieldset > label {
 	&:disabled {
 		cursor: default;
 		color: var(--gray-5);
+		border: 1px solid transparent;
 	}
 
 	&:focus,
@@ -266,8 +267,45 @@ button.selected + .popup {
 .Heading {
 	padding: 0.5rem;
 
+	h1,
 	h2 {
+		display: flex;
+		align-items: baseline;
+
+		* + * {
+			margin-left: 0.5rem;
+		}
+	}
+
+	h2 {
+		margin-top: 0.25rem;
 		color: var(--gray-6);
+	}
+
+	input {
+		flex-grow: 1;
+		background-color: var(--gray-2);
+		padding: 0.125rem 0;
+		border: 1px solid transparent;
+		border-radius: var(--border-radius);
+
+		transition: background 150ms, border 150ms;
+
+		&:hover {
+			background: var(--gray-0);
+			border: var(--border);
+		}
+
+		&:active,
+		&:focus {
+			background: var(--gray-0);
+			border: var(--border);
+			outline: var(--outline-emphasis);
+		}
+	}
+
+	.buttons {
+		margin-top: 1rem;
 	}
 }
 
@@ -299,7 +337,7 @@ button.selected + .popup {
 
 footer {
 	color: var(--gray-6);
-	font-size: 0.9rem;
+	font-size: 0.8rem;
 	padding: 0.5rem;
 
 	p {

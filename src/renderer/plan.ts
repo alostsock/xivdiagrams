@@ -53,6 +53,17 @@ class Plan {
 		diagram.entities = this.steps[this.currentStepIndex].entities;
 		diagram.render();
 	}
+
+	toJSON(): PlanData {
+		return {
+			author: this.author,
+			title: this.title,
+			steps: this.steps.map((step) => ({
+				...step,
+				entities: step.entities.map((entity) => entity.toJSON()),
+			})),
+		};
+	}
 }
 
 export const plan = new Plan();

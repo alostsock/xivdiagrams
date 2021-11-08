@@ -5,48 +5,13 @@ import {
 	useEffect,
 	useState,
 } from 'react';
-import { useRoute } from 'wouter';
+import { useRoute, useLocation } from 'wouter';
 import useSwr from 'swr';
+import { getPlan } from 'data/api';
 import type { PlanData } from 'renderer/plan';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { runInAction } from 'mobx';
-
-const envApiUrl = process.env.REACT_APP_API_URL;
-const apiUrl = envApiUrl ? `${envApiUrl}/plan` : '/plan';
-
-type PlanGetSuccess = PlanData;
-type ErrorResponse = { message: string };
-
-async function getPlan(planId: string) {
-	if (!planId) throw Error('No plan');
-
-	const response = await fetch(`${apiUrl}/${planId}`);
-	const data = await response.json();
-
-	if (response.status === 200) {
-		return data as PlanGetSuccess;
-	} else {
-		const { message } = data as ErrorResponse;
-		throw Error(message);
-	}
-}
-
-function usePlanRoute(): [planId: string | null, editKey: string | null] {
-	const pattern = '/:planId/:editKey?' as const;
-
-	type PlanRouteParams = { planId: string; editKey: string };
-
-	const [match, params] = useRoute<PlanRouteParams, typeof pattern>(pattern);
-
-	if (match && params) {
-		const { planId, editKey } = params;
-		// TODO: store editKey in local storage
-		return [planId.trim() || null, editKey?.trim() || null];
-	} else {
-		return [null, null];
-	}
-}
 
 interface PlanState {
 	planId: string | null;
@@ -64,17 +29,33 @@ const planContext = createContext<PlanState>({
 
 export const usePlanContext = () => useContext(planContext);
 
+type RouteParams = { planId: string; editKey: string };
+const routePattern = '/:planId/:editKey?' as const;
+
 export function PlanProvider(props: { children: ReactNode }) {
 	const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
-	const [planId, editKey] = usePlanRoute();
+	const [, setLocation] = useLocation();
+	const [match, params] = useRoute<RouteParams>(routePattern);
+	const planId = params?.planId || null;
+	const editKey = params?.editKey || null;
 
 	const { data: planData, error } = useSwr<PlanData, string>(planId, getPlan);
 
 	useEffect(() => {
-		runInAction(() => (plan.editable = !!editKey));
-	}, [editKey]);
+		const isBlankDiagram = !match;
+		const hasEditKey = !!editKey;
+		runInAction(() => (plan.editable = isBlankDiagram || hasEditKey));
+	}, [match, editKey]);
+
+	useEffect(() => {
+		if (planId && error) {
+			// the api has 404'd, probably
+			console.warn(error);
+			setLocation('/');
+		}
+	}, [planId, error, setLocation]);
 
 	useEffect(() => {
 		const planIsLoading = planId && !planData && !error;
@@ -82,8 +63,6 @@ export function PlanProvider(props: { children: ReactNode }) {
 		if (!canvasEl || planIsLoading) return;
 
 		setIsLoading(false);
-
-		if (error) console.warn(error);
 
 		diagram.attach(canvasEl);
 		plan.loadPlan(planData);
