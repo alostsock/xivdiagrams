@@ -4,9 +4,10 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 
 Feature roadmap, listed in priority order:
 
-- multiple steps per plan
+- drag to multi-select
+- delete
 - object/mechanic markers
-- keybinds (bksp, del, esc, ctrl+c, ctrl+v)
+- multiple steps per plan
 - copy/paste
 - undo/redo
 - grid, snap-to

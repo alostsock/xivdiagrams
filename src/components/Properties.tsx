@@ -65,9 +65,9 @@ const ColorPicker = observer(function ColorPicker({ entity }: PickerProps) {
 				// match fill with stroke color
 				entity.roughOptions.fill = fill;
 			}
+			plan.dirty = true;
 		});
 		diagram.render();
-		plan.dirty = true;
 	};
 
 	return (
@@ -133,9 +133,9 @@ const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 				entity.roughOptions.fill = getFillByStroke();
 				entity.roughOptions.fillStyle = fillStyle;
 			}
+			plan.dirty = true;
 		});
 		diagram.render();
-		plan.dirty = true;
 	};
 
 	return (
