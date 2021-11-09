@@ -132,8 +132,10 @@ export const handleMarkDrop = action(function handleMarkDrop(
 	const size = getDefaultSize(markId);
 	const markEntity = new Mark({ type: markId, origin, size });
 	diagram.addEntities([markEntity]);
+	plan.dirty = true;
 });
 
+// TODO: add custom attributes per mark
 function getDefaultSize(markType: MarkType): number {
 	const iconName = markType.split('-', 2).pop() as IconName;
 	if (iconName === 'mob') return 50;

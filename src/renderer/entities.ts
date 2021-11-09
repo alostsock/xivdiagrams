@@ -599,6 +599,7 @@ export class Freehand implements BaseEntity<FreehandData> {
 	constructor(options: ConstructorOptions<FreehandData>) {
 		// explicitly untrack huge data structures.
 		makeAutoObservable(this, {
+			bounds: false,
 			strokePoints: false,
 			path: false,
 		});

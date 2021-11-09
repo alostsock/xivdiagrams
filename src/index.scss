@@ -92,9 +92,10 @@ fieldset > label {
 	}
 
 	&:disabled {
-		cursor: default;
+		cursor: not-allowed;
 		color: var(--gray-5);
 		border: 1px solid transparent;
+		outline: none;
 	}
 
 	&:focus,
@@ -176,6 +177,7 @@ button.selected + .popup {
 		}
 
 		.canvas-container {
+			background: var(--gray-0);
 			position: absolute;
 			left: 0;
 			right: 0;
@@ -183,10 +185,6 @@ button.selected + .popup {
 			width: 100%;
 			height: 100%;
 			overflow: hidden;
-
-			canvas {
-				background: var(--gray-0);
-			}
 		}
 	}
 
@@ -261,51 +259,6 @@ button.selected + .popup {
 		label + label {
 			margin-top: 0.5rem;
 		}
-	}
-}
-
-.Heading {
-	padding: 0.5rem;
-
-	h1,
-	h2 {
-		display: flex;
-		align-items: baseline;
-
-		* + * {
-			margin-left: 0.5rem;
-		}
-	}
-
-	h2 {
-		margin-top: 0.25rem;
-		color: var(--gray-6);
-	}
-
-	input {
-		flex-grow: 1;
-		background-color: var(--gray-2);
-		padding: 0.125rem 0;
-		border: 1px solid transparent;
-		border-radius: var(--border-radius);
-
-		transition: background 150ms, border 150ms;
-
-		&:hover {
-			background: var(--gray-0);
-			border: var(--border);
-		}
-
-		&:active,
-		&:focus {
-			background: var(--gray-0);
-			border: var(--border);
-			outline: var(--outline-emphasis);
-		}
-	}
-
-	.buttons {
-		margin-top: 1rem;
 	}
 }
 

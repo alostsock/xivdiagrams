@@ -73,12 +73,14 @@ class Diagram {
 
 	render(): void {
 		if (!this.canvas || !this.roughCanvas || !this.context) return;
-		this.context.clearRect(
-			0,
-			0,
-			this.canvas.width / this.scale,
-			this.canvas.height / this.scale
-		);
+		const width = this.canvas.width / this.scale;
+		const height = this.canvas.height / this.scale;
+		this.context.clearRect(0, 0, width, height);
+
+		this.context.save();
+		this.context.fillStyle = '#fffefc';
+		this.context.fillRect(0, 0, width, height);
+		this.context.restore();
 
 		for (const entity of this.entities) {
 			entity.draw(this.roughCanvas, this.context);

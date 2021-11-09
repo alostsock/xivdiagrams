@@ -28,6 +28,7 @@ export const handlePointerMove = action(function handlePointerMove(
 		if (diagram.dragAnchor && diagram.entityInCreation) {
 			if (diagram.entityInCreation instanceof Freehand) {
 				diagram.entityInCreation.addPoint([x, y]);
+				plan.dirty = true;
 			} else {
 				// TODO: modify entity instead of creating a new one
 				diagram.entityInCreation = createFromAnchorPoints(
@@ -46,6 +47,7 @@ export const handlePointerMove = action(function handlePointerMove(
 		// dragging a control
 		diagram.entityControlInUse.handleDrag([x, y]);
 		diagram.cursorType = 'grabbing';
+		plan.dirty = true;
 		return;
 	}
 
@@ -58,6 +60,7 @@ export const handlePointerMove = action(function handlePointerMove(
 		});
 		diagram.dragAnchor = [x, y];
 		diagram.render();
+		plan.dirty = true;
 		return;
 	}
 
@@ -141,6 +144,7 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 		diagram.entityControlInUse = null;
 		if (!diagram.validateEntity(modifiedEntity)) {
 			diagram.deleteEntities([modifiedEntity]);
+			plan.dirty = true;
 		} else {
 			diagram.cursorType = 'grab';
 		}
@@ -152,6 +156,7 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 		diagram.entityInCreation = null;
 		if (diagram.validateEntity(createdEntity)) {
 			diagram.addEntities([createdEntity]);
+			plan.dirty = true;
 		}
 		diagram.render();
 		if (diagram.selectedTool !== 'freehand') {

@@ -24,6 +24,7 @@ class Plan {
 	steps: Step[] = [{ entities: [], notes: '' }];
 
 	editable: boolean = false;
+	dirty: boolean = false;
 	currentStepIndex: number = 0;
 
 	constructor() {

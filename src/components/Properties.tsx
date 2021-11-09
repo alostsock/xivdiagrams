@@ -61,6 +61,7 @@ const ColorPicker = observer(function ColorPicker({ entity }: PickerProps) {
 			}
 		});
 		diagram.render();
+		plan.dirty = true;
 	};
 
 	return (
@@ -129,6 +130,7 @@ const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 			}
 		});
 		diagram.render();
+		plan.dirty = true;
 	};
 
 	return (

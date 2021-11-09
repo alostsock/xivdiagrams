@@ -37,6 +37,7 @@ const NotesEditable = observer(function NotesEditable() {
 				value={plan.currentStep.notes}
 				onChange={action((e) => {
 					plan.currentStep.notes = e.target.value.slice(0, MAX_CHARS);
+					plan.dirty = true;
 				})}
 			/>
 		</>
