@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import clsx from 'clsx';
 import type { Entity } from 'renderer/entities';
+import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { useOnPointerDownOutside } from 'hooks';
+import clsx from 'clsx';
 import './Properties.scss';
-import { plan } from 'renderer/plan';
+
+const fillable: Entity['type'][] = ['circle', 'cone', 'rect'];
 
 interface Props {
 	className?: string;
@@ -23,8 +25,12 @@ const Properties = observer(function Properties({ className, style }: Props) {
 
 	return (
 		<div className={clsx('Properties', className)} style={style}>
-			<ColorPicker entity={selectedEntity} />
-			<FillPicker entity={selectedEntity} />
+			{'roughOptions' in selectedEntity && (
+				<ColorPicker entity={selectedEntity} />
+			)}
+			{fillable.includes(selectedEntity.type) && (
+				<FillPicker entity={selectedEntity} />
+			)}
 		</div>
 	);
 });
@@ -101,7 +107,6 @@ type FillStyle = typeof fills[number]['style'];
 const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const addRef = useOnPointerDownOutside(() => setIsOpen(false));
-	const fillable: Entity['type'][] = ['circle', 'cone', 'rect'];
 
 	if (!('roughOptions' in entity) || !fillable.includes(entity.type))
 		return null;
