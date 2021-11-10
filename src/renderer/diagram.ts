@@ -9,8 +9,9 @@ import {
 	MIN_MARK_SIZE,
 } from 'renderer/constants';
 import type { Entity, Mark } from 'renderer/entities';
+import { drawBounds } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
-import type { Point } from 'renderer/geometry';
+import { Point, calcBoundsFromPoints } from 'renderer/geometry';
 import type { Tool } from 'components/Toolset';
 
 type CursorType = 'default' | 'crosshair' | 'move' | 'grab' | 'grabbing';
@@ -31,6 +32,8 @@ class Diagram {
 	// interaction state
 	selectedEntities: Entity[] = [];
 	dragAnchor: Point | null = null;
+	isDraggingEntities: boolean = false;
+	selectionPoints: [Point, Point] | null = null;
 	entityControlInUse: Control<any> | null = null;
 	entityInCreation: Exclude<Entity, Mark> | null = null;
 
@@ -82,8 +85,33 @@ class Diagram {
 		this.context.fillRect(0, 0, width, height);
 		this.context.restore();
 
+		if (this.selectionPoints) {
+			const { left, right, top, bottom } = calcBoundsFromPoints(
+				this.selectionPoints
+			);
+			this.context.save();
+			this.context.beginPath();
+			this.context.fillStyle = 'rgba(24, 133, 231, 0.15)';
+			this.context.rect(left, top, right - left, bottom - top);
+			this.context.fill();
+			this.context.strokeStyle = 'rgba(24, 133, 231, 0.75)';
+			this.context.lineWidth = 1;
+			this.context.stroke();
+			this.context.restore();
+		}
+
 		for (const entity of this.entities) {
+			this.context.save();
 			entity.draw(this.roughCanvas, this.context);
+
+			if (entity.isSelected) {
+				drawBounds(this.context, entity.bounds);
+
+				if (this.selectedEntities.length === 1) {
+					entity.controls.forEach((c) => c.render(this.context!));
+				}
+			}
+			this.context.restore();
 		}
 
 		if (this.entityInCreation) {

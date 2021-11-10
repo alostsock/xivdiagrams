@@ -4,7 +4,6 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 
 Feature roadmap, listed in priority order:
 
-- drag to multi-select
 - delete
 - object/mechanic markers
 - multiple steps per plan

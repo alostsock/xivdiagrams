@@ -224,11 +224,6 @@ export class Circle implements BaseEntity<CircleData> {
 				});
 			}
 		}
-
-		if (this.isSelected) {
-			drawBounds(ctx, this.bounds);
-			this.controls.forEach((c) => c.render(ctx));
-		}
 	}
 }
 
@@ -367,11 +362,6 @@ export class Cone implements BaseEntity<ConeData> {
 
 			rc.path(path, { ...this.roughOptions, combineNestedSvgPaths: true });
 		}
-
-		if (this.isSelected) {
-			drawBounds(ctx, this.bounds);
-			this.controls.forEach((c) => c.render(ctx));
-		}
 	}
 }
 
@@ -433,11 +423,6 @@ export class Rect implements BaseEntity<RectData> {
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		rc.polygon(this.points, this.roughOptions);
-
-		if (this.isSelected) {
-			drawBounds(ctx, this.bounds);
-			this.controls.forEach((c) => c.render(ctx));
-		}
 	}
 }
 
@@ -525,11 +510,6 @@ export class Line implements BaseEntity<LineData> {
 		this.segments.forEach(([[x1, y1], [x2, y2]]) => {
 			rc.line(x1, y1, x2, y2, this.roughOptions);
 		});
-
-		if (this.isSelected) {
-			drawBounds(ctx, this.bounds);
-			this.controls.forEach((c) => c.render(ctx));
-		}
 	}
 }
 
@@ -577,11 +557,6 @@ export class Mark implements BaseEntity<MarkData> {
 			this.size,
 			this.size
 		);
-
-		if (this.isSelected) {
-			drawBounds(ctx, this.bounds);
-			this.controls.forEach((c) => c.render(ctx));
-		}
 	}
 }
 
@@ -659,11 +634,6 @@ export class Freehand implements BaseEntity<FreehandData> {
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
 		ctx.fill(new Path2D(this.path));
-
-		if (this.isSelected) {
-			drawBounds(ctx, this.bounds);
-			this.controls.forEach((c) => c.render(ctx));
-		}
 	}
 }
 
@@ -696,7 +666,7 @@ function getRoughOptions(options?: RoughOptions): RoughOptions {
 	};
 }
 
-function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
+export function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
 	const { left, right, top, bottom } = bounds;
 	ctx.save();
 

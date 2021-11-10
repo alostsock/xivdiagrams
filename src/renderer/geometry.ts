@@ -82,6 +82,15 @@ export function pointInBounds(
 	return x > left && x < right && y > top && y < bottom;
 }
 
+export function boundsInBounds(
+	innerBounds: Bounds,
+	outerBounds: Bounds
+): boolean {
+	const { left: il, right: ir, top: it, bottom: ib } = innerBounds;
+	const { left: ol, right: or, top: ot, bottom: ob } = outerBounds;
+	return il > ol && ir < or && it > ot && ib < ob;
+}
+
 export function pointInCircle(
 	point: Point,
 	origin: Point,

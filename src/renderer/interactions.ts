@@ -4,7 +4,13 @@ import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import { Entity, Freehand, createFromAnchorPoints } from 'renderer/entities';
-import { Bounds, Point, pointInBounds } from 'renderer/geometry';
+import {
+	Bounds,
+	Point,
+	calcBoundsFromPoints,
+	pointInBounds,
+	boundsInBounds,
+} from 'renderer/geometry';
 
 export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
 	const { left, top } = e.currentTarget.getBoundingClientRect();
@@ -51,7 +57,7 @@ export const handlePointerMove = action(function handlePointerMove(
 		return;
 	}
 
-	if (diagram.dragAnchor) {
+	if (diagram.isDraggingEntities && diagram.dragAnchor) {
 		// moving entities
 		const [anchorX, anchorY] = diagram.dragAnchor;
 		diagram.selectedEntities.forEach((entity) => {
@@ -64,8 +70,18 @@ export const handlePointerMove = action(function handlePointerMove(
 		return;
 	}
 
+	if (diagram.selectionPoints) {
+		// doing a selection
+		diagram.selectionPoints[1] = [x, y];
+		const selectionBounds = calcBoundsFromPoints(diagram.selectionPoints);
+		diagram.updateSelection(
+			diagram.entities.filter((e) => boundsInBounds(e.bounds, selectionBounds))
+		);
+		return;
+	}
+
 	if (diagram.selectedEntities.length === 1) {
-		// indicate to the user what is draggable
+		// grab cursor indicator for controls
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
 				diagram.cursorType = 'grab';
@@ -74,12 +90,14 @@ export const handlePointerMove = action(function handlePointerMove(
 		}
 	}
 
+	// move cursor indicator
 	const hit = hitTest([x, y], diagram.entities);
 	if (hit) {
 		diagram.cursorType = 'move';
 		return;
 	}
 
+	// nothing hit
 	diagram.cursorType = 'default';
 });
 
@@ -89,6 +107,8 @@ export const handlePointerDown = action(function handlePointerDown(
 	if (!plan.editable) return;
 
 	const [x, y] = getCanvasCoords(e);
+
+	// always set a drag anchor
 	diagram.dragAnchor = [x, y];
 
 	if (diagram.selectedTool !== 'cursor') {
@@ -105,8 +125,8 @@ export const handlePointerDown = action(function handlePointerDown(
 		return;
 	}
 
-	// only allow interacting with controls if one entity is selected
 	if (diagram.selectedEntities.length === 1) {
+		// only allow interacting with controls if one entity is selected
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
 				diagram.entityControlInUse = control;
@@ -118,12 +138,20 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	const hit = hitTest([x, y], diagram.entities);
 	if (hit) {
-		diagram.updateSelection([hit]);
+		// moving things
+		diagram.isDraggingEntities = true;
+		if (!diagram.selectedEntities.includes(hit)) {
+			diagram.updateSelection([hit]);
+		}
 		return;
 	}
 
-	// nothing hit
+	// nothing hit, start a selection
 	diagram.updateSelection([]);
+	diagram.selectionPoints = [
+		[x, y],
+		[x, y],
+	];
 });
 
 export const handlePointerUpLeave = action(function handlePointerUpLeave(
@@ -132,12 +160,10 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 	e.stopPropagation();
 	if (!plan.editable) return;
 
-	if (diagram.dragAnchor && diagram.selectedEntities.length > 0) {
-		// must have been dragging something
-		diagram.cursorType = 'move';
-	}
-
+	// reset interaction state
 	diagram.dragAnchor = null;
+	diagram.isDraggingEntities = false;
+	diagram.selectionPoints = null;
 
 	if (diagram.entityControlInUse) {
 		const modifiedEntity = diagram.entityControlInUse.parent;
@@ -158,11 +184,12 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 			diagram.addEntities([createdEntity]);
 			plan.dirty = true;
 		}
-		diagram.render();
 		if (diagram.selectedTool !== 'freehand') {
 			diagram.selectedTool = 'cursor';
 		}
 	}
+
+	diagram.render();
 });
 
 function hitTest(point: Point, entities: Entity[]): Entity | false {
