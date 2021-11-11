@@ -62,7 +62,7 @@ class Plan {
 			title: this.title,
 			steps: this.steps.map((step) => ({
 				...step,
-				entities: step.entities.map((entity) => entity.toJSON()),
+				entities: diagram.entities.map((entity) => entity.toJSON()),
 			})),
 		};
 	}
