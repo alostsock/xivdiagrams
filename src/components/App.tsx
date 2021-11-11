@@ -6,6 +6,7 @@ import {
 	handlePointerMove,
 	handlePointerDown,
 	handlePointerUpLeave,
+	handleKeyDown,
 } from 'renderer/interactions';
 import Heading from 'components/Heading';
 import Properties from 'components/Properties';
@@ -49,6 +50,8 @@ const App = observer(function App() {
 						onDragEnter={handleMarkDragEnterOver}
 						onDragOver={handleMarkDragEnterOver}
 						onDrop={handleMarkDrop}
+						onKeyDown={handleKeyDown}
+						tabIndex={0}
 					></canvas>
 				</div>
 			</div>

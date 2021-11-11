@@ -1,4 +1,4 @@
-import { PointerEvent, DragEvent } from 'react';
+import { PointerEvent, DragEvent, KeyboardEvent } from 'react';
 import { action } from 'mobx';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
@@ -213,3 +213,22 @@ function hitTest(point: Point, entities: Entity[]): Entity | false {
 
 	return false;
 }
+
+export const handleKeyDown = action(function handleKeyDown(
+	e: KeyboardEvent<HTMLCanvasElement>
+) {
+	const { ctrlKey: ctrl, key, repeat } = e;
+
+	if (repeat) return;
+
+	console.log(`${ctrl ? 'ctrl-' : ''}${key}`);
+
+	if (ctrl && key === 'a') {
+		e.stopPropagation();
+		diagram.updateSelection(diagram.entities);
+	} else if (key === 'Backspace' || key === 'Delete') {
+		e.stopPropagation();
+		diagram.deleteEntities(diagram.selectedEntities);
+		plan.dirty = true;
+	}
+});
