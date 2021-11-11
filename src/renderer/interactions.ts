@@ -22,7 +22,6 @@ export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
 export const handlePointerMove = action(function handlePointerMove(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
-	e.stopPropagation();
 	if (!plan.editable) return;
 
 	const [x, y] = getCanvasCoords(e);
@@ -157,7 +156,6 @@ export const handlePointerDown = action(function handlePointerDown(
 export const handlePointerUpLeave = action(function handlePointerUpLeave(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
-	e.stopPropagation();
 	if (!plan.editable) return;
 
 	// reset interaction state
@@ -224,11 +222,12 @@ export const handleKeyDown = action(function handleKeyDown(
 	console.log(`${ctrl ? 'ctrl-' : ''}${key}`);
 
 	if (ctrl && key === 'a') {
-		e.stopPropagation();
+		e.preventDefault();
 		diagram.updateSelection(diagram.entities);
 	} else if (key === 'Backspace' || key === 'Delete') {
-		e.stopPropagation();
 		diagram.deleteEntities(diagram.selectedEntities);
 		plan.dirty = true;
 	}
+
+	e.stopPropagation();
 });
