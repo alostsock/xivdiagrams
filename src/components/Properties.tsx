@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import clsx from 'clsx';
+import './Properties.scss';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import type { Entity } from 'renderer/entities';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { useOnPointerDownOutside } from 'hooks';
-import clsx from 'clsx';
-import './Properties.scss';
 
 const fillable: Entity['type'][] = ['circle', 'cone', 'rect'];
 

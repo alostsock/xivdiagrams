@@ -1,3 +1,5 @@
+import React from 'react';
+
 const svgOptions: React.SVGAttributes<SVGSVGElement> = {
 	width: '100%',
 	height: '100%',

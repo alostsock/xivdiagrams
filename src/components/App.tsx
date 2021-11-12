@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { usePlanContext } from 'data/PlanContext';
+import { usePlanContext } from 'data/PlanProvider';
 import { diagram } from 'renderer/diagram';
 import {
 	handlePointerMove,

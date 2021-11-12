@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { configure as configureMobx } from 'mobx';
 import reportWebVitals from 'data/reportWebVitals';
 
-import { PlanProvider } from 'data/PlanContext';
+import PlanProvider from 'data/PlanProvider';
 import App from 'components/App';
 
 import './index.scss';

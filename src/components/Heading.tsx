@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import clsx from 'clsx';
+import './Heading.scss';
 import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useLocation } from 'wouter';
 import { plan } from 'renderer/plan';
-import { usePlanContext } from 'data/PlanContext';
+import { usePlanContext } from 'data/PlanProvider';
 import { createPlan, editPlan } from 'data/api';
-import clsx from 'clsx';
-import './Heading.scss';
 
 interface Props {
 	className?: string;

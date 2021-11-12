@@ -1,6 +1,6 @@
 import type { PlanData } from 'renderer/plan';
 
-const envApiUrl = process.env.REACT_APP_API_URL;
+const envApiUrl = import.meta.env.VITE_API_URL as string;
 const apiUrl = envApiUrl ? `${envApiUrl}/plan` : '/plan';
 
 type PlanGetSuccess = PlanData;

@@ -1,17 +1,17 @@
-import {
+import React, {
 	createContext,
 	ReactNode,
 	useContext,
 	useEffect,
 	useState,
 } from 'react';
+import { runInAction } from 'mobx';
 import { useRoute, useLocation } from 'wouter';
 import useSwr from 'swr';
 import { getPlan } from 'data/api';
 import type { PlanData } from 'renderer/plan';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
-import { runInAction } from 'mobx';
 
 interface PlanState {
 	planId: string | null;
@@ -32,7 +32,7 @@ export const usePlanContext = () => useContext(planContext);
 type RouteParams = { planId: string; editKey: string };
 const routePattern = '/:planId/:editKey?' as const;
 
-export function PlanProvider(props: { children: ReactNode }) {
+export default function PlanProvider(props: { children: ReactNode }) {
 	const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 

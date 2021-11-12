@@ -1,6 +1,7 @@
+import React from 'react';
+import clsx from 'clsx';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import clsx from 'clsx';
 import { plan } from 'renderer/plan';
 
 const MAX_CHARS = 500;

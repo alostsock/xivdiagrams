@@ -1,7 +1,9 @@
+import React from 'react';
+import clsx from 'clsx';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { plan } from 'renderer/plan';
 import type { Entity } from 'renderer/entities';
+import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import {
 	CursorSvg,
@@ -12,7 +14,6 @@ import {
 	ArrowSvg,
 	FreehandSvg,
 } from 'data/icons';
-import clsx from 'clsx';
 
 export type Tool =
 	| 'cursor'
