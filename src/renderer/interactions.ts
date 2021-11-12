@@ -228,9 +228,11 @@ function hitTest(point: Point, entities: Entity[]): Entity | false {
 export const handleKeyDown = action(function handleKeyDown(
 	e: KeyboardEvent<HTMLCanvasElement>
 ) {
-	const { ctrlKey: ctrl, key, repeat } = e;
+	const { ctrlKey, metaKey, key, repeat } = e;
 
 	if (repeat) return;
+
+	const ctrl = ctrlKey || metaKey;
 
 	// console.log(`${ctrl ? 'ctrl-' : ''}${key}`);
 
