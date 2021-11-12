@@ -3,13 +3,20 @@ import { action } from 'mobx';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { HIT_TEST_TOLERANCE } from 'renderer/constants';
-import { Entity, Freehand, createFromAnchorPoints } from 'renderer/entities';
+import {
+	Entity,
+	Freehand,
+	createFromAnchorPoints,
+	deserializeEntities,
+} from 'renderer/entities';
 import {
 	Bounds,
 	Point,
+	averagePoints,
 	calcBoundsFromPoints,
 	pointInBounds,
 	boundsInBounds,
+	distance,
 } from 'renderer/geometry';
 
 export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
@@ -19,12 +26,22 @@ export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
 	return [x, y];
 }
 
+function moveEntities(entities: Entity[], [x0, y0]: Point, [x, y]: Point) {
+	entities.forEach((entity) => {
+		const [originX, originY] = entity.origin;
+		entity.origin = [originX + x - x0, originY + y - y0];
+	});
+	return entities;
+}
+
 export const handlePointerMove = action(function handlePointerMove(
 	e: PointerEvent<HTMLCanvasElement>
 ) {
 	if (!plan.editable) return;
 
 	const [x, y] = getCanvasCoords(e);
+
+	diagram.lastCursorPosition = [x, y];
 
 	if (diagram.selectedTool !== 'cursor') {
 		// either about to create, or creating an entity
@@ -58,11 +75,7 @@ export const handlePointerMove = action(function handlePointerMove(
 
 	if (diagram.isDraggingEntities && diagram.dragAnchor) {
 		// moving entities
-		const [anchorX, anchorY] = diagram.dragAnchor;
-		diagram.selectedEntities.forEach((entity) => {
-			const [originX, originY] = entity.origin;
-			entity.origin = [originX + x - anchorX, originY + y - anchorY];
-		});
+		moveEntities(diagram.selectedEntities, diagram.dragAnchor, [x, y]);
 		diagram.dragAnchor = [x, y];
 		diagram.render();
 		plan.dirty = true;
@@ -219,13 +232,45 @@ export const handleKeyDown = action(function handleKeyDown(
 
 	if (repeat) return;
 
-	console.log(`${ctrl ? 'ctrl-' : ''}${key}`);
+	// console.log(`${ctrl ? 'ctrl-' : ''}${key}`);
 
 	if (ctrl && key === 'a') {
+		// select all
 		e.preventDefault();
 		diagram.updateSelection(diagram.entities);
 	} else if (key === 'Backspace' || key === 'Delete') {
+		// delete
 		diagram.deleteEntities(diagram.selectedEntities);
+		plan.dirty = true;
+	} else if (ctrl && key === 'c') {
+		// copy
+		e.preventDefault();
+		if (diagram.selectedEntities.length === 0) return;
+
+		diagram.copyData = {
+			entityData: diagram.selectedEntities.map((entity) =>
+				JSON.parse(JSON.stringify(entity))
+			),
+			origin: averagePoints(
+				diagram.selectedEntities.map((entity) => entity.origin)
+			),
+		};
+	} else if (ctrl && key === 'v') {
+		// paste
+		e.preventDefault();
+		if (!diagram.copyData) return;
+
+		const { entityData, origin } = diagram.copyData;
+
+		const tolerance = HIT_TEST_TOLERANCE * diagram.windowScaleFactor;
+		const position: Point =
+			distance(origin, diagram.lastCursorPosition) < tolerance
+				? [origin[0] + tolerance, origin[1] + tolerance]
+				: diagram.lastCursorPosition;
+
+		diagram.addEntities(
+			moveEntities(deserializeEntities(entityData, false), origin, position)
+		);
 		plan.dirty = true;
 	}
 

@@ -4,10 +4,8 @@ An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excal
 
 Feature roadmap, listed in priority order:
 
-- delete
 - object/mechanic markers
 - multiple steps per plan
-- copy/paste
 - undo/redo
 - grid, snap-to
 - ? fight-specific bg

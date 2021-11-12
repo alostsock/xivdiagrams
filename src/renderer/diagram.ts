@@ -8,7 +8,7 @@ import {
 	MIN_ARROW_LEN,
 	MIN_MARK_SIZE,
 } from 'renderer/constants';
-import type { Entity, Mark } from 'renderer/entities';
+import type { Entity, EntityData, Mark } from 'renderer/entities';
 import { drawBounds } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import { Point, calcBoundsFromPoints } from 'renderer/geometry';
@@ -36,6 +36,8 @@ class Diagram {
 	selectionPoints: [Point, Point] | null = null;
 	entityControlInUse: Control<any> | null = null;
 	entityInCreation: Exclude<Entity, Mark> | null = null;
+	lastCursorPosition: Point = [0, 0];
+	copyData: { entityData: EntityData[]; origin: Point } | null = null;
 
 	constructor() {
 		makeAutoObservable(this);

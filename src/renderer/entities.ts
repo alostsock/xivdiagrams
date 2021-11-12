@@ -738,23 +738,30 @@ function selectProps<T extends U, U>(obj: T, keys: Array<keyof U>): U {
 	}, partial);
 }
 
-export function deserializeEntities(entities: EntityData[]): Entity[] {
+export function deserializeEntities(
+	entities: EntityData[],
+	reuseIds: boolean = true
+): Entity[] {
 	// eslint-disable-next-line array-callback-return
 	return entities.map((entityData) => {
-		switch (entityData.type) {
+		const options: EntityData = reuseIds
+			? entityData
+			: { ...entityData, id: generateId() };
+
+		switch (options.type) {
 			case 'rect':
-				return new Rect({ ...entityData });
+				return new Rect(options);
 			case 'circle':
-				return new Circle({ ...entityData });
+				return new Circle(options);
 			case 'cone':
-				return new Cone({ ...entityData });
+				return new Cone(options);
 			case 'line':
 			case 'arrow':
-				return new Line({ ...entityData });
+				return new Line(options);
 			case 'freehand':
-				return new Freehand({ ...entityData });
+				return new Freehand(options);
 			default:
-				return new Mark({ ...entityData });
+				return new Mark(options);
 		}
 	});
 }

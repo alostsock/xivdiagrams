@@ -37,6 +37,14 @@ export function rotatePoint(
 	];
 }
 
+export function averagePoints(points: Points): Point {
+	const s = points.reduce<Point>(
+		(acc, p) => [acc[0] + p[0], acc[1] + p[1]],
+		[0, 0]
+	);
+	return [s[0] / points.length, s[1] / points.length];
+}
+
 export function calcRectPoints(
 	origin: Point,
 	width: number,
