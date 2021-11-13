@@ -574,6 +574,8 @@ export class Freehand implements BaseEntity<FreehandData> {
 	constructor(options: ConstructorOptions<FreehandData>) {
 		// explicitly untrack huge data structures.
 		makeAutoObservable(this, {
+			origin: false,
+			points: false,
 			bounds: false,
 			strokePoints: false,
 			path: false,
@@ -613,10 +615,7 @@ export class Freehand implements BaseEntity<FreehandData> {
 	// eagerly calculate stroke points ahead of time, otherwise `draw` has to do
 	// a lot of work on every diagram rerender.
 	calculatePath(): void {
-		this.strokePoints = getStroke(
-			toJS(this.points),
-			FREEHAND_OPTIONS
-		) as Points;
+		this.strokePoints = getStroke(this.points, FREEHAND_OPTIONS) as Points;
 		this.path = getSvgPathFromStroke(this.strokePoints);
 	}
 
