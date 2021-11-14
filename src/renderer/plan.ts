@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { Entity, EntityData, deserializeEntities } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
+import { history } from 'renderer/history';
 
 export interface StepData {
 	entities: EntityData[];
@@ -36,6 +37,8 @@ class Plan {
 	}
 
 	loadPlan(planData?: PlanData) {
+		history.clear();
+
 		if (!planData) {
 			this.title = 'untitled';
 			this.author = 'anonymous';

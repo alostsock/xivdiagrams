@@ -6,7 +6,6 @@ Feature roadmap, listed in priority order:
 
 - object/mechanic markers
 - multiple steps per plan
-- undo/redo
 - grid, snap-to
 - ? fight-specific bg
 - ? searchable debuffs for players

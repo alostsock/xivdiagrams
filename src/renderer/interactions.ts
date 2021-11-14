@@ -2,6 +2,7 @@ import { PointerEvent, DragEvent, KeyboardEvent } from 'react';
 import { action } from 'mobx';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
+import { history } from 'renderer/history';
 import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import {
 	Entity,
@@ -125,6 +126,7 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	if (diagram.selectedTool !== 'cursor') {
 		// start creating an entity
+		history.save();
 		diagram.entityInCreation =
 			diagram.selectedTool === 'freehand'
 				? new Freehand({ points: [[x, y]] })
@@ -141,6 +143,7 @@ export const handlePointerDown = action(function handlePointerDown(
 		// only allow interacting with controls if one entity is selected
 		for (const control of diagram.selectedEntities[0].controls) {
 			if (control.hitTest([x, y])) {
+				history.save();
 				diagram.entityControlInUse = control;
 				diagram.cursorType = 'grabbing';
 				return;
@@ -151,6 +154,7 @@ export const handlePointerDown = action(function handlePointerDown(
 	const hit = hitTest([x, y], diagram.entities);
 	if (hit) {
 		// moving things
+		history.save();
 		diagram.isDraggingEntities = true;
 		if (!diagram.selectedEntities.includes(hit)) {
 			diagram.updateSelection([hit]);
@@ -228,24 +232,28 @@ function hitTest(point: Point, entities: Entity[]): Entity | false {
 export const handleKeyDown = action(function handleKeyDown(
 	e: KeyboardEvent<HTMLCanvasElement>
 ) {
-	const { ctrlKey, metaKey, key, repeat } = e;
+	if (e.repeat) return;
 
-	if (repeat) return;
+	const key = e.key.toLowerCase();
+	const ctrl = e.ctrlKey || e.metaKey;
+	const shift = e.shiftKey;
 
-	const ctrl = ctrlKey || metaKey;
+	const selectAll = ctrl && key === 'a';
+	const del = key === 'backspace' || key === 'delete';
+	const copy = ctrl && key === 'c';
+	const paste = ctrl && key === 'v';
+	const undo = ctrl && key === 'z' && !shift;
+	const redo = (ctrl && key === 'z' && shift) || (ctrl && key === 'y');
 
 	// console.log(`${ctrl ? 'ctrl-' : ''}${key}`);
 
-	if (ctrl && key === 'a') {
-		// select all
+	if (selectAll) {
 		e.preventDefault();
 		diagram.updateSelection(diagram.entities);
-	} else if (key === 'Backspace' || key === 'Delete') {
-		// delete
+	} else if (del) {
 		diagram.deleteEntities(diagram.selectedEntities);
 		plan.dirty = true;
-	} else if (ctrl && key === 'c') {
-		// copy
+	} else if (copy) {
 		e.preventDefault();
 		if (diagram.selectedEntities.length === 0) return;
 
@@ -257,8 +265,7 @@ export const handleKeyDown = action(function handleKeyDown(
 				diagram.selectedEntities.map((entity) => entity.origin)
 			),
 		};
-	} else if (ctrl && key === 'v') {
-		// paste
+	} else if (paste) {
 		e.preventDefault();
 		if (!diagram.copyData) return;
 
@@ -270,10 +277,18 @@ export const handleKeyDown = action(function handleKeyDown(
 				? [origin[0] + tolerance, origin[1] + tolerance]
 				: diagram.lastCursorPosition;
 
-		diagram.addEntities(
-			moveEntities(deserializeEntities(entityData, false), origin, position)
+		const pasted = moveEntities(
+			deserializeEntities(entityData, false),
+			origin,
+			position
 		);
+		diagram.addEntities(pasted);
 		plan.dirty = true;
+		diagram.updateSelection(pasted);
+	} else if (undo) {
+		history.undo();
+	} else if (redo) {
+		history.redo();
 	}
 
 	e.stopPropagation();

@@ -12,6 +12,7 @@ import type { Entity, EntityData, Mark } from 'renderer/entities';
 import { drawBounds } from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import { Point, calcBoundsFromPoints } from 'renderer/geometry';
+import { history } from 'renderer/history';
 import type { Tool } from 'components/Toolset';
 
 type CursorType = 'default' | 'crosshair' | 'move' | 'grab' | 'grabbing';
@@ -148,6 +149,10 @@ class Diagram {
 	}
 
 	addEntities(entities: Entity[]) {
+		if (entities.length === 0) return;
+
+		history.save();
+
 		const selectAfterAdd: Entity[] = [];
 
 		for (const entity of entities) {
@@ -163,6 +168,10 @@ class Diagram {
 	}
 
 	deleteEntities(toRemove: Entity[]) {
+		if (toRemove.length === 0) return;
+
+		history.save();
+
 		const idsToRemove = new Set(toRemove.map((e) => e.id));
 		this.entities = this.entities.filter((e) => !idsToRemove.has(e.id));
 		this.updateSelection([]);

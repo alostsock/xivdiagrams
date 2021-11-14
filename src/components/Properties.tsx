@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite';
 import type { Entity } from 'renderer/entities';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
+import { history } from 'renderer/history';
 import { useOnPointerDownOutside } from 'hooks';
 
 const fillable: Entity['type'][] = ['circle', 'cone', 'rect'];
@@ -59,6 +60,7 @@ const ColorPicker = observer(function ColorPicker({ entity }: PickerProps) {
 	const currentColor = entity.roughOptions.stroke;
 
 	const modifyColor = (stroke: Stroke, fill: Fill) => {
+		history.save();
 		runInAction(() => {
 			entity.roughOptions.stroke = stroke;
 			if (entity.roughOptions.fill) {
@@ -126,6 +128,7 @@ const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 	};
 
 	const modifyFill = (fillStyle: FillStyle) => {
+		history.save();
 		runInAction(() => {
 			if (fillStyle === 'none') {
 				delete entity.roughOptions.fill;

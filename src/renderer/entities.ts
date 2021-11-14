@@ -1,4 +1,4 @@
-import { makeAutoObservable, toJS } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
