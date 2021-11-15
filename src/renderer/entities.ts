@@ -41,7 +41,7 @@ import {
 	MarkSizeControl,
 } from 'renderer/controls';
 import { diagram } from 'renderer/diagram';
-import { IconName } from 'data/icons';
+import { MarkName } from 'data/marks';
 
 interface BaseData {
 	id: string;
@@ -86,10 +86,10 @@ export interface LineData extends BaseData {
 	length: number;
 }
 
-export type MarkType = `mark-${IconName}`;
-
 export interface MarkData extends BaseData {
-	type: MarkType;
+	type: 'mark';
+	name: MarkName;
+	colors: string[];
 	origin: Point;
 	size: number;
 }
@@ -107,7 +107,10 @@ export type EntityData =
 	| MarkData
 	| FreehandData;
 
-type ConstructorOptions<T extends BaseData> = PartialBy<T, keyof BaseData>;
+export type ConstructorOptions<T extends BaseData> = PartialBy<
+	T,
+	keyof BaseData
+>;
 
 type BaseEntity<T extends BaseData> = T & {
 	isSelected: boolean;
@@ -515,25 +518,35 @@ export class Line implements BaseEntity<LineData> {
 
 export class Mark implements BaseEntity<MarkData> {
 	id;
-	type: MarkType;
+	type: 'mark' = 'mark';
 
+	name: MarkName;
+	colors: string[];
 	origin: Point;
 	size: number;
 
 	isSelected: boolean = false;
 	controls: Control<Mark>[];
 
-	constructor(options: ConstructorOptions<MarkData> & { type: MarkType }) {
+	constructor(options: ConstructorOptions<MarkData>) {
 		makeAutoObservable(this);
 		this.id = options.id ?? generateId();
-		this.type = options.type;
+		this.name = options.name;
+		this.colors = options.colors;
 		this.origin = options.origin;
 		this.size = options.size;
 		this.controls = [new MarkSizeControl(this)];
 	}
 
 	toJSON(): MarkData {
-		return selectProps(this, ['id', 'type', 'origin', 'size']);
+		return selectProps(this, [
+			'id',
+			'type',
+			'name',
+			'colors',
+			'origin',
+			'size',
+		]);
 	}
 
 	get points(): Points {
@@ -549,7 +562,10 @@ export class Mark implements BaseEntity<MarkData> {
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		const img = document.getElementById(this.type) as HTMLImageElement;
+		const img = document.getElementById(
+			`mark-${this.name}`
+		) as HTMLImageElement;
+
 		ctx.drawImage(
 			img,
 			this.origin[0] - this.size / 2,
@@ -741,7 +757,6 @@ export function deserializeEntities(
 	entities: EntityData[],
 	reuseIds: boolean = true
 ): Entity[] {
-	// eslint-disable-next-line array-callback-return
 	return entities.map((entityData) => {
 		const options: EntityData = reuseIds
 			? entityData
@@ -759,7 +774,7 @@ export function deserializeEntities(
 				return new Line(options);
 			case 'freehand':
 				return new Freehand(options);
-			default:
+			case 'mark':
 				return new Mark(options);
 		}
 	});

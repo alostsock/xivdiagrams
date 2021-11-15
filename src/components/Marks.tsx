@@ -6,7 +6,7 @@ import { useOnPointerDownOutside } from 'hooks';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import {
-	IconName,
+	MarkName,
 	createSvgDataUrl,
 	roles,
 	tanks,
@@ -14,22 +14,22 @@ import {
 	physical,
 	ranged,
 	magical,
-} from 'data/icons';
-import { MarkType, Mark } from 'renderer/entities';
+} from 'data/marks';
+import { Mark } from 'renderer/entities';
 import { getCanvasCoords } from 'renderer/interactions';
 
 type MarkGroup = {
 	name: string;
-	icons: Array<IconName | 'spacer'>;
+	icons: Array<MarkName | 'spacer'>;
 	width: number;
 };
 
 function createMarkGroup(
 	name: string,
-	iconGroups: Array<IconName | 'spacer'>[]
+	iconGroups: Array<MarkName | 'spacer'>[]
 ): MarkGroup {
 	let width = 0;
-	const icons: Array<IconName | 'spacer'> = [];
+	const icons: Array<MarkName | 'spacer'> = [];
 
 	iconGroups.forEach((group, i) => {
 		width = Math.max(width, group.length);
@@ -128,16 +128,17 @@ export const handleMarkDrop = action(function handleMarkDrop(
 ) {
 	e.preventDefault();
 	const origin = getCanvasCoords(e);
-	const markId = e.dataTransfer.getData('text/plain') as MarkType;
-	const size = getDefaultSize(markId);
-	const markEntity = new Mark({ type: markId, origin, size });
+	const domId = e.dataTransfer.getData('text/plain');
+	const name = domId.split('-').pop() as MarkName;
+	const size = getDefaultSize(name);
+	const markEntity = new Mark({ name, colors: [], origin, size });
 	diagram.addEntities([markEntity]);
 	plan.dirty = true;
 });
 
 // TODO: add custom attributes per mark
-function getDefaultSize(markType: MarkType): number {
-	const iconName = markType.split('-', 2).pop() as IconName;
+function getDefaultSize(markType: MarkName): number {
+	const iconName = markType.split('-', 2).pop() as MarkName;
 	if (iconName === 'mob') return 50;
 	return 30;
 }

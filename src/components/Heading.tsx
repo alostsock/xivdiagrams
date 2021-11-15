@@ -5,6 +5,7 @@ import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useLocation } from 'wouter';
 import { plan } from 'renderer/plan';
+import { diagram } from 'renderer/diagram';
 import { usePlanContext } from 'data/PlanProvider';
 import { createPlan, editPlan } from 'data/api';
 
@@ -81,6 +82,7 @@ const ButtonList = observer(function ButtonList() {
 
 	const handleSave = async () => {
 		setInProgress(true);
+		diagram.updateSelection([]);
 		if (planId && editKey) {
 			try {
 				await editPlan(planId, editKey, plan.toJSON());

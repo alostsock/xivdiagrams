@@ -126,7 +126,6 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	if (diagram.selectedTool !== 'cursor') {
 		// start creating an entity
-		history.save();
 		diagram.entityInCreation =
 			diagram.selectedTool === 'freehand'
 				? new Freehand({ points: [[x, y]] })

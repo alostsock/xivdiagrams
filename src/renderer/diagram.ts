@@ -199,8 +199,9 @@ class Diagram {
 			case 'freehand':
 				isValid = entity.points.length > 0;
 				break;
-			default:
+			case 'mark':
 				isValid = entity.size > MIN_MARK_SIZE;
+				break;
 		}
 
 		return isValid;
