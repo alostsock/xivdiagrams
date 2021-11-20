@@ -116,7 +116,7 @@ type BaseEntity<T extends BaseData> = T & {
 	isSelected: boolean;
 	controls: Control<BaseEntity<T>>[];
 	bounds: Bounds;
-	hitTest: (point: Point) => boolean;
+	distance: (point: Point) => number;
 	draw: (rc: RoughCanvas, ctx: CanvasRenderingContext2D) => void;
 	toJSON: () => T;
 };
@@ -172,10 +172,10 @@ export class Circle implements BaseEntity<CircleData> {
 		};
 	}
 
-	hitTest(point: Point) {
-		return (
-			distToCircle(point, this.origin, this.radius) <= HIT_TEST_TOLERANCE ||
-			distToCircle(point, this.origin, this.innerRadius) <= HIT_TEST_TOLERANCE
+	distance(point: Point) {
+		return Math.min(
+			distToCircle(point, this.origin, this.radius),
+			distToCircle(point, this.origin, this.innerRadius)
 		);
 	}
 
@@ -307,16 +307,14 @@ export class Cone implements BaseEntity<ConeData> {
 		return calcBoundsFromPoints(points);
 	}
 
-	hitTest(point: Point) {
-		return (
-			distToCone(
-				point,
-				this.origin,
-				this.radius,
-				this.innerRadius,
-				this.start,
-				this.end
-			) <= HIT_TEST_TOLERANCE
+	distance(point: Point) {
+		return distToCone(
+			point,
+			this.origin,
+			this.radius,
+			this.innerRadius,
+			this.start,
+			this.end
 		);
 	}
 
@@ -420,8 +418,8 @@ export class Rect implements BaseEntity<RectData> {
 		);
 	}
 
-	hitTest(point: Point) {
-		return distToPolygon(point, this.points) <= HIT_TEST_TOLERANCE;
+	distance(point: Point) {
+		return distToPolygon(point, this.points);
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
@@ -505,8 +503,8 @@ export class Line implements BaseEntity<LineData> {
 		};
 	}
 
-	hitTest(point: Point) {
-		return distToSegments(point, this.segments) <= HIT_TEST_TOLERANCE;
+	distance(point: Point) {
+		return distToSegments(point, this.segments);
 	}
 
 	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
@@ -557,8 +555,8 @@ export class Mark implements BaseEntity<MarkData> {
 		return calcBoundsFromPoints(this.points);
 	}
 
-	hitTest(point: Point) {
-		return pointInBounds(point, this.bounds);
+	distance(point: Point) {
+		return pointInBounds(point, this.bounds) ? 0 : Infinity;
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
@@ -639,12 +637,12 @@ export class Freehand implements BaseEntity<FreehandData> {
 		return calcBoundsFromPoints(this.strokePoints);
 	}
 
-	hitTest(point: Point) {
+	distance(point: Point) {
 		const segments: Segments = [];
 		for (let i = 0; i < this.strokePoints.length - 1; i++) {
 			segments.push([this.strokePoints[i], this.strokePoints[i + 1]]);
 		}
-		return distToSegments(point, segments) <= HIT_TEST_TOLERANCE;
+		return distToSegments(point, segments);
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {

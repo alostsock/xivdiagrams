@@ -1,5 +1,5 @@
 import { PointerEvent, DragEvent, KeyboardEvent } from 'react';
-import { action } from 'mobx';
+import { action, entries } from 'mobx';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { history } from 'renderer/history';
@@ -104,7 +104,7 @@ export const handlePointerMove = action(function handlePointerMove(
 	}
 
 	// move cursor indicator
-	const hit = hitTest([x, y], diagram.entities);
+	const hit = hitTest([x, y]);
 	if (hit) {
 		diagram.cursorType = 'move';
 		return;
@@ -150,7 +150,7 @@ export const handlePointerDown = action(function handlePointerDown(
 		}
 	}
 
-	const hit = hitTest([x, y], diagram.entities);
+	const hit = detailedHitTest([x, y]);
 	if (hit) {
 		// moving things
 		history.save();
@@ -206,26 +206,76 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave(
 	diagram.render();
 });
 
-function hitTest(point: Point, entities: Entity[]): Entity | false {
+function pointInBoundsTolerance(point: Point, entity: Entity): boolean {
+	const tolerance = HIT_TEST_TOLERANCE * diagram.windowScaleFactor;
+
+	const entityBounds = entity.bounds;
+	const bounds = {
+		left: entityBounds.left - tolerance,
+		right: entityBounds.right + tolerance,
+		top: entityBounds.top - tolerance,
+		bottom: entityBounds.bottom + tolerance,
+	};
+
+	return pointInBounds(point, bounds) && entity.distance(point) < tolerance;
+}
+
+// fast hit test, used for determining cursor style
+function hitTest(point: Point): Entity | false {
 	// elements in the fore should be hit first
-	for (let i = entities.length - 1; i > -1; i--) {
-		const entity = entities[i];
+	for (let i = diagram.entities.length - 1; i > -1; i--) {
+		const entity = diagram.entities[i];
 
-		// bypass detailed hit testing if out of bounds
-		const entityBounds = entity.bounds;
-		const tolerance = HIT_TEST_TOLERANCE * diagram.windowScaleFactor;
-		const boundsMargin: Bounds = {
-			left: entityBounds.left - tolerance,
-			right: entityBounds.right + tolerance,
-			top: entityBounds.top - tolerance,
-			bottom: entityBounds.bottom + tolerance,
-		};
-		if (!pointInBounds(point, boundsMargin)) continue;
-
-		if (entity.hitTest(point)) return entity;
+		const inBounds = pointInBoundsTolerance(point, entity);
+		if (inBounds) return entity;
 	}
 
 	return false;
+}
+
+// finding needles in haystacks; harder-to-hit entities take priority
+function detailedHitTest(point: Point): Entity | false {
+	let smallest: Entity | false = false;
+	let smallestDistance: number = Infinity;
+
+	for (const entity of diagram.entities) {
+		if (!pointInBoundsTolerance(point, entity)) continue;
+
+		if (!smallest) {
+			smallest = entity;
+			smallestDistance = entity.distance(point);
+			continue;
+		}
+
+		// if only considering marks, the smaller mark takes priority
+		if (
+			smallest.type === 'mark' &&
+			entity.type === 'mark' &&
+			entity.size < smallest.size
+		) {
+			smallest = entity;
+			continue;
+		}
+
+		if (smallest.type !== entity.type) {
+			// non-marks take priority
+			if (smallest.type === 'mark') {
+				smallest = entity;
+				smallestDistance = entity.distance(point);
+			}
+			continue;
+		}
+
+		// entities closer to the point take priority
+		const entityDistance = entity.distance(point);
+		console.log(entity.type, entityDistance, smallest.type, smallestDistance);
+		if (entityDistance < smallestDistance) {
+			smallest = entity;
+			smallestDistance = entityDistance;
+		}
+	}
+
+	return smallest;
 }
 
 export const handleKeyDown = action(function handleKeyDown(
