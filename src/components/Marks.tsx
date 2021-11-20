@@ -7,6 +7,7 @@ import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import {
 	MarkName,
+	getMarkDefaults,
 	createSvgDataUrl,
 	roles,
 	tanks,
@@ -131,15 +132,12 @@ export const handleMarkDrop = action(function handleMarkDrop(
 	const origin = getCanvasCoords(e);
 	const domId = e.dataTransfer.getData('text/plain');
 	const name = domId.split('-').pop() as MarkName;
-	const size = getDefaultSize(name);
-	const markEntity = new Mark({ name, colors: [], origin, size });
+	const markEntity = new Mark({
+		name,
+		colors: [],
+		origin,
+		...getMarkDefaults(name),
+	});
 	diagram.addEntities([markEntity]);
 	plan.dirty = true;
 });
-
-// TODO: add custom attributes per mark
-function getDefaultSize(markType: MarkName): number {
-	const iconName = markType.split('-', 2).pop() as MarkName;
-	if (iconName === 'mob') return 50;
-	return 30;
-}

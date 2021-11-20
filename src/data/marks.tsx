@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { renderToStaticMarkup } from 'react-dom/server';
+import { MarkData } from 'renderer/entities';
 
 export type MarkName = keyof typeof marks;
 
@@ -28,6 +28,28 @@ export const mechanics: MarkName[] = [
 ];
 
 type Colors = readonly string[];
+
+const defaultSize: Partial<Record<MarkName, number>> = {
+	mob: 50,
+	stack: 125,
+	stackLinear: 125,
+	flare: 100,
+	glare: 65,
+};
+
+const defaultRotatable: Partial<Record<MarkName, boolean>> = {
+	stackLinear: true,
+};
+
+export function getMarkDefaults(
+	name: MarkName
+): Pick<MarkData, 'size' | 'rotation' | 'rotatable'> {
+	return {
+		size: defaultSize[name] ?? 30,
+		rotation: 0,
+		rotatable: defaultRotatable[name] ?? false,
+	};
+}
 
 export function createSvgDataUrl(name: MarkName, colors?: Colors) {
 	const mark = marks[name];

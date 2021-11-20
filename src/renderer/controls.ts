@@ -352,10 +352,15 @@ export class LinePointControl implements Control<Line> {
 	}
 }
 
-export class MarkSizeControl implements Control<Mark> {
-	angle: number = -Math.PI / 4;
+export class MarkSizeRotationControl implements Control<Mark> {
+	angle: number;
+	angleOffset = -Math.PI / 2;
 
-	constructor(public parent: Mark) {}
+	constructor(public parent: Mark) {
+		this.angle = this.parent.rotatable
+			? this.parent.rotation + this.angleOffset
+			: -Math.PI / 4;
+	}
 
 	get position(): Point {
 		const [x0, y0] = this.parent.origin;
@@ -376,6 +381,9 @@ export class MarkSizeControl implements Control<Mark> {
 	handleDrag(point: Point) {
 		this.angle = calcAngle(this.parent.origin, point);
 		this.parent.size = 2 * distance(this.parent.origin, point);
+		if (this.parent.rotatable) {
+			this.parent.rotation = this.angle - this.angleOffset;
+		}
 		diagram.render();
 	}
 }

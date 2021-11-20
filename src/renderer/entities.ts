@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, action } from 'mobx';
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
@@ -6,7 +6,6 @@ import { RoughGenerator } from 'roughjs/bin/generator';
 import { getStroke } from 'perfect-freehand';
 import {
 	BOUNDS_STYLE,
-	HIT_TEST_TOLERANCE,
 	DEFAULT_ROUGH_OPTIONS,
 	ARROWHEAD_LEN,
 	ARROWHEAD_ANGLE,
@@ -38,10 +37,10 @@ import {
 	ConeInnerRadiusControl,
 	ConeAngleControl,
 	LinePointControl,
-	MarkSizeControl,
+	MarkSizeRotationControl,
 } from 'renderer/controls';
 import { diagram } from 'renderer/diagram';
-import { MarkName } from 'data/marks';
+import { MarkName, createSvgDataUrl } from 'data/marks';
 
 interface BaseData {
 	id: string;
@@ -92,6 +91,8 @@ export interface MarkData extends BaseData {
 	colors: string[];
 	origin: Point;
 	size: number;
+	rotation: number;
+	rotatable: boolean;
 }
 
 export interface FreehandData extends BaseData {
@@ -522,9 +523,14 @@ export class Mark implements BaseEntity<MarkData> {
 	colors: string[];
 	origin: Point;
 	size: number;
+	rotation: number;
+	rotatable: boolean;
 
 	isSelected: boolean = false;
 	controls: Control<Mark>[];
+
+	image: HTMLImageElement;
+	isLoaded: boolean = false;
 
 	constructor(options: ConstructorOptions<MarkData>) {
 		makeAutoObservable(this);
@@ -533,7 +539,17 @@ export class Mark implements BaseEntity<MarkData> {
 		this.colors = options.colors;
 		this.origin = options.origin;
 		this.size = options.size;
-		this.controls = [new MarkSizeControl(this)];
+		this.rotation = options.rotation;
+		this.rotatable = options.rotatable;
+		this.controls = [new MarkSizeRotationControl(this)];
+
+		this.image = new Image();
+		this.image.onload = action(() => {
+			this.isLoaded = true;
+			diagram.render();
+		});
+		const colors = this.colors.length > 0 ? this.colors : undefined;
+		this.image.src = createSvgDataUrl(this.name, colors);
 	}
 
 	toJSON(): MarkData {
@@ -544,6 +560,8 @@ export class Mark implements BaseEntity<MarkData> {
 			'colors',
 			'origin',
 			'size',
+			'rotation',
+			'rotatable',
 		]);
 	}
 
@@ -560,17 +578,18 @@ export class Mark implements BaseEntity<MarkData> {
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		const img = document.getElementById(
-			`mark-${this.name}`
-		) as HTMLImageElement;
+		if (!this.isLoaded) return;
 
-		ctx.drawImage(
-			img,
-			this.origin[0] - this.size / 2,
-			this.origin[1] - this.size / 2,
-			this.size,
-			this.size
-		);
+		const [x, y] = this.origin;
+		const dx = x - this.size / 2;
+		const dy = y - this.size / 2;
+
+		ctx.save();
+		ctx.translate(x, y);
+		ctx.rotate(this.rotation);
+		ctx.translate(-x, -y);
+		ctx.drawImage(this.image, dx, dy, this.size, this.size);
+		ctx.restore();
 	}
 }
 
