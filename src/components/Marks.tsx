@@ -14,6 +14,7 @@ import {
 	physical,
 	ranged,
 	magical,
+	mechanics,
 } from 'data/marks';
 import { Mark } from 'renderer/entities';
 import { getCanvasCoords } from 'renderer/interactions';
@@ -41,7 +42,7 @@ function createMarkGroup(
 }
 
 const markGroups: MarkGroup[] = [
-	createMarkGroup('General', [['mob', ...roles]]),
+	createMarkGroup('General', [['mob'], roles, mechanics]),
 	createMarkGroup('Jobs', [tanks, healers, physical, ranged, magical]),
 ];
 
@@ -68,7 +69,7 @@ const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 			<div
 				ref={addPointerOutsideRef}
 				className="popup"
-				style={{ width: `${markGroup.width * 2.5 + 0.5}rem` }}
+				style={{ width: `${markGroup.width * 3 + 0.5}rem` }}
 			>
 				{markGroup.icons.map((icon, i) => {
 					if (icon === 'spacer') {

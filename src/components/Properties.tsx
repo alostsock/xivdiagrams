@@ -39,10 +39,14 @@ const Properties = observer(function Properties({ className, style }: Props) {
 export default Properties;
 
 const colors = [
-	{ name: 'gray', stroke: '#1a1f26', fill: 'rgba(186, 186, 188, 0.5)' },
-	{ name: 'blue', stroke: '#1764ab', fill: 'rgba(75, 163, 241, 0.5)' },
-	{ name: 'green', stroke: '#3ea47b', fill: 'rgba(112, 205, 167, 0.5)' },
-	{ name: 'red', stroke: '#b4434a', fill: 'rgba(229, 121, 125, 0.5)' },
+	{ name: 'gray', stroke: '#1a1f26', fill: 'rgba(112, 115, 119, 0.15)' },
+	{ name: 'blue', stroke: '#1764ab', fill: 'rgba(75, 163, 241, 0.15)' },
+	{ name: 'green', stroke: '#3ea47b', fill: 'rgba(112, 205, 167, 0.15)' },
+	{ name: 'red', stroke: '#c33f42', fill: 'rgba(228, 112, 114, 0.15)' },
+	{ name: 'purple', stroke: '#7048e8', fill: 'rgba(155, 107, 241, 0.15)' },
+	{ name: 'cyan', stroke: '#1eb6b8', fill: 'rgba(101, 198, 199, 0.15)' },
+	{ name: 'lime', stroke: '#66a80f', fill: 'rgba(184, 238, 102, 0.15)' },
+	{ name: 'yellow', stroke: '#e67700', fill: 'rgba(255, 193, 80, 0.15)' },
 ] as const;
 type Stroke = typeof colors[number]['stroke'];
 type Fill = typeof colors[number]['fill'];
@@ -103,6 +107,7 @@ const fills = [
 	{ style: 'solid', label: 'Solid' },
 	{ style: 'hachure', label: 'Hachure' },
 	{ style: 'cross-hatch', label: 'Cross Hatch' },
+	{ style: 'zigzag', label: 'Zigzag' },
 ] as const;
 type FillStyle = typeof fills[number]['style'];
 
@@ -124,7 +129,7 @@ const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 		const color = colors.find(
 			(color) => color.stroke === entity.roughOptions.stroke
 		);
-		return color!.fill;
+		return color?.fill ?? null;
 	};
 
 	const modifyFill = (fillStyle: FillStyle) => {
@@ -133,8 +138,12 @@ const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 			if (fillStyle === 'none') {
 				delete entity.roughOptions.fill;
 			} else {
-				entity.roughOptions.fill = getFillByStroke();
+				const fill = getFillByStroke();
+				if (!fill) return;
+				entity.roughOptions.fill = fill;
 				entity.roughOptions.fillStyle = fillStyle;
+				entity.roughOptions.fillWeight = 1;
+				entity.roughOptions.hachureGap = 8;
 			}
 			plan.dirty = true;
 		});

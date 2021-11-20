@@ -39,6 +39,8 @@
 	--blue-5: #1764ab;
 	--blue-5-rgb: 23, 100, 171;
 
+	/* low contrast, only use for graphics.
+	 * green-5 barely above a 3.0 contrast ratio*/
 	--green-0: #f5fcf9;
 	--green-0-rgb: 245, 252, 249;
 	--green-1: #bdead7;
@@ -54,16 +56,16 @@
 
 	--red-0: #fff9f9;
 	--red-0-rgb: 255, 249, 249;
-	--red-1: #fcc9c9;
-	--red-1-rgb: 252, 201, 201;
-	--red-2: #f39ea0;
-	--red-2-rgb: 243, 158, 160;
-	--red-3: #e5797d;
-	--red-3-rgb: 229, 121, 125;
-	--red-4: #d1595f;
-	--red-4-rgb: 209, 89, 95;
-	--red-5: #b4434a;
-	--red-5-rgb: 180, 67, 74;
+	--red-1: #fababa;
+	--red-1-rgb: 250, 186, 186;
+	--red-2: #f19192;
+	--red-2-rgb: 241, 145, 146;
+	--red-3: #e47072;
+	--red-3-rgb: 228, 112, 114;
+	--red-4: #d55558;
+	--red-4-rgb: 213, 85, 88;
+	--red-5: #c33f42;
+	--red-5-rgb: 195, 63, 66;
 
 	--pink-0: #fff5f5;
 	--pink-0-rgb: 255, 245, 245;
@@ -77,4 +79,60 @@
 	--pink-4-rgb: 247, 0, 55;
 	--pink-5: #c60035;
 	--pink-5-rgb: 198, 0, 53;
+
+	/* the following colors are picked from
+	 * https://yeun.github.io/open-color/
+	 */
+
+	--purple-0: #fcf4ff;
+	--purple-0-rgb: 252, 244, 255;
+	--purple-1: #cfa2fa;
+	--purple-1-rgb: 207, 162, 250;
+	--purple-2: #b382f6;
+	--purple-2-rgb: 179, 130, 246;
+	--purple-3: #9b6bf1;
+	--purple-3-rgb: 155, 107, 241;
+	--purple-4: #8558ec;
+	--purple-4-rgb: 133, 88, 236;
+	--purple-5: #7048e8;
+	--purple-5-rgb: 112, 72, 232;
+
+	--cyan-0: #f1fbfc;
+	--cyan-0-rgb: 241, 251, 252;
+	--cyan-1: #a5dcdd;
+	--cyan-1-rgb: 165, 220, 221;
+	--cyan-2: #82d0d1;
+	--cyan-2-rgb: 130, 208, 209;
+	--cyan-3: #65c6c7;
+	--cyan-3-rgb: 101, 198, 199;
+	--cyan-4: #47bdbf;
+	--cyan-4-rgb: 71, 189, 191;
+	--cyan-5: #1eb6b8;
+	--cyan-5-rgb: 30, 182, 184;
+
+	--lime-0: #f5fce9;
+	--lime-0-rgb: 245, 252, 233;
+	--lime-1: #d2f39f;
+	--lime-1-rgb: 210, 243, 159;
+	--lime-2: #b8ee66;
+	--lime-2-rgb: 184, 238, 102;
+	--lime-3: #9fea33;
+	--lime-3-rgb: 159, 234, 51;
+	--lime-4: #83d414;
+	--lime-4-rgb: 131, 212, 20;
+	--lime-5: #66a80f;
+	--lime-5-rgb: 102, 168, 15;
+
+	--yellow-0: #fffced;
+	--yellow-0-rgb: 255, 252, 237;
+	--yellow-1: #ffefb9;
+	--yellow-1-rgb: 255, 239, 185;
+	--yellow-2: #ffdb84;
+	--yellow-2-rgb: 255, 219, 132;
+	--yellow-3: #ffc150;
+	--yellow-3-rgb: 255, 193, 80;
+	--yellow-4: #ffa01b;
+	--yellow-4-rgb: 255, 160, 27;
+	--yellow-5: #e67700;
+	--yellow-5-rgb: 230, 119, 0;
 }
