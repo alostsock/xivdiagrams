@@ -1,8 +1,28 @@
 .EditButtons {
 	padding: 0.5rem;
 	display: flex;
+	flex-wrap: nowrap;
 
-	* + * {
+	> * + * {
 		margin-left: 0.5rem;
+	}
+
+	.share {
+		position: relative;
+
+		.popup {
+			left: 0;
+			max-width: min-content;
+
+			button + button {
+				margin-top: 0.5rem;
+			}
+
+			button {
+				width: 100%;
+				border: none;
+				outline: none;
+			}
+		}
 	}
 }

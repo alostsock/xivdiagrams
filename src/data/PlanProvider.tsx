@@ -9,6 +9,7 @@ import { runInAction } from 'mobx';
 import { useRoute, useLocation } from 'wouter';
 import useSwr from 'swr';
 import { getPlan } from 'data/api';
+import { getKey } from 'data/storage';
 import type { PlanData } from 'renderer/plan';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
@@ -39,7 +40,9 @@ export default function PlanProvider(props: { children: ReactNode }) {
 	const [, setLocation] = useLocation();
 	const [match, params] = useRoute<RouteParams>(routePattern);
 	const planId = params?.planId || null;
-	const editKey = params?.editKey || null;
+	const urlEditKey = params?.editKey || null;
+
+	const editKey = useKeyCache(planId, urlEditKey);
 
 	const { data: planData, error } = useSwr<PlanData, string>(planId, getPlan);
 
@@ -78,4 +81,17 @@ export default function PlanProvider(props: { children: ReactNode }) {
 	};
 
 	return <planContext.Provider value={planState} {...props} />;
+}
+
+function useKeyCache(planId: string | null, urlEditKey: string | null) {
+	const [cachedKey, setCachedKey] = useState<string | null>(null);
+
+	// check localstorage if a key is available
+	useEffect(() => {
+		if (!planId) return;
+		const cached = getKey(planId);
+		setCachedKey(cached);
+	}, [planId, urlEditKey]);
+
+	return cachedKey || urlEditKey;
 }

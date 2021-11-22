@@ -26,6 +26,8 @@
 	}
 
 	.popup {
+		transform-origin: top right;
+
 		&.swatches {
 			min-width: 13rem;
 			right: 0;
