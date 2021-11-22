@@ -20,6 +20,7 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 	const { planId, editKey } = usePlanContext();
 	const [, setLocation] = useLocation();
 	const [inProgress, setInProgress] = useState(false);
+	const saveable = !inProgress && plan.editable && plan.dirty;
 
 	const create = async () => {
 		try {
@@ -64,32 +65,32 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 		}
 	};
 
-	const saveable = !inProgress && plan.editable && plan.dirty;
+	const toggleEditable = action(() => {
+		diagram.updateSelection([]);
+		plan.editable = !plan.editable;
+	});
 
 	return (
 		<div className={clsx('EditButtons', className)} style={style}>
 			{plan.editable && (
-				<button disabled={!saveable} onClick={() => saveable && handleSave()}>
+				<button
+					className="save"
+					disabled={!saveable}
+					onClick={() => saveable && handleSave()}
+				>
 					Save
 				</button>
 			)}
 
 			<ShareButton />
 
-			{plan.editable && (
-				<button onClick={action(() => (plan.editable = false))}>View</button>
-			)}
+			{plan.editable && <button onClick={toggleEditable}>View</button>}
 
 			{!plan.editable && !!editKey && (
-				<button onClick={action(() => (plan.editable = true))}>Edit</button>
+				<button onClick={toggleEditable}>Edit</button>
 			)}
 
-			<button
-				disabled={inProgress}
-				onClick={() => !inProgress && handleClone()}
-			>
-				Clone
-			</button>
+			<button onClick={handleClone}>Clone</button>
 
 			<span style={{ width: '100%' }} />
 

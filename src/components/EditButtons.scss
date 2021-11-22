@@ -7,6 +7,10 @@
 		margin-left: 0.5rem;
 	}
 
+	.save:not(:disabled) {
+		box-shadow: var(--shadow-low);
+	}
+
 	.share {
 		position: relative;
 
