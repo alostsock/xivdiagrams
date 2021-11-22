@@ -1,5 +1,5 @@
 import { PointerEvent, DragEvent, KeyboardEvent } from 'react';
-import { action, entries } from 'mobx';
+import { action } from 'mobx';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { history } from 'renderer/history';

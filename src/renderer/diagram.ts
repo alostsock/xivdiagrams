@@ -148,7 +148,7 @@ class Diagram {
 		});
 	}
 
-	addEntities(entities: Entity[]) {
+	addEntities(entities: Entity[], shouldSelect = true) {
 		if (entities.length === 0) return;
 
 		history.save();
@@ -158,7 +158,7 @@ class Diagram {
 		for (const entity of entities) {
 			if (this.validateEntity(entity)) {
 				this.entities.push(entity);
-				if (entity.type !== 'freehand') {
+				if (shouldSelect && entity.type !== 'freehand') {
 					selectAfterAdd.push(entity);
 				}
 			}

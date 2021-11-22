@@ -17,6 +17,7 @@ import { diagram } from 'renderer/diagram';
 interface PlanState {
 	planId: string | null;
 	editKey: string | null;
+	isBlankDiagram: boolean;
 	setCanvasElement: ((el: HTMLCanvasElement) => void) | null;
 	isLoading: boolean;
 }
@@ -24,6 +25,7 @@ interface PlanState {
 const planContext = createContext<PlanState>({
 	planId: null,
 	editKey: null,
+	isBlankDiagram: false,
 	setCanvasElement: null,
 	isLoading: true,
 });
@@ -46,11 +48,12 @@ export default function PlanProvider(props: { children: ReactNode }) {
 
 	const { data: planData, error } = useSwr<PlanData, string>(planId, getPlan);
 
+	const isBlankDiagram = !match;
+	const hasEditKey = !!editKey;
+
 	useEffect(() => {
-		const isBlankDiagram = !match;
-		const hasEditKey = !!editKey;
 		runInAction(() => (plan.editable = isBlankDiagram || hasEditKey));
-	}, [match, editKey]);
+	}, [isBlankDiagram, hasEditKey]);
 
 	useEffect(() => {
 		if (planId && error) {
@@ -76,6 +79,7 @@ export default function PlanProvider(props: { children: ReactNode }) {
 	const planState: PlanState = {
 		planId,
 		editKey,
+		isBlankDiagram,
 		setCanvasElement: setCanvasEl,
 		isLoading,
 	};

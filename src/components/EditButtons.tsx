@@ -8,6 +8,7 @@ import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { usePlanContext } from 'data/PlanProvider';
 import { createPlan, editPlan } from 'data/api';
+import { SaveSvg, EditSvg, ViewSvg, LinkSvg } from 'data/icons';
 import { storeKey, removeKey } from 'data/storage';
 import { useOnPointerDownOutside } from 'hooks';
 
@@ -17,7 +18,7 @@ interface Props {
 }
 
 const EditButtons = observer(function EditButtons({ className, style }: Props) {
-	const { planId, editKey } = usePlanContext();
+	const { planId, editKey, isBlankDiagram } = usePlanContext();
 	const [, setLocation] = useLocation();
 	const [inProgress, setInProgress] = useState(false);
 	const saveable = !inProgress && plan.editable && plan.dirty;
@@ -53,62 +54,13 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 		setInProgress(false);
 	};
 
-	const handleClone = async () => {
-		setInProgress(true);
-		await create();
-		setInProgress(false);
-	};
-
-	const handleClear = () => {
-		if (window.confirm('Are you sure you want to clear the diagram?')) {
-			plan.loadPlan();
-			plan.dirty = true;
-		}
-	};
-
 	const toggleEditable = action(() => {
 		diagram.updateSelection([]);
 		plan.editable = !plan.editable;
 	});
 
-	return (
-		<div className={clsx('EditButtons', className)} style={style}>
-			{plan.editable && (
-				<button
-					className="save"
-					disabled={!saveable}
-					onClick={() => saveable && handleSave()}
-				>
-					Save
-				</button>
-			)}
-
-			<ShareButton />
-
-			{plan.editable && <button onClick={toggleEditable}>View</button>}
-
-			{!plan.editable && !!editKey && (
-				<button onClick={toggleEditable}>Edit</button>
-			)}
-
-			<button onClick={handleClone}>Clone</button>
-
-			<span style={{ width: '100%' }} />
-
-			{plan.editable && <button onClick={handleClear}>Reset</button>}
-		</div>
-	);
-});
-
-export default EditButtons;
-
-const ShareButton = observer(function ShareButton() {
-	const { planId, editKey } = usePlanContext();
-	const [isSelected, setIsSelected] = useState(false);
 	const [copied, setCopied] = useState(false);
 	const [editCopied, setEditCopied] = useState(false);
-
-	const addRef = useOnPointerDownOutside(() => setIsSelected(false));
 
 	const handleCopy = async (edit: boolean) => {
 		let link = `${window.location.origin}/${planId}`;
@@ -122,25 +74,102 @@ const ShareButton = observer(function ShareButton() {
 		}
 	};
 
+	const handleClone = async () => {
+		setInProgress(true);
+		await create();
+		setInProgress(false);
+	};
+
+	const handleClear = () => {
+		if (window.confirm('Are you sure you want to reset the diagram?')) {
+			plan.loadPlan();
+			plan.dirty = true;
+		}
+	};
 	return (
-		<div className="share">
-			<button
-				ref={addRef}
-				className={clsx({ selected: isSelected })}
-				onClick={() => setIsSelected(!isSelected)}
-			>
-				Share
-			</button>
-			<div ref={addRef} className="popup">
-				<button onClick={() => !copied && handleCopy(false)}>
+		<div className={clsx('EditButtons', className)} style={style}>
+			{plan.editable && (
+				<button
+					title="Save"
+					className="save"
+					disabled={!saveable}
+					onClick={() => saveable && handleSave()}
+				>
+					<SaveSvg /> Save
+				</button>
+			)}
+
+			{plan.editable && (
+				<button title="View" onClick={toggleEditable}>
+					<ViewSvg />
+				</button>
+			)}
+
+			{!plan.editable && (isBlankDiagram || !!editKey) && (
+				<button title="Edit" onClick={toggleEditable}>
+					<EditSvg />
+				</button>
+			)}
+
+			<Popup title="Share" label={<LinkSvg />}>
+				<button
+					title="Copy link for viewing"
+					onClick={() => !copied && handleCopy(false)}
+				>
 					{copied ? 'Copied!' : 'Copy link'}
 				</button>
 				{plan.editable && (
-					<button onClick={() => !editCopied && handleCopy(true)}>
+					<button
+						title="Copy link for editing"
+						onClick={() => !editCopied && handleCopy(true)}
+					>
 						{editCopied ? 'Copied!' : 'Copy edit link'}
 					</button>
 				)}
-			</div>
+			</Popup>
+
+			<Popup title="More actions" label="•••">
+				<button
+					title="Make a copy of this diagram"
+					disabled={inProgress}
+					onClick={() => !inProgress && handleClone()}
+				>
+					Clone
+				</button>
+
+				{plan.editable && (
+					<button title="Reset the diagram" onClick={handleClear}>
+						Reset
+					</button>
+				)}
+			</Popup>
 		</div>
 	);
 });
+
+export default EditButtons;
+
+const Popup = (props: {
+	title: string;
+	label: React.ReactNode;
+	children: React.ReactNode;
+}) => {
+	const [isSelected, setIsSelected] = useState(false);
+	const addRef = useOnPointerDownOutside(() => setIsSelected(false));
+
+	return (
+		<div className="popup-wrapper">
+			<button
+				ref={addRef}
+				title={props.title}
+				className={clsx({ selected: isSelected })}
+				onClick={() => setIsSelected(!isSelected)}
+			>
+				{props.label}
+			</button>
+			<div ref={addRef} className="popup">
+				{props.children}
+			</div>
+		</div>
+	);
+};

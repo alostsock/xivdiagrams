@@ -7,11 +7,27 @@
 		margin-left: 0.5rem;
 	}
 
-	.save:not(:disabled) {
-		box-shadow: var(--shadow-low);
+	.save {
+		svg {
+			margin-right: 0.25rem;
+		}
+
+		&:not(:disabled) {
+			box-shadow: var(--shadow-low);
+		}
 	}
 
-	.share {
+	button > svg {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	.spacer {
+		width: 100%;
+		margin: 0;
+	}
+
+	.popup-wrapper {
 		position: relative;
 
 		.popup {

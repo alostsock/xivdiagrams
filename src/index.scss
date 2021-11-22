@@ -51,8 +51,6 @@ fieldset {
 	display: flex;
 
 	label.icon {
-		width: 2.5rem;
-		height: 2.5rem;
 		padding: 0.25rem;
 	}
 
@@ -71,7 +69,7 @@ fieldset > label {
 	background: rgba(var(--gray-0-rgb), 0.95);
 	border: var(--border);
 	border-radius: var(--border-radius);
-	padding: 0.125rem 0.5rem;
+	padding: 0.25rem 0.5rem;
 
 	display: flex;
 	align-items: center;

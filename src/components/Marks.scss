@@ -2,8 +2,8 @@
 	width: 100%;
 	height: min-content;
 	margin-top: 0.5rem;
-	margin-bottom: 0.5rem;
 	display: flex;
+	align-items: flex-start;
 
 	position: relative;
 
@@ -13,6 +13,7 @@
 
 	.popup {
 		// width is set via js
+		max-height: 14rem;
 		left: 0;
 
 		.spacer {
@@ -21,8 +22,8 @@
 
 		img {
 			cursor: grab;
-			width: 3rem;
-			height: 3rem;
+			width: 2.5rem;
+			height: 2.5rem;
 			padding: 0.25rem;
 			border-radius: var(--border-radius);
 

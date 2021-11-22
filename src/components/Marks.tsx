@@ -64,14 +64,19 @@ const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 			<button
 				ref={addPointerOutsideRef}
 				className={clsx({ selected: isSelected })}
-				onClick={() => setIsSelected(!isSelected)}
+				onClick={action(() => {
+					diagram.updateSelection([]);
+					diagram.selectedTool = 'cursor';
+					setIsSelected(!isSelected);
+				})}
 			>
 				{markGroup.name}
 			</button>
+
 			<div
 				ref={addPointerOutsideRef}
 				className="popup"
-				style={{ width: `${markGroup.width * 3 + 1}rem` }}
+				style={{ width: `${markGroup.width * 2.5 + 1}rem` }}
 			>
 				{markGroup.icons.map((icon, i) => {
 					if (icon === 'spacer') {
@@ -86,6 +91,10 @@ const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 								alt={icon}
 								src={createSvgDataUrl(icon)}
 								onDragStart={handleMarkDragStart}
+								onTouchStart={(e) => {
+									setIsSelected(false);
+									handleMarkTouchStart(e);
+								}}
 							/>
 						);
 					}
@@ -137,6 +146,26 @@ export const handleMarkDrop = action(function handleMarkDrop(
 		name,
 		colors: [],
 		origin,
+		...getMarkDefaults(name),
+	});
+	diagram.addEntities([markEntity], false);
+	plan.dirty = true;
+});
+
+// minimal touch support for now.
+// try to support proper drag + drop in the future
+const handleMarkTouchStart = action(function handleMarkTouchStart(
+	e: React.TouchEvent
+) {
+	if (!(e.target instanceof HTMLImageElement)) return;
+
+	if (!diagram.canvas) return;
+	const canvasCenter = diagram.canvas.width / diagram.scale / 2;
+	const name = e.target.id.split('-').pop() as MarkName;
+	const markEntity = new Mark({
+		name,
+		colors: [],
+		origin: [canvasCenter, canvasCenter],
 		...getMarkDefaults(name),
 	});
 	diagram.addEntities([markEntity]);
