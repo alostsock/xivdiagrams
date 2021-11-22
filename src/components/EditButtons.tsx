@@ -62,6 +62,7 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 	const handleClear = () => {
 		if (window.confirm('Are you sure you want to clear the diagram?')) {
 			plan.loadPlan();
+			plan.dirty = true;
 		}
 	};
 
@@ -94,7 +95,7 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 
 			<span style={{ width: '100%' }} />
 
-			{plan.editable && <button onClick={handleClear}>Clear</button>}
+			{plan.editable && <button onClick={handleClear}>Reset</button>}
 		</div>
 	);
 });
