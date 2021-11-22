@@ -8,7 +8,7 @@
 
 	pointer-events: all;
 
-	.container + .container {
+	> * + * {
 		margin-top: 0.5rem;
 	}
 
@@ -16,6 +16,12 @@
 		width: min-content;
 		height: min-content;
 		position: relative;
+	}
+
+	> button {
+		width: 2rem;
+		height: 2rem;
+		padding: 0.25rem;
 	}
 
 	button {

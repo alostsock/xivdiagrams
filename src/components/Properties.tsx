@@ -8,6 +8,7 @@ import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { history } from 'renderer/history';
 import { useOnPointerDownOutside } from 'hooks';
+import { CrossSvg } from 'data/icons';
 
 const fillable: Entity['type'][] = ['circle', 'cone', 'rect'];
 
@@ -22,15 +23,19 @@ const Properties = observer(function Properties({ className, style }: Props) {
 	const selectedEntity: Entity | null =
 		diagram.selectedEntities.length === 1 ? diagram.selectedEntities[0] : null;
 
-	if (!selectedEntity) return null;
-
 	return (
 		<div className={clsx('Properties', className)} style={style}>
-			{'roughOptions' in selectedEntity && (
+			{selectedEntity && 'roughOptions' in selectedEntity && (
 				<ColorPicker entity={selectedEntity} />
 			)}
-			{fillable.includes(selectedEntity.type) && (
+			{selectedEntity && fillable.includes(selectedEntity.type) && (
 				<FillPicker entity={selectedEntity} />
+			)}
+			{diagram.selectedEntities.length > 0 && (
+				<button
+					onClick={() => diagram.deleteEntities(diagram.selectedEntities)}
+					children={<CrossSvg />}
+				/>
 			)}
 		</div>
 	);
