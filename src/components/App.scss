@@ -1,0 +1,116 @@
+.App {
+	width: 100%;
+	min-height: 100vh;
+
+	> :not(.diagram) {
+		margin-left: 0.5rem;
+		margin-right: 0.5rem;
+	}
+
+	.diagram {
+		// reserve a square of 100% width in flex layout
+		width: 100%;
+		height: 100%;
+		padding-bottom: 100%;
+		margin: 0.5rem 0;
+		display: flex;
+		align-items: center;
+
+		position: relative;
+
+		touch-action: none;
+
+		.overlay {
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			z-index: 1;
+			pointer-events: none;
+
+			display: flex;
+		}
+
+		.canvas-container {
+			background: var(--gray-0);
+			position: absolute;
+			left: 0;
+			right: 0;
+			transform: translateY(50%);
+			width: 100%;
+			height: 100%;
+			outline: var(--border);
+			overflow: hidden;
+		}
+	}
+
+	@media screen and (min-width: 600px) {
+		width: 75%;
+
+		.diagram .canvas-container {
+			border-radius: var(--border-radius);
+		}
+	}
+
+	// tablets or larger, must have room for a sidebar
+	// can't mix calc units in the media query to account for the sidebar:
+	// https://bugs.chromium.org/p/chromium/issues/detail?id=843584
+	// as a workaround, use fixed width instead
+	@media screen and (min-aspect-ratio: 1.32) and (min-width: 800px) {
+		width: 100%;
+		max-width: calc(100vh + 30rem);
+
+		display: grid;
+		grid-template-columns: 100vh 1fr;
+		grid-template-rows: repeat(3, min-content) 1fr min-content;
+		grid-template-areas:
+			'diagram a'
+			'diagram b'
+			'diagram c'
+			'diagram d'
+			'diagram e';
+
+		.diagram {
+			grid-area: diagram;
+			margin: 0;
+			padding: 0;
+			display: block;
+
+			.canvas-container {
+				height: 100vh;
+				position: sticky;
+				top: 0;
+				left: 0;
+				right: 0;
+				transform: none;
+				border-radius: 0;
+			}
+		}
+
+		.heading {
+			grid-area: a;
+		}
+
+		.editbuttons {
+			grid-area: b;
+		}
+
+		.stepper {
+			grid-area: c;
+			margin-top: 0.5rem;
+			border-top: 1px solid var(--gray-2);
+			border-bottom: 1px solid var(--gray-2);
+		}
+
+		.notes {
+			grid-area: d;
+		}
+
+		footer {
+			grid-area: e;
+			margin-bottom: 0.5rem;
+		}
+	}
+}

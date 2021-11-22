@@ -26,7 +26,8 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
 	padding: 0;
 	margin: 0;
 }
@@ -69,31 +70,29 @@ fieldset > label {
 	background: rgba(var(--gray-0-rgb), 0.95);
 	border: var(--border);
 	border-radius: var(--border-radius);
-	padding: 0.25rem 0.5rem;
+	padding: 0.125rem 0.5rem;
 
 	display: flex;
 	align-items: center;
 	white-space: nowrap;
-
-	transition: background 150ms, color 150ms;
 
 	user-select: none;
 	pointer-events: auto;
 
 	&:hover:not(:disabled) {
 		cursor: pointer;
-		background: rgba(var(--gray-2-rgb), 0.95);
+		background: rgba(var(--gray-3-rgb), 0.95);
 	}
 
 	&:active:not(:disabled),
 	&.selected {
 		color: var(--gray-8);
-		background: rgba(var(--gray-2-rgb), 0.95);
+		background: rgba(var(--gray-3-rgb), 0.95);
 	}
 
 	&:disabled {
 		cursor: not-allowed;
-		color: var(--gray-5);
+		color: var(--gray-4);
 		border: 1px solid transparent;
 		outline: none;
 	}
@@ -120,7 +119,7 @@ button.selected + .popup {
 	display: flex;
 	flex-wrap: wrap;
 
-	padding: 0.25rem;
+	padding: 0.5rem;
 	// width is set via js
 	max-width: 100%;
 	overflow: auto;
@@ -139,165 +138,27 @@ button.selected + .popup {
 	transition: background 150ms, opacity 150ms ease, transform 150ms ease;
 }
 
-.App {
+input {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	background-color: var(--gray-2);
 	width: 100%;
-	min-height: 100vh;
+	padding: 0.25rem;
+	border: 1px solid transparent;
+	border-radius: var(--border-radius);
 
-	& > *:not(.diagram) {
-		margin: 0 0.5rem;
-	}
+	transition: background 150ms, border 150ms;
 
-	& > * + * {
-		margin-top: 0.5rem;
-	}
-
-	.diagram {
-		// reserve a square of 100% width in flex layout
-		width: 100%;
-		height: 100%;
-		padding-bottom: 100%;
-		display: flex;
-		align-items: center;
-
-		position: relative;
-
-		touch-action: none;
-
-		.overlay {
-			width: 100%;
-			height: 100%;
-			position: absolute;
-			left: 0;
-			top: 0;
-			bottom: 0;
-			z-index: 1;
-			pointer-events: none;
-
-			display: flex;
-		}
-
-		.canvas-container {
-			background: var(--gray-0);
-			position: absolute;
-			left: 0;
-			right: 0;
-			transform: translateY(50%);
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
-		}
-	}
-
-	@media screen and (min-width: 600px) {
-		width: 75%;
-
-		& > * {
-			margin: 0 0;
-		}
-
-		.diagram .canvas-container {
-			border-radius: var(--border-radius);
-			outline: var(--border);
-		}
-	}
-
-	// tablets or larger, must have room for a sidebar
-	// can't mix calc units in the media query to account for the sidebar:
-	// https://bugs.chromium.org/p/chromium/issues/detail?id=843584
-	// as a workaround, use fixed width instead
-	@media screen and (min-aspect-ratio: 5/4) and (min-width: 800px) {
-		width: 100%;
-		max-width: calc(100vh + 30rem);
-
-		display: grid;
-		grid-template-columns: 100vh 1fr;
-		grid-template-rows: min-content 1fr min-content;
-		grid-template-areas:
-			'diagram a'
-			'diagram b'
-			'diagram c';
-
-		.diagram {
-			grid-area: diagram;
-			margin: 0;
-			padding: 0;
-			display: block;
-
-			.canvas-container {
-				height: 100vh;
-				position: sticky;
-				top: 0;
-				left: 0;
-				right: 0;
-				transform: none;
-				border-radius: 0;
-			}
-		}
-
-		.heading {
-			grid-area: a;
-		}
-
-		.notes {
-			grid-area: b;
-		}
-
-		footer {
-			grid-area: c;
-		}
-	}
-}
-
-.Toolset {
-	height: 100%;
-	display: flex;
-	align-items: center;
-
-	fieldset {
-		flex-direction: column;
-
-		label + label {
-			margin-top: 0.5rem;
-		}
-	}
-}
-
-.Notes {
-	color: var(--gray-7);
-	padding: 0.5rem;
-
-	.title {
-		color: var(--gray-6);
-		display: flex;
-		justify-content: space-between;
-	}
-
-	textarea {
+	&:hover {
 		background: var(--gray-0);
-		width: 100%;
-		margin-top: 0.5rem;
 		border: var(--border);
-		border-radius: var(--border-radius);
-		resize: none;
-
-		&:focus-visible {
-			outline: none;
-			border: var(--border);
-			box-shadow: var(--shadow-emphasis);
-		}
-	}
-}
-
-footer {
-	color: var(--gray-6);
-	font-size: 0.8rem;
-	padding: 0.5rem;
-
-	p {
-		margin: 0;
 	}
 
-	p + p {
-		margin-top: 0.5rem;
+	&:active,
+	&:focus {
+		background: var(--gray-0);
+		border: var(--border);
+		outline: var(--outline-emphasis);
 	}
 }

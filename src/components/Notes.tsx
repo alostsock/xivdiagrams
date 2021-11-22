@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import './Notes.scss';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { plan } from 'renderer/plan';
@@ -15,12 +16,23 @@ interface Props {
 const Notes = observer(function Notes({ className, style }: Props) {
 	return (
 		<div className={clsx('Notes', className)} style={style}>
-			{plan.editable ? <NotesEditable /> : <NotesDisplay />}
+			{!plan.editable ? <NotesDisplay /> : <NotesEditable />}
 		</div>
 	);
 });
 
 export default Notes;
+
+const NotesDisplay = observer(function NotesDisplay() {
+	return !plan.currentStep.notes ? null : (
+		<>
+			<div className="title">
+				<h3>Notes</h3>
+			</div>
+			<div className="content">{plan.currentStep.notes}</div>
+		</>
+	);
+});
 
 const NotesEditable = observer(function NotesEditable() {
 	return (
@@ -41,17 +53,6 @@ const NotesEditable = observer(function NotesEditable() {
 					plan.dirty = true;
 				})}
 			/>
-		</>
-	);
-});
-
-const NotesDisplay = observer(function NotesDisplay() {
-	return !plan.currentStep.notes ? null : (
-		<>
-			<div className="title">
-				<h3>Notes</h3>
-			</div>
-			<div>{plan.currentStep.notes}</div>
 		</>
 	);
 });

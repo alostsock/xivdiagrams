@@ -1,14 +1,12 @@
 # xivdiagrams
 
-An experiment to help create raid diagrams for FFXIV, heavily inspired by [Excalidraw](https://excalidraw.com/), Fabric.js, Figma, and others.
+A web app for creating FFXIV raid diagrams, heavily inspired by tools like [Excalidraw](https://excalidraw.com/), Fabric.js, Figma, and others.
 
-Feature roadmap, listed in priority order:
+Feature roadmap:
 
-- object/mechanic markers
-- multiple steps per plan
+- fight-specific backgrounds
+- searchable debuffs for players
 - grid, snap-to
-- ? fight-specific bg
-- ? searchable debuffs for players
 
 ## Copyright
 

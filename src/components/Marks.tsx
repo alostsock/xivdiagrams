@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import clsx from 'clsx';
 import './Marks.scss';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import { useOnPointerDownOutside } from 'hooks';
 import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
@@ -70,7 +71,7 @@ const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 			<div
 				ref={addPointerOutsideRef}
 				className="popup"
-				style={{ width: `${markGroup.width * 3 + 0.5}rem` }}
+				style={{ width: `${markGroup.width * 3 + 1}rem` }}
 			>
 				{markGroup.icons.map((icon, i) => {
 					if (icon === 'spacer') {
@@ -99,7 +100,7 @@ interface Props {
 	style?: React.CSSProperties;
 }
 
-const Marks = ({ className, style }: Props) => {
+const Marks = observer(function Marks({ className, style }: Props) {
 	if (!plan.editable) return null;
 
 	return (
@@ -109,7 +110,7 @@ const Marks = ({ className, style }: Props) => {
 			))}
 		</div>
 	);
-};
+});
 
 export default Marks;
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './App.scss';
 import { observer } from 'mobx-react-lite';
 import { usePlanContext } from 'data/PlanProvider';
 import { diagram } from 'renderer/diagram';
@@ -9,9 +10,11 @@ import {
 	handleKeyDown,
 } from 'renderer/interactions';
 import Heading from 'components/Heading';
-import Properties from 'components/Properties';
+import EditButtons from 'components/EditButtons';
+import Stepper from 'components/Stepper';
 import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
+import Properties from 'components/Properties';
 import Marks, { handleMarkDragEnterOver, handleMarkDrop } from './Marks';
 
 const App = observer(function App() {
@@ -31,6 +34,8 @@ const App = observer(function App() {
 	return (
 		<div className="App">
 			<Heading className="heading" />
+
+			<EditButtons className="editbuttons" />
 
 			<div ref={containerRef} className="diagram">
 				<div className="canvas-container">
@@ -55,6 +60,8 @@ const App = observer(function App() {
 					></canvas>
 				</div>
 			</div>
+
+			<Stepper className="stepper" />
 
 			<Notes className="notes" />
 

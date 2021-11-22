@@ -1,9 +1,10 @@
 import { makeAutoObservable } from 'mobx';
-import { Entity, EntityData, deserializeEntities } from 'renderer/entities';
+import { EntityData, deserializeEntities } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { history } from 'renderer/history';
 
 export interface StepData {
+	subtitle?: string;
 	entities: EntityData[];
 	notes: string;
 }
@@ -14,15 +15,10 @@ export interface PlanData {
 	steps: StepData[];
 }
 
-export interface Step {
-	entities: Entity[];
-	notes: string;
-}
-
 class Plan {
-	title: string = 'untitled';
-	author: string = 'anonymous';
-	steps: Step[] = [{ entities: [], notes: '' }];
+	title: string = '';
+	author: string = '';
+	steps: StepData[] = [{ entities: [], notes: '' }];
 
 	editable: boolean = false;
 	dirty: boolean = false;
@@ -36,36 +32,68 @@ class Plan {
 		return this.steps[this.currentStepIndex];
 	}
 
-	loadPlan(planData?: PlanData) {
-		history.clear();
+	saveStep() {
+		this.currentStep.entities = diagram.entities.map((e) =>
+			JSON.parse(JSON.stringify(e))
+		);
+	}
 
+	loadStep(index: number) {
+		if (index < 0 || index >= this.steps.length) {
+			console.warn(`attempted to load out of bounds step index ${index}`);
+			return;
+		}
+
+		history.clear();
+		diagram.updateSelection([]);
+		this.currentStepIndex = index;
+		diagram.entities = deserializeEntities(this.steps[index].entities);
+		diagram.render();
+	}
+
+	addStep() {
+		this.saveStep();
+		this.steps.splice(this.currentStepIndex, 0, {
+			entities: this.currentStep.entities.map((e) =>
+				JSON.parse(JSON.stringify(e))
+			),
+			notes: '',
+		});
+		this.loadStep(this.currentStepIndex + 1);
+	}
+
+	removeStep() {
+		if (this.steps.length === 1) {
+			console.warn(`attempted to remove the only remaining step`);
+			return;
+		}
+		this.steps.splice(this.currentStepIndex, 1);
+		this.loadStep(Math.min(this.currentStepIndex - 1, 0));
+	}
+
+	loadPlan(planData?: PlanData) {
 		if (!planData) {
-			this.title = 'untitled';
-			this.author = 'anonymous';
+			this.title = '';
+			this.author = '';
 			this.steps = [{ entities: [], notes: '' }];
 		} else {
 			this.title = planData.title;
 			this.author = planData.author;
-
-			if (planData.steps) {
-				this.steps = planData.steps.map((step) => ({
-					...step,
-					entities: deserializeEntities(step.entities),
-				}));
-			}
+			this.steps = planData.steps;
 		}
 
-		diagram.entities = this.steps[this.currentStepIndex].entities;
-		diagram.render();
+		this.loadStep(this.currentStepIndex);
 	}
 
 	toJSON(): PlanData {
+		this.saveStep();
 		return {
-			author: this.author,
-			title: this.title,
+			title: this.title.trim(),
+			author: this.author.trim(),
 			steps: this.steps.map((step) => ({
-				...step,
-				entities: diagram.entities.map((entity) => entity.toJSON()),
+				subtitle: step.subtitle?.trim(),
+				entities: step.entities,
+				notes: step.notes.trim(),
 			})),
 		};
 	}

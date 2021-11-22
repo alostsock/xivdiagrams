@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import './Toolset.scss';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import type { Entity } from 'renderer/entities';

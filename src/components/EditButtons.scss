@@ -1,0 +1,8 @@
+.EditButtons {
+	padding: 0.5rem;
+	display: flex;
+
+	* + * {
+		margin-left: 0.5rem;
+	}
+}

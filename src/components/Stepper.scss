@@ -1,0 +1,33 @@
+.Stepper {
+	color: var(--gray-8);
+	padding: 0.5rem;
+	display: flex;
+
+	button {
+		width: 2rem;
+		padding: 0.25rem;
+		flex-shrink: 0;
+	}
+
+	button + button {
+		margin-left: 0.5rem;
+	}
+
+	.info {
+		width: 100%;
+		margin-left: 0.5rem;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+
+		h3 {
+			flex-grow: 1;
+		}
+
+		h4 {
+			color: var(--gray-6);
+			width: 100%;
+			margin-top: 0.5rem;
+		}
+	}
+}

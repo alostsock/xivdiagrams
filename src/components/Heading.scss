@@ -1,5 +1,6 @@
 .Heading {
 	padding: 0.5rem;
+	margin-top: 0.5rem;
 
 	h1,
 	h2 {
@@ -12,39 +13,7 @@
 	}
 
 	h2 {
-		margin-top: 0.25rem;
+		margin-top: 0.5rem;
 		color: var(--gray-6);
-	}
-
-	input {
-		width: 100%;
-		flex-grow: 1;
-		background-color: var(--gray-2);
-		padding: 0.125rem 0;
-		border: 1px solid transparent;
-		border-radius: var(--border-radius);
-
-		transition: background 150ms, border 150ms;
-
-		&:hover {
-			background: var(--gray-0);
-			border: var(--border);
-		}
-
-		&:active,
-		&:focus {
-			background: var(--gray-0);
-			border: var(--border);
-			outline: var(--outline-emphasis);
-		}
-	}
-
-	.buttons {
-		margin-top: 1rem;
-		display: flex;
-
-		* + * {
-			margin-left: 0.5rem;
-		}
 	}
 }

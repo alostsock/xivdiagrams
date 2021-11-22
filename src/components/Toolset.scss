@@ -1,0 +1,18 @@
+.Toolset {
+	height: 100%;
+	display: flex;
+	align-items: center;
+
+	fieldset {
+		flex-direction: column;
+
+		label {
+			width: 2.125rem;
+			height: 2.125rem;
+		}
+
+		label + label {
+			margin-top: 0.5rem;
+		}
+	}
+}
