@@ -26,13 +26,14 @@ import {
 	distToPolygon,
 	distToSegments,
 	pointInBounds,
+	averagePoints,
 } from 'renderer/geometry';
 import {
 	Control,
 	CircleRadiusControl,
 	CircleInnerRadiusControl,
-	RectCornerControl,
-	RectRotationControl,
+	RectAnchorPointControl,
+	RectHeightControl,
 	ConeRadiusRotationControl,
 	ConeInnerRadiusControl,
 	ConeAngleControl,
@@ -388,8 +389,12 @@ export class Rect implements BaseEntity<RectData> {
 		this.width = options.width;
 		this.height = options.height;
 		this.rotation = options.rotation;
-		this.controls = [0, 1, 2, 3].map((ix) => new RectCornerControl(this, ix));
-		this.controls.push(new RectRotationControl(this));
+		this.controls = [
+			new RectAnchorPointControl(this, false),
+			new RectAnchorPointControl(this, true),
+			new RectHeightControl(this, 0),
+			new RectHeightControl(this, 2),
+		];
 	}
 
 	toJSON(): RectData {
@@ -725,16 +730,19 @@ export function createFromAnchorPoints(
 	switch (type) {
 		case 'rect':
 			return new Rect({
-				origin: [(x0 + x) / 2, (y0 + y) / 2],
-				rotation: 0,
-				width: Math.abs(x - x0),
-				height: Math.abs(y - y0),
+				origin: averagePoints([
+					[x0, y0],
+					[x, y],
+				]),
+				rotation: calcAngle([x0, y0], [x, y]),
+				width: Math.hypot(x - x0, y - y0),
+				height: 50,
 				roughOptions: getRoughOptions(),
 			});
 		case 'circle':
 			return new Circle({
-				origin: [(x0 + x) / 2, (y0 + y) / 2],
-				radius: Math.max(Math.abs((x - x0) / 2), Math.abs((y - y0) / 2)),
+				origin: [x0, y0],
+				radius: Math.hypot(x - x0, y - y0),
 				innerRadius: 0,
 				innerRadiusDrawingStartAngle: Math.random() * Math.PI * 2,
 				roughOptions: getRoughOptions(),

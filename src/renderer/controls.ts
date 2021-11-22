@@ -1,16 +1,20 @@
 import {
 	CONTROL_RADIUS,
-	CONTROL_OFFSET,
+	CONTROL_SIZE,
 	CONTROL_STROKE_STYLE,
 	CONTROL_LINE_WIDTH,
 	CONTROL_FILL_STYLE,
 	MIN_DIMENSION,
 } from 'renderer/constants';
 import {
+	averagePoints,
 	calcAngle,
+	calcRectPoints,
 	distance,
+	distToSegment,
 	Point,
 	pointInCircle,
+	pointInPolygon,
 	rotatePoint,
 } from 'renderer/geometry';
 import { Circle, Cone, Rect, Line, Mark } from 'renderer/entities';
@@ -44,6 +48,37 @@ function renderCircleControl(ctx: CanvasRenderingContext2D, [x, y]: Point) {
 function hitTestCircleControl(point: Point, controlPosition: Point) {
 	const radius = CONTROL_RADIUS * diagram.windowScaleFactor;
 	return pointInCircle(point, controlPosition, radius);
+}
+
+function renderRectControl(
+	ctx: CanvasRenderingContext2D,
+	position: Point,
+	rotation: number
+) {
+	ctx.save();
+
+	const size = CONTROL_SIZE * diagram.windowScaleFactor;
+	const points = calcRectPoints(position, size, size, rotation);
+	ctx.lineWidth = CONTROL_LINE_WIDTH * diagram.windowScaleFactor;
+	ctx.strokeStyle = CONTROL_STROKE_STYLE;
+	ctx.fillStyle = CONTROL_FILL_STYLE;
+
+	ctx.beginPath();
+	ctx.moveTo(...points.pop()!);
+	for (const p of points) {
+		ctx.lineTo(...p);
+	}
+	ctx.closePath();
+	ctx.fill();
+	ctx.stroke();
+
+	ctx.restore();
+}
+
+function hitTestRectControl(point: Point, position: Point, rotation: number) {
+	const size = CONTROL_SIZE * diagram.windowScaleFactor;
+	const points = calcRectPoints(position, size, size, rotation);
+	return pointInPolygon(point, points);
 }
 
 export class CircleRadiusControl implements Control<Circle> {
@@ -264,11 +299,19 @@ export class ConeAngleControl implements Control<Cone> {
 	}
 }
 
-export class RectCornerControl implements Control<Rect> {
-	constructor(public parent: Rect, public pointIndex = 0 | 1 | 2 | 3) {}
+export class RectAnchorPointControl implements Control<Rect> {
+	constructor(public parent: Rect, public isHead: boolean) {}
 
 	get position() {
-		return this.parent.points[this.pointIndex];
+		return this.isHead
+			? averagePoints([this.parent.points[1], this.parent.points[2]])
+			: averagePoints([this.parent.points[3], this.parent.points[0]]);
+	}
+
+	get opposite() {
+		return this.isHead
+			? averagePoints([this.parent.points[3], this.parent.points[0]])
+			: averagePoints([this.parent.points[1], this.parent.points[2]]);
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
@@ -280,44 +323,45 @@ export class RectCornerControl implements Control<Rect> {
 	}
 
 	handleDrag(point: Point) {
-		// first anchor point -- the dragged corner
-		const [x1, y1] = point;
-		// the other anchor point will always be opposite on a rectangle
-		const [x2, y2] = this.parent.points[(this.pointIndex + 2) % 4];
-		this.parent.origin = [(x1 + x2) / 2, (y1 + y2) / 2];
-		// get width/height between anchor points on an un-rotated axis
-		const [rx, ry] = rotatePoint([x2, y2], [x1, y1], -this.parent.rotation);
-		this.parent.width = Math.abs(x2 - rx);
-		this.parent.height = Math.abs(y2 - ry);
+		const [x0, y0] = this.isHead ? this.opposite : point;
+		const [x, y] = this.isHead ? point : this.opposite;
+		this.parent.width = Math.hypot(x - x0, y - y0);
+		this.parent.origin = averagePoints([
+			[x0, y0],
+			[x, y],
+		]);
+		this.parent.rotation = calcAngle([x0, y0], [x, y]);
 		diagram.render();
 	}
 }
 
-export class RectRotationControl implements Control<Rect> {
+export class RectHeightControl implements Control<Rect> {
 	angle = Math.PI / 2; // should appear at the 'top' of a rect
 
-	constructor(public parent: Rect) {}
+	constructor(public parent: Rect, public side: 0 | 2) {}
 
 	get position() {
-		const distFromCenter = this.parent.height / 2 + CONTROL_OFFSET;
-		const [x0, y0] = this.parent.origin;
-		return rotatePoint(
-			[x0, y0],
-			[x0 + distFromCenter, y0],
-			-this.angle + this.parent.rotation
-		);
+		return averagePoints([
+			this.parent.points[this.side],
+			this.parent.points[this.side + 1],
+		]);
 	}
 
 	render(ctx: CanvasRenderingContext2D) {
-		renderCircleControl(ctx, this.position);
+		renderRectControl(ctx, this.position, this.parent.rotation);
 	}
 
 	hitTest(point: Point) {
-		return hitTestCircleControl(point, this.position);
+		return hitTestRectControl(point, this.position, this.parent.rotation);
 	}
 
-	handleDrag(point: Point) {
-		this.parent.rotation = this.angle + calcAngle(this.parent.origin, point);
+	handleDrag([x, y]: Point) {
+		const midSegment = [
+			averagePoints([this.parent.points[1], this.parent.points[2]]),
+			averagePoints([this.parent.points[3], this.parent.points[0]]),
+		];
+		const d = distToSegment([x, y], midSegment[0], midSegment[1]);
+		this.parent.height = d * 2;
 		diagram.render();
 	}
 }

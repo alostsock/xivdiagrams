@@ -34,7 +34,7 @@ export const MIN_MARK_SIZE = 16;
 // controls
 
 export const CONTROL_RADIUS = 8;
-export const CONTROL_OFFSET = 24;
+export const CONTROL_SIZE = 14;
 export const CONTROL_STROKE_STYLE = '#1885e7';
 export const CONTROL_LINE_WIDTH = 2.5;
 export const CONTROL_FILL_STYLE = '#fff';
