@@ -44,14 +44,14 @@ const Properties = observer(function Properties({ className, style }: Props) {
 export default Properties;
 
 const colors = [
-	{ name: 'gray', stroke: '#1a1f26', fill: 'rgba(112, 115, 119, 0.15)' },
-	{ name: 'blue', stroke: '#1764ab', fill: 'rgba(75, 163, 241, 0.15)' },
-	{ name: 'green', stroke: '#3ea47b', fill: 'rgba(112, 205, 167, 0.15)' },
-	{ name: 'red', stroke: '#c33f42', fill: 'rgba(228, 112, 114, 0.15)' },
-	{ name: 'purple', stroke: '#7048e8', fill: 'rgba(155, 107, 241, 0.15)' },
-	{ name: 'cyan', stroke: '#1eb6b8', fill: 'rgba(101, 198, 199, 0.15)' },
-	{ name: 'lime', stroke: '#66a80f', fill: 'rgba(184, 238, 102, 0.15)' },
-	{ name: 'yellow', stroke: '#e67700', fill: 'rgba(255, 193, 80, 0.15)' },
+	{ name: 'gray', stroke: '#1a1f26', fill: 'rgba(112, 115, 119, 0.2)' },
+	{ name: 'blue', stroke: '#1764ab', fill: 'rgba(75, 163, 241, 0.2)' },
+	{ name: 'green', stroke: '#3ea47b', fill: 'rgba(112, 205, 167, 0.2)' },
+	{ name: 'red', stroke: '#c33f42', fill: 'rgba(228, 112, 114, 0.2)' },
+	{ name: 'purple', stroke: '#5b42e8', fill: 'rgba(91, 66, 232, 0.2)' },
+	{ name: 'cyan', stroke: '#1eb6b8', fill: 'rgba(101, 198, 199, 0.2)' },
+	{ name: 'lime', stroke: '#66a80f', fill: 'rgba(131, 212, 20, 0.2)' },
+	{ name: 'yellow', stroke: '#e67700', fill: 'rgba(255, 160, 27, 0.2)' },
 ] as const;
 type Stroke = typeof colors[number]['stroke'];
 type Fill = typeof colors[number]['fill'];
