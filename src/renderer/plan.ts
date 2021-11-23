@@ -53,7 +53,7 @@ class Plan {
 
 	addStep() {
 		this.saveStep();
-		this.steps.splice(this.currentStepIndex, 0, {
+		this.steps.splice(this.currentStepIndex + 1, 0, {
 			entities: this.currentStep.entities.map((e) =>
 				JSON.parse(JSON.stringify(e))
 			),
@@ -68,7 +68,8 @@ class Plan {
 			return;
 		}
 		this.steps.splice(this.currentStepIndex, 1);
-		this.loadStep(Math.min(this.currentStepIndex - 1, 0));
+		const prevStep = this.currentStepIndex - 1;
+		this.loadStep(prevStep >= 0 ? prevStep : 0);
 	}
 
 	loadPlan(planData?: PlanData) {
