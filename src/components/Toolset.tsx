@@ -24,13 +24,13 @@ export type Tool =
 	  >;
 
 const tools: [Tool, JSX.Element][] = [
-	['cursor', <CursorSvg />],
-	['rect', <RectSvg />],
-	['circle', <CircleSvg />],
-	['cone', <ConeSvg />],
-	['line', <LineSvg />],
-	['arrow', <ArrowSvg />],
-	['freehand', <FreehandSvg />],
+	['cursor', <CursorSvg key="cursor" />],
+	['rect', <RectSvg key="rect" />],
+	['circle', <CircleSvg key="circle" />],
+	['cone', <ConeSvg key="cone" />],
+	['line', <LineSvg key="line" />],
+	['arrow', <ArrowSvg key="arrow" />],
+	['freehand', <FreehandSvg key="freehand" />],
 ];
 
 interface Props {

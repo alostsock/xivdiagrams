@@ -16,13 +16,13 @@ export interface PlanData {
 }
 
 class Plan {
-	title: string = '';
-	author: string = '';
+	title = '';
+	author = '';
 	steps: StepData[] = [{ entities: [], notes: '' }];
 
-	editable: boolean = false;
-	dirty: boolean = false;
-	currentStepIndex: number = 0;
+	editable = false;
+	dirty = false;
+	currentStepIndex = 0;
 
 	constructor() {
 		makeAutoObservable(this);

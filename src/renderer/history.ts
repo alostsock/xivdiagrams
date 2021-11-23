@@ -9,8 +9,6 @@ function freeze(entities: Entity[]): EntityData[] {
 	return entities.map((e) => JSON.parse(JSON.stringify(e)));
 }
 
-type Action = 'add' | 'delete' | 'update';
-
 interface Entry {
 	entities: EntityData[];
 }

@@ -64,7 +64,7 @@ function renderRectControl(
 	ctx.fillStyle = CONTROL_FILL_STYLE;
 
 	ctx.beginPath();
-	ctx.moveTo(...points.pop()!);
+	ctx.moveTo(...(points.pop() ?? [0, 0]));
 	for (const p of points) {
 		ctx.lineTo(...p);
 	}

@@ -11,7 +11,6 @@ import {
 	deserializeEntities,
 } from 'renderer/entities';
 import {
-	Bounds,
 	Point,
 	averagePoints,
 	calcBoundsFromPoints,
@@ -169,9 +168,7 @@ export const handlePointerDown = action(function handlePointerDown(
 	];
 });
 
-export const handlePointerUpLeave = action(function handlePointerUpLeave(
-	e: PointerEvent<HTMLCanvasElement>
-) {
+export const handlePointerUpLeave = action(function handlePointerUpLeave() {
 	if (!plan.editable) return;
 
 	// reset interaction state
@@ -236,7 +233,7 @@ function hitTest(point: Point): Entity | false {
 // finding needles in haystacks; harder-to-hit entities take priority
 function detailedHitTest(point: Point): Entity | false {
 	let smallest: Entity | false = false;
-	let smallestDistance: number = Infinity;
+	let smallestDistance = Infinity;
 
 	for (const entity of diagram.entities) {
 		if (!pointInBoundsTolerance(point, entity)) continue;

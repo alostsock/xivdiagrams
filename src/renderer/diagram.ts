@@ -21,7 +21,7 @@ class Diagram {
 	canvas: HTMLCanvasElement | null = null;
 	roughCanvas: RoughCanvas | null = null;
 	context: CanvasRenderingContext2D | null = null;
-	scale: number = 1;
+	scale = 1;
 
 	// diagram state
 	entities: Entity[] = [];
@@ -33,9 +33,9 @@ class Diagram {
 	// interaction state
 	selectedEntities: Entity[] = [];
 	dragAnchor: Point | null = null;
-	isDraggingEntities: boolean = false;
+	isDraggingEntities = false;
 	selectionPoints: [Point, Point] | null = null;
-	entityControlInUse: Control<any> | null = null;
+	entityControlInUse: Control<Entity> | null = null;
 	entityInCreation: Exclude<Entity, Mark> | null = null;
 	lastCursorPosition: Point = [0, 0];
 	copyData: { entityData: EntityData[]; origin: Point } | null = null;
@@ -54,7 +54,8 @@ class Diagram {
 		this.canvas = el;
 		this.roughCanvas = new RoughCanvas(el);
 		this.context = el.getContext('2d');
-		this.context!.imageSmoothingEnabled = false;
+		if (!this.context) throw Error('canvas context unavailable');
+		this.context.imageSmoothingEnabled = false;
 		this.resize();
 	}
 
@@ -111,7 +112,8 @@ class Diagram {
 				drawBounds(this.context, entity.bounds);
 
 				if (this.selectedEntities.length === 1) {
-					entity.controls.forEach((c) => c.render(this.context!));
+					// @ts-expect-error: this.context is never null here
+					entity.controls.forEach((c) => c.render(this.context));
 				}
 			}
 			this.context.restore();

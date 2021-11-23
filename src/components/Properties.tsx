@@ -34,8 +34,9 @@ const Properties = observer(function Properties({ className, style }: Props) {
 			{diagram.selectedEntities.length > 0 && (
 				<button
 					onClick={() => diagram.deleteEntities(diagram.selectedEntities)}
-					children={<CrossSvg />}
-				/>
+				>
+					<CrossSvg />
+				</button>
 			)}
 		</div>
 	);
@@ -127,7 +128,7 @@ const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 		if (!entity.roughOptions.fill) return 'No Fill';
 
 		const fill = fills.find((f) => f.style === entity.roughOptions.fillStyle);
-		return fill!.label;
+		return fill?.label ?? 'Unknown Fill';
 	};
 
 	const getFillByStroke = () => {

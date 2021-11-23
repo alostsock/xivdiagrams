@@ -24,16 +24,12 @@ const Stepper = observer(function Stepper({ className, style }: Props) {
 
 	return (
 		<div className={clsx('Stepper', className)} style={style}>
-			<button
-				disabled={!leftEnabled}
-				onClick={() => leftEnabled && step(-1)}
-				children={<LeftSvg />}
-			/>
-			<button
-				disabled={!rightEnabled}
-				onClick={() => rightEnabled && step(1)}
-				children={<RightSvg />}
-			/>
+			<button disabled={!leftEnabled} onClick={() => leftEnabled && step(-1)}>
+				<LeftSvg />
+			</button>
+			<button disabled={!rightEnabled} onClick={() => rightEnabled && step(1)}>
+				<RightSvg />
+			</button>
 			{plan.editable ? <InfoEditable /> : <InfoDisplay />}
 		</div>
 	);
@@ -65,13 +61,15 @@ const InfoEditable = observer(function StepInfo() {
 			<button
 				disabled={!addEnabled}
 				onClick={() => addEnabled && plan.addStep()}
-				children={<PlusSvg />}
-			/>
+			>
+				<PlusSvg />
+			</button>
 			<button
 				disabled={!removeEnabled}
 				onClick={() => removeEnabled && plan.removeStep()}
-				children={<CrossSvg />}
-			/>
+			>
+				<CrossSvg />
+			</button>
 
 			<h4>
 				<input

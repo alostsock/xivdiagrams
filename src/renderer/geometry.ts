@@ -203,7 +203,7 @@ export function distToCone(
 }
 
 export function distToPolygon(point: Point, points: Points): number {
-	let minDist: number = Infinity;
+	let minDist = Infinity;
 	// iterate through line segments
 	let i = 0;
 	let j = points.length - 1;
@@ -217,7 +217,7 @@ export function distToPolygon(point: Point, points: Points): number {
 }
 
 export function distToPoints(point: Point, points: Points): number {
-	const min2 = points.reduce<number>((min, current, i) => {
+	const min2 = points.reduce<number>((min, current) => {
 		const d2 = distance2(point, current);
 		return d2 < min ? d2 : min;
 	}, Infinity);

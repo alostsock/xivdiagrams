@@ -135,7 +135,7 @@ export class Circle implements BaseEntity<CircleData> {
 	innerRadius: number;
 	innerRadiusDrawingStartAngle: number;
 
-	isSelected: boolean = false;
+	isSelected = false;
 	controls: Control<Circle>[];
 
 	constructor(options: ConstructorOptions<CircleData>) {
@@ -181,7 +181,7 @@ export class Circle implements BaseEntity<CircleData> {
 		);
 	}
 
-	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+	draw(rc: RoughCanvas) {
 		const [x, y] = this.origin;
 		if (this.innerRadius === 0) {
 			rc.circle(x, y, 2 * this.radius, this.roughOptions);
@@ -243,7 +243,7 @@ export class Cone implements BaseEntity<ConeData> {
 	start: number;
 	end: number;
 
-	isSelected: boolean = false;
+	isSelected = false;
 	controls: Control<Cone>[];
 
 	constructor(options: ConstructorOptions<ConeData>) {
@@ -320,7 +320,7 @@ export class Cone implements BaseEntity<ConeData> {
 		);
 	}
 
-	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+	draw(rc: RoughCanvas) {
 		const [x0, y0] = this.origin;
 
 		// use `rc.path` instead of `rc.arc`. advantages:
@@ -378,7 +378,7 @@ export class Rect implements BaseEntity<RectData> {
 	height: number;
 	rotation: number;
 
-	isSelected: boolean = false;
+	isSelected = false;
 	controls: Control<Rect>[];
 
 	constructor(options: ConstructorOptions<RectData>) {
@@ -428,7 +428,7 @@ export class Rect implements BaseEntity<RectData> {
 		return distToPolygon(point, this.points);
 	}
 
-	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+	draw(rc: RoughCanvas) {
 		rc.polygon(this.points, this.roughOptions);
 	}
 }
@@ -442,7 +442,7 @@ export class Line implements BaseEntity<LineData> {
 	angle: number;
 	length: number;
 
-	isSelected: boolean = false;
+	isSelected = false;
 	controls: Control<Line>[];
 
 	constructor(options: ConstructorOptions<LineData>) {
@@ -486,7 +486,7 @@ export class Line implements BaseEntity<LineData> {
 	}
 
 	get segments(): Segments {
-		let segments: Segments = [[this.origin, this.lineTo]];
+		const segments: Segments = [[this.origin, this.lineTo]];
 		if (this.type === 'arrow') {
 			const arrowPoints = this.arrowPoints;
 			segments.push([this.lineTo, arrowPoints[0]]);
@@ -496,7 +496,7 @@ export class Line implements BaseEntity<LineData> {
 	}
 
 	get bounds() {
-		let points = [this.origin, this.lineTo];
+		const points = [this.origin, this.lineTo];
 		if (this.type === 'arrow') {
 			points.push(...this.arrowPoints);
 		}
@@ -513,7 +513,7 @@ export class Line implements BaseEntity<LineData> {
 		return distToSegments(point, this.segments);
 	}
 
-	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+	draw(rc: RoughCanvas) {
 		this.segments.forEach(([[x1, y1], [x2, y2]]) => {
 			rc.line(x1, y1, x2, y2, this.roughOptions);
 		});
@@ -531,11 +531,11 @@ export class Mark implements BaseEntity<MarkData> {
 	rotation: number;
 	rotatable: boolean;
 
-	isSelected: boolean = false;
+	isSelected = false;
 	controls: Control<Mark>[];
 
 	image: HTMLImageElement;
-	isLoaded: boolean = false;
+	isLoaded = false;
 
 	constructor(options: ConstructorOptions<MarkData>) {
 		makeAutoObservable(this);
@@ -604,9 +604,9 @@ export class Freehand implements BaseEntity<FreehandData> {
 
 	points: Points;
 	strokePoints: Points = [];
-	path: string = '';
+	path = '';
 
-	isSelected: boolean = false;
+	isSelected = false;
 	controls: Control<Freehand>[];
 
 	constructor(options: ConstructorOptions<FreehandData>) {
@@ -747,7 +747,7 @@ export function createFromAnchorPoints(
 				innerRadiusDrawingStartAngle: Math.random() * Math.PI * 2,
 				roughOptions: getRoughOptions(),
 			});
-		case 'cone':
+		case 'cone': {
 			const defaultAngle = Math.PI / 6;
 			const angle = calcAngle([x0, y0], [x, y]);
 			return new Cone({
@@ -758,6 +758,7 @@ export function createFromAnchorPoints(
 				end: angle + defaultAngle,
 				roughOptions: getRoughOptions(),
 			});
+		}
 		case 'line':
 		case 'arrow':
 			return new Line({
@@ -780,7 +781,7 @@ function selectProps<T extends U, U>(obj: T, keys: Array<keyof U>): U {
 
 export function deserializeEntities(
 	entities: EntityData[],
-	reuseIds: boolean = true
+	reuseIds = true
 ): Entity[] {
 	return entities.map((entityData) => {
 		const options: EntityData = reuseIds
