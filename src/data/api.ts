@@ -1,7 +1,6 @@
 import type { PlanData } from 'renderer/plan';
 
-const envApiUrl = import.meta.env.VITE_API_URL as string;
-const apiUrl = envApiUrl ? `${envApiUrl}/plan` : '/plan';
+const apiUrl = `${import.meta.env.VITE_API_URL}/plan`;
 
 type PlanGetSuccess = PlanData;
 type PlanCreateSuccess = { id: string; editKey: string };
