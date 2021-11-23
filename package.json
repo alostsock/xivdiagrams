@@ -4,8 +4,8 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite",
-		"lint": "yarn run eslint . --ext .ts,.tsx",
-		"build": "tsc && vite build",
+		"lint": "eslint . --ext .ts,.tsx",
+		"build": "yarn lint && yarn tsc && vite build",
 		"preview": "yarn build && vite preview"
 	},
 	"dependencies": {
