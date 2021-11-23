@@ -83,7 +83,7 @@ class Plan {
 			this.steps = planData.steps;
 		}
 
-		this.loadStep(this.currentStepIndex);
+		this.loadStep(0);
 	}
 
 	toJSON(): PlanData {

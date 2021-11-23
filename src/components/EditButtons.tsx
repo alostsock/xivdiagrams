@@ -80,12 +80,13 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 		setInProgress(false);
 	};
 
-	const handleClear = () => {
+	const handleClear = action(() => {
 		if (window.confirm('Are you sure you want to reset the diagram?')) {
 			plan.loadPlan();
 			plan.dirty = true;
 		}
-	};
+	});
+
 	return (
 		<div className={clsx('EditButtons', className)} style={style}>
 			{plan.editable && (
