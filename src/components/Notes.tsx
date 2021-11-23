@@ -25,18 +25,18 @@ export default Notes;
 
 const NotesDisplay = observer(function NotesDisplay() {
 	return !plan.currentStep.notes ? null : (
-		<>
+		<React.Fragment>
 			<div className="title">
 				<h3>Notes</h3>
 			</div>
 			<div className="content">{plan.currentStep.notes}</div>
-		</>
+		</React.Fragment>
 	);
 });
 
 const NotesEditable = observer(function NotesEditable() {
 	return (
-		<>
+		<React.Fragment>
 			<div className="title">
 				<h3>Notes</h3>
 
@@ -53,6 +53,6 @@ const NotesEditable = observer(function NotesEditable() {
 					plan.dirty = true;
 				})}
 			/>
-		</>
+		</React.Fragment>
 	);
 });

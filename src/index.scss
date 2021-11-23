@@ -1,5 +1,6 @@
 @import './sanitize.css';
 @import './variables.css';
+@import '@reach/dialog/styles.css';
 
 :where(svg:not([fill])) {
 	fill: currentColor;
@@ -33,7 +34,7 @@ h4 {
 }
 
 h1 {
-	font-size: 2rem;
+	font-size: 1.8rem;
 }
 
 h2 {
@@ -62,7 +63,8 @@ fieldset {
 }
 
 button,
-fieldset > label {
+fieldset > label,
+a.button {
 	position: relative;
 	font-weight: bold;
 	color: var(--gray-6);
@@ -99,6 +101,12 @@ fieldset > label {
 	&:focus,
 	&:focus-within {
 		outline: var(--outline-emphasis);
+	}
+
+	&.icon {
+		width: 2rem;
+		height: 2rem;
+		padding: 0.25rem;
 	}
 }
 
@@ -159,5 +167,43 @@ input {
 		background: var(--gray-0);
 		border: var(--border);
 		outline: var(--outline-emphasis);
+	}
+}
+
+[data-reach-dialog-overlay] {
+	background: rgba(10, 10, 10, 0.6);
+}
+
+[data-reach-dialog-content] {
+	background: var(--gray-1);
+	width: 75vw;
+	padding: 1rem;
+	border-radius: var(--border-radius);
+	box-shadow: var(--shadow-high);
+
+	@media screen and (min-width: 600px) {
+		width: 50vw;
+	}
+
+	header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+	}
+}
+
+.appear {
+	transform-origin: top center;
+	animation: appear 150ms ease;
+}
+
+@keyframes appear {
+	0% {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
 	}
 }

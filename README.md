@@ -5,8 +5,10 @@ A web app for creating FFXIV raid diagrams, heavily inspired by tools like [Exca
 Feature roadmap:
 
 - fight-specific backgrounds
-- searchable debuffs for players
+- text tool
 - grid, snap-to
+- (?) utility to quickly swap player roles when cloning
+- (?) searchable debuffs for players
 
 ## Copyright
 

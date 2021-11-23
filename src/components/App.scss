@@ -49,6 +49,11 @@
 	@media screen and (min-width: 600px) {
 		width: 75%;
 
+		> :not(.diagram) {
+			margin-left: 0;
+			margin-right: 0;
+		}
+
 		.diagram .canvas-container {
 			border-radius: var(--border-radius);
 		}
@@ -111,6 +116,11 @@
 		footer {
 			grid-area: e;
 			margin-bottom: 0.5rem;
+
+			// make room for info/github buttons
+			p:last-child {
+				margin-right: 5rem;
+			}
 		}
 	}
 }

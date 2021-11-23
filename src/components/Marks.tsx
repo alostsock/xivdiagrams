@@ -60,7 +60,7 @@ const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 	});
 
 	return (
-		<>
+		<React.Fragment>
 			<button
 				ref={addPointerOutsideRef}
 				className={clsx({ selected: isSelected })}
@@ -78,29 +78,27 @@ const PopupButton = function PopupButton({ markGroup }: PopupButtonProps) {
 				className="popup"
 				style={{ width: `${markGroup.width * 2.5 + 1}rem` }}
 			>
-				{markGroup.icons.map((icon, i) => {
-					if (icon === 'spacer') {
-						return <span key={`spacer${i}`} className="spacer" />;
-					} else {
-						return (
-							<img
-								draggable
-								key={icon}
-								// the id is used for drag and drop
-								id={`mark-${icon}`}
-								alt={icon}
-								src={createSvgDataUrl(icon)}
-								onDragStart={handleMarkDragStart}
-								onTouchStart={(e) => {
-									setIsSelected(false);
-									handleMarkTouchStart(e);
-								}}
-							/>
-						);
-					}
-				})}
+				{markGroup.icons.map((icon, i) =>
+					icon === 'spacer' ? (
+						<span key={`spacer${i}`} className="spacer" />
+					) : (
+						<img
+							draggable
+							key={icon}
+							// the id is used for drag and drop
+							id={`mark-${icon}`}
+							alt={icon}
+							src={createSvgDataUrl(icon)}
+							onDragStart={handleMarkDragStart}
+							onTouchStart={(e) => {
+								setIsSelected(false);
+								handleMarkTouchStart(e);
+							}}
+						/>
+					)
+				)}
 			</div>
-		</>
+		</React.Fragment>
 	);
 };
 
