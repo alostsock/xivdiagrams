@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import './Heading.scss';
-import { action } from 'mobx';
+import { action, autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { plan } from 'renderer/plan';
 
@@ -11,6 +11,12 @@ interface Props {
 }
 
 const Heading = observer(function Heading({ className, style }: Props) {
+	useEffect(() => {
+		autorun(() => {
+			document.title = `${plan.title || 'untitled'} - XIV Diagrams`;
+		});
+	}, []);
+
 	return (
 		<header className={clsx('Heading', className)} style={style}>
 			{!plan.editable ? <HeadingDisplay /> : <HeadingEditable />}
