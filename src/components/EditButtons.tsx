@@ -81,7 +81,8 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 	};
 
 	const handleClear = action(() => {
-		if (window.confirm('Are you sure you want to reset the diagram?')) {
+		const msg = 'Are you sure you want to reset the diagram and all its steps?';
+		if (window.confirm(msg)) {
 			plan.loadPlan();
 			plan.dirty = true;
 		}
@@ -100,8 +101,30 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 				</button>
 			)}
 
+			<Popup title="Share" label={<LinkSvg />} disabled={isBlankDiagram}>
+				{() => (
+					<React.Fragment>
+						<button
+							title="Copy link for viewing"
+							onClick={() => !copied && handleCopy(false)}
+						>
+							{copied ? 'Copied!' : 'Copy link'}
+						</button>
+
+						{plan.editable && (
+							<button
+								title="Copy link for editing"
+								onClick={() => !editCopied && handleCopy(true)}
+							>
+								{editCopied ? 'Copied!' : 'Copy edit link'}
+							</button>
+						)}
+					</React.Fragment>
+				)}
+			</Popup>
+
 			{plan.editable && (
-				<button title="View" onClick={toggleEditable}>
+				<button title="Preview" onClick={toggleEditable}>
 					<ViewSvg />
 				</button>
 			)}
@@ -112,36 +135,34 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 				</button>
 			)}
 
-			<Popup title="Share" label={<LinkSvg />}>
-				<button
-					title="Copy link for viewing"
-					onClick={() => !copied && handleCopy(false)}
-				>
-					{copied ? 'Copied!' : 'Copy link'}
-				</button>
-				{plan.editable && (
-					<button
-						title="Copy link for editing"
-						onClick={() => !editCopied && handleCopy(true)}
-					>
-						{editCopied ? 'Copied!' : 'Copy edit link'}
-					</button>
-				)}
-			</Popup>
+			<Popup title="More actions" label="•••" disabled={false}>
+				{(setIsSelected) => (
+					<React.Fragment>
+						<button
+							title="Make a copy of this diagram"
+							disabled={inProgress}
+							onClick={() => {
+								if (!inProgress) {
+									handleClone();
+									setIsSelected(false);
+								}
+							}}
+						>
+							Clone
+						</button>
 
-			<Popup title="More actions" label="•••">
-				<button
-					title="Make a copy of this diagram"
-					disabled={inProgress}
-					onClick={() => !inProgress && handleClone()}
-				>
-					Clone
-				</button>
-
-				{plan.editable && (
-					<button title="Reset the diagram" onClick={handleClear}>
-						Reset
-					</button>
+						{plan.editable && (
+							<button
+								title="Reset the diagram"
+								onClick={() => {
+									handleClear();
+									setIsSelected(false);
+								}}
+							>
+								Reset
+							</button>
+						)}
+					</React.Fragment>
 				)}
 			</Popup>
 		</div>
@@ -153,7 +174,8 @@ export default EditButtons;
 const Popup = (props: {
 	title: string;
 	label: React.ReactNode;
-	children: React.ReactNode;
+	disabled: boolean;
+	children: (setIsSelected: (isSelected: boolean) => void) => React.ReactNode;
 }) => {
 	const [isSelected, setIsSelected] = useState(false);
 	const addRef = useOnPointerDownOutside(() => setIsSelected(false));
@@ -164,12 +186,13 @@ const Popup = (props: {
 				ref={addRef}
 				title={props.title}
 				className={clsx({ selected: isSelected })}
-				onClick={() => setIsSelected(!isSelected)}
+				disabled={props.disabled}
+				onClick={() => !props.disabled && setIsSelected(!isSelected)}
 			>
 				{props.label}
 			</button>
 			<div ref={addRef} className="popup">
-				{props.children}
+				{props.children(setIsSelected)}
 			</div>
 		</div>
 	);
