@@ -45,3 +45,19 @@ export function removeKey(
 		return null;
 	}
 }
+
+export interface Preferences {
+	drawPrecisely: boolean;
+}
+
+export function getPreferences(): Preferences {
+	const data = storage.getItem('preferences');
+	const partialPrefs = data ? (JSON.parse(data) as Partial<Preferences>) : null;
+	return {
+		drawPrecisely: partialPrefs?.drawPrecisely ?? false,
+	};
+}
+
+export function storePreferences(preferences: Preferences): void {
+	storage.setItem('preferences', JSON.stringify(preferences));
+}

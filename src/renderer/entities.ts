@@ -6,7 +6,6 @@ import { RoughGenerator } from 'roughjs/bin/generator';
 import { getStroke } from 'perfect-freehand';
 import {
 	BOUNDS_STYLE,
-	DEFAULT_ROUGH_OPTIONS,
 	ARROWHEAD_LEN,
 	ARROWHEAD_ANGLE,
 	FREEHAND_POINT_PRECISION,
@@ -175,59 +174,62 @@ export class Circle implements BaseEntity<CircleData> {
 	}
 
 	distance(point: Point) {
-		return Math.min(
-			distToCircle(point, this.origin, this.radius),
-			distToCircle(point, this.origin, this.innerRadius)
-		);
+		if (this.innerRadius === 0) {
+			return distToCircle(point, this.origin, this.radius);
+		} else {
+			return Math.min(
+				distToCircle(point, this.origin, this.radius),
+				distToCircle(point, this.origin, this.innerRadius)
+			);
+		}
 	}
 
 	draw(rc: RoughCanvas) {
 		const [x, y] = this.origin;
-		if (this.innerRadius === 0) {
-			rc.circle(x, y, 2 * this.radius, this.roughOptions);
-		} else {
-			const start = this.innerRadiusDrawingStartAngle;
-			const end = start + Math.PI * 2 - 0.000001;
-			// outer arc, clockwise
-			const p1 = rotatePoint(this.origin, [x + this.radius, y], start);
-			const p2 = rotatePoint([x, y], [x + this.radius, y], end);
-			// inner arc, counter-clockwise
-			const p3 = rotatePoint([x, y], [x + this.innerRadius, y], start);
-			const p4 = rotatePoint([x, y], [x + this.innerRadius, y], end);
+		const start = this.innerRadiusDrawingStartAngle;
+		const end = start + Math.PI * 2 - 0.000001;
+		// outer arc, clockwise
+		const p1 = rotatePoint(this.origin, [x + this.radius, y], start);
+		const p2 = rotatePoint([x, y], [x + this.radius, y], end);
+		// inner arc, counter-clockwise
+		const p3 = rotatePoint([x, y], [x + this.innerRadius, y], start);
+		const p4 = rotatePoint([x, y], [x + this.innerRadius, y], end);
 
-			const path =
-				`M ${p1[0]} ${p1[1]}` +
-				`A ${this.radius} ${this.radius}` +
-				`  0 ${end - start > Math.PI ? 1 : 0} 1` +
-				`  ${p2[0]} ${p2[1]} Z` +
+		let path =
+			`M ${p1[0]} ${p1[1]}` +
+			`A ${this.radius} ${this.radius}` +
+			`  0 ${end - start > Math.PI ? 1 : 0} 1` +
+			`  ${p2[0]} ${p2[1]} Z`;
+		if (this.innerRadius > 0) {
+			path +=
 				`M ${p4[0]} ${p4[1]}` +
 				`A ${this.innerRadius} ${this.innerRadius}` +
 				`  0 ${end - start > Math.PI ? 1 : 0} 0` +
 				`  ${p3[0]} ${p3[1]} Z`;
+		}
 
-			if (this.roughOptions.fillStyle === 'solid') {
-				// workaround for a bug with the 'solid' fill style.
-				// kind of related: https://github.com/rough-stuff/rough/issues/183
+		if (this.roughOptions.fillStyle === 'solid') {
+			// workaround for a bug with the 'solid' fill style.
+			// kind of related: https://github.com/rough-stuff/rough/issues/183
 
-				// render just the fill, with a perfect circle
-				rc.path(path, {
-					...this.roughOptions,
-					stroke: 'none',
-					maxRandomnessOffset: 0,
-					combineNestedSvgPaths: true,
-				});
-				// render just the stroke
-				rc.path(path, {
-					...this.roughOptions,
-					fill: undefined,
-					combineNestedSvgPaths: true,
-				});
-			} else {
-				rc.path(path, {
-					...this.roughOptions,
-					combineNestedSvgPaths: true,
-				});
-			}
+			// render just the fill, with a perfect circle
+			rc.path(path, {
+				...this.roughOptions,
+				stroke: 'none',
+				maxRandomnessOffset: 0,
+				combineNestedSvgPaths: true,
+			});
+			// render just the stroke
+			rc.path(path, {
+				...this.roughOptions,
+				fill: undefined,
+				combineNestedSvgPaths: true,
+			});
+		} else {
+			rc.path(path, {
+				...this.roughOptions,
+				combineNestedSvgPaths: true,
+			});
 		}
 	}
 }
@@ -694,12 +696,25 @@ function generateId() {
 	return nanoid(8);
 }
 
-function getRoughOptions(options?: RoughOptions): RoughOptions {
+export function getRoughOptions(options?: RoughOptions): RoughOptions {
+	const precise = diagram.drawPrecisely;
+
+	const precisionOptions: RoughOptions = {
+		strokeWidth: precise ? 1.4 : 1,
+		roughness: precise ? 0 : 1,
+		bowing: precise ? 0 : 1,
+		curveFitting: precise ? 1 : 0.98,
+		maxRandomnessOffset: precise ? 0 : 2,
+		disableMultiStroke: precise ? true : false,
+		disableMultiStrokeFill: precise ? true : false,
+	};
+
 	return {
-		...DEFAULT_ROUGH_OPTIONS,
+		stroke: '#1a1f26',
 		hachureAngle: Math.floor(Math.random() * 90),
 		...options,
 		seed: options?.seed ?? RoughGenerator.newSeed(),
+		...precisionOptions,
 	};
 }
 

@@ -6,7 +6,7 @@
 	align-items: flex-end;
 	border-radius: var(--border-radius);
 
-	pointer-events: all;
+	pointer-events: none;
 
 	> * + * {
 		margin-top: 0.5rem;

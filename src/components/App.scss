@@ -70,13 +70,14 @@
 
 		display: grid;
 		grid-template-columns: 100vh 1fr;
-		grid-template-rows: repeat(3, min-content) 1fr min-content;
+		grid-template-rows: repeat(4, min-content) 1fr min-content;
 		grid-template-areas:
 			'diagram a'
 			'diagram b'
 			'diagram c'
 			'diagram d'
-			'diagram e';
+			'diagram e'
+			'diagram f';
 
 		> :not(.diagram) {
 			margin-left: 0.5rem;
@@ -108,19 +109,23 @@
 			grid-area: b;
 		}
 
-		.stepper {
+		.preferences {
 			grid-area: c;
+		}
+
+		.stepper {
+			grid-area: d;
 			margin-top: 0.5rem;
 			border-top: 1px solid var(--gray-2);
 			border-bottom: 1px solid var(--gray-2);
 		}
 
 		.notes {
-			grid-area: d;
+			grid-area: e;
 		}
 
 		footer {
-			grid-area: e;
+			grid-area: f;
 			margin-bottom: 0.5rem;
 
 			// make room for info/github buttons

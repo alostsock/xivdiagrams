@@ -3,13 +3,6 @@ import type { StrokeOptions } from 'perfect-freehand';
 
 export const BASE_CANVAS_SIZE = 540;
 
-export const DEFAULT_ROUGH_OPTIONS: RoughOptions = {
-	roughness: 1,
-	curveFitting: 0.98,
-	strokeWidth: 1,
-	stroke: '#1a1f26',
-};
-
 // entities
 
 export const HIT_TEST_TOLERANCE = 10;

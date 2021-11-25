@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 
 type CallbackRef = (el: HTMLElement | null) => void;
 
@@ -36,4 +36,24 @@ export function useOnPointerDownOutside(callback: () => void) {
 	}, [containers, callback]);
 
 	return addRef;
+}
+
+// https://github.com/reach/reach-ui/blob/develop/packages/window-size/src/index.tsx
+export function useWindowSize() {
+	const [dimensions, setDimensions] = useState({
+		width: window.innerWidth,
+		height: window.innerHeight,
+	});
+
+	useLayoutEffect(() => {
+		const resize = () =>
+			setDimensions({
+				width: window.innerWidth,
+				height: window.innerHeight,
+			});
+		window.addEventListener('resize', resize);
+		return () => window.removeEventListener('resize', resize);
+	}, []);
+
+	return dimensions;
 }

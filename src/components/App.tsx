@@ -11,6 +11,7 @@ import {
 } from 'renderer/interactions';
 import Heading from 'components/Heading';
 import EditButtons from 'components/EditButtons';
+import Preferences from 'components/Preferences';
 import Stepper from 'components/Stepper';
 import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
@@ -36,6 +37,8 @@ const App = observer(function App() {
 			<Heading className="heading" />
 
 			<EditButtons className="editbuttons" />
+
+			<Preferences className="preferences" />
 
 			<div ref={containerRef} className="diagram">
 				<div className="canvas-container">

@@ -8,12 +8,18 @@ import {
 	MIN_ARROW_LEN,
 	MIN_MARK_SIZE,
 } from 'renderer/constants';
-import type { Entity, EntityData, Mark } from 'renderer/entities';
-import { drawBounds } from 'renderer/entities';
+import {
+	Entity,
+	EntityData,
+	Mark,
+	drawBounds,
+	getRoughOptions,
+} from 'renderer/entities';
 import type { Control } from 'renderer/controls';
 import { Point, calcBoundsFromPoints } from 'renderer/geometry';
 import { history } from 'renderer/history';
 import type { Tool } from 'components/Toolset';
+import { getPreferences, storePreferences } from 'data/storage';
 
 type CursorType = 'default' | 'crosshair' | 'move' | 'grab' | 'grabbing';
 
@@ -22,6 +28,7 @@ class Diagram {
 	roughCanvas: RoughCanvas | null = null;
 	context: CanvasRenderingContext2D | null = null;
 	scale = 1;
+	drawPrecisely;
 
 	// diagram state
 	entities: Entity[] = [];
@@ -42,6 +49,20 @@ class Diagram {
 
 	constructor() {
 		makeAutoObservable(this);
+		this.drawPrecisely = getPreferences().drawPrecisely;
+	}
+
+	toggleDrawingPrecision() {
+		this.drawPrecisely = !this.drawPrecisely;
+		for (const entity of this.entities) {
+			if (!('roughOptions' in entity)) continue;
+			entity.roughOptions = getRoughOptions(entity.roughOptions);
+		}
+		storePreferences({
+			...getPreferences(),
+			drawPrecisely: this.drawPrecisely,
+		});
+		this.render();
 	}
 
 	get windowScaleFactor() {

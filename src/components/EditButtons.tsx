@@ -91,14 +91,14 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 
 	const ref = useRef(null);
 	const rect = useRect(ref, { observe: true });
+
 	const IconLabel = (props: { icon: React.ReactNode; label: string }) => {
 		const isWide = rect && rect.width > 400;
-		const iconStyle = isWide ? { marginRight: '0.25rem' } : undefined;
 
 		return (
 			<React.Fragment>
-				<span style={iconStyle}>{props.icon}</span>
-				{isWide && props.label}
+				{props.icon}
+				{isWide && <span style={{ marginLeft: '0.25rem' }}>{props.label}</span>}
 			</React.Fragment>
 		);
 	};

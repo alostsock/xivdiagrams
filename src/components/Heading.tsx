@@ -105,8 +105,8 @@ const AboutButton = () => {
 				</header>
 
 				<p>
-					<b>XIV Diagrams</b> is a tool to make creating and sharing strategies
-					quick and simple.
+					<b>XIV Diagrams</b> is a tool for quickly creating and sharing raid
+					diagrams and strategies.
 				</p>
 
 				<p>Keyboard shortcuts:</p>
