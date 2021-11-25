@@ -5,8 +5,6 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { plan } from 'renderer/plan';
 
-const MAX_CHARS = 500;
-
 interface Props {
 	className?: string;
 	style?: React.CSSProperties;
@@ -35,13 +33,15 @@ const NotesDisplay = observer(function NotesDisplay() {
 });
 
 const NotesEditable = observer(function NotesEditable() {
+	const maxChars = 500;
+
 	return (
 		<React.Fragment>
 			<div className="title">
 				<h3>Notes</h3>
 
 				<div className="charcount">
-					{plan.currentStep.notes.length}/{MAX_CHARS}
+					{plan.currentStep.notes.length}/{maxChars}
 				</div>
 			</div>
 			<textarea
@@ -49,7 +49,7 @@ const NotesEditable = observer(function NotesEditable() {
 				placeholder="Write something here! (as if people actually read this stuff...)"
 				value={plan.currentStep.notes}
 				onChange={action((e) => {
-					plan.currentStep.notes = e.target.value.slice(0, MAX_CHARS);
+					plan.currentStep.notes = e.target.value.slice(0, maxChars);
 					plan.dirty = true;
 				})}
 			/>

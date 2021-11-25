@@ -86,7 +86,9 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 
 	const handleClone = async () => {
 		setInProgress(true);
-		await create();
+		if (window.confirm('Make a copy of the current diagram?')) {
+			await create();
+		}
 		setInProgress(false);
 	};
 

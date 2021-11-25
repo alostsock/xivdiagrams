@@ -60,7 +60,7 @@ const HeadingEditable = observer(function HeadingEditable() {
 					placeholder="untitled"
 					value={plan.title}
 					onChange={action((e) => {
-						plan.title = e.target.value;
+						plan.title = e.target.value.slice(0, 60);
 						plan.dirty = true;
 					})}
 				/>
@@ -72,7 +72,7 @@ const HeadingEditable = observer(function HeadingEditable() {
 					placeholder="anonymous"
 					value={plan.author}
 					onChange={action((e) => {
-						plan.author = e.target.value;
+						plan.author = e.target.value.slice(0, 40);
 						plan.dirty = true;
 					})}
 				/>
