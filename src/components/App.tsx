@@ -12,7 +12,7 @@ import {
 import Heading from 'components/Heading';
 import EditButtons from 'components/EditButtons';
 import Preferences from 'components/Preferences';
-import Stepper from 'components/Stepper';
+import StepDetails from 'components/StepDetails';
 import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
 import Properties from 'components/Properties';
@@ -64,7 +64,7 @@ const App = observer(function App() {
 				</div>
 			</div>
 
-			<Stepper className="stepper" />
+			<StepDetails className="stepdetails" />
 
 			<Notes className="notes" />
 

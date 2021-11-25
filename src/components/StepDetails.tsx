@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import './Stepper.scss';
+import './StepDetails.scss';
 import { observer } from 'mobx-react-lite';
 import { plan } from 'renderer/plan';
 import { LeftSvg, RightSvg, PlusSvg, CrossSvg } from 'data/icons';
@@ -13,7 +13,7 @@ interface Props {
 	style?: React.CSSProperties;
 }
 
-const Stepper = observer(function Stepper({ className, style }: Props) {
+const StepDetails = observer(function StepDetails({ className, style }: Props) {
 	const leftEnabled = plan.currentStepIndex !== 0;
 	const rightEnabled = plan.currentStepIndex < plan.steps.length - 1;
 
@@ -23,7 +23,7 @@ const Stepper = observer(function Stepper({ className, style }: Props) {
 	};
 
 	return (
-		<div className={clsx('Stepper', className)} style={style}>
+		<div className={clsx('StepDetails', className)} style={style}>
 			<button disabled={!leftEnabled} onClick={() => leftEnabled && step(-1)}>
 				<LeftSvg />
 			</button>
@@ -35,7 +35,7 @@ const Stepper = observer(function Stepper({ className, style }: Props) {
 	);
 });
 
-export default Stepper;
+export default StepDetails;
 
 const InfoDisplay = observer(function StepInfo() {
 	return (
