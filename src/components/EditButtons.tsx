@@ -75,6 +75,15 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 		}
 	};
 
+	const handleNew = () => {
+		const msg =
+			'Do you want to make a new, blank diagram? ' +
+			'Any unsaved changes to the current diagram will be lost.';
+		if (window.confirm(msg)) {
+			setLocation('/');
+		}
+	};
+
 	const handleClone = async () => {
 		setInProgress(true);
 		await create();
@@ -161,6 +170,19 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 			>
 				{(setIsSelected) => (
 					<React.Fragment>
+						<button
+							title="Make a new, blank diagram"
+							disabled={isBlankDiagram}
+							onClick={() => {
+								if (!isBlankDiagram) {
+									handleNew();
+									setIsSelected(false);
+								}
+							}}
+						>
+							New
+						</button>
+
 						<button
 							title="Make a copy of this diagram"
 							disabled={inProgress}

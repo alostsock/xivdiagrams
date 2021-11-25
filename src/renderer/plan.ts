@@ -82,6 +82,7 @@ class Plan {
 			this.author = planData.author;
 			this.steps = planData.steps;
 		}
+		this.dirty = false;
 
 		this.loadStep(0);
 	}
