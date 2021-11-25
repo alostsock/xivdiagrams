@@ -16,8 +16,8 @@
 		cursor: pointer;
 
 		.fill {
-			background: var(--gray-2);
-			height: 0.25rem;
+			background: var(--gray-3);
+			height: 0.5rem;
 
 			transition: background 150ms, height 150ms;
 
@@ -28,7 +28,7 @@
 
 		&:hover {
 			.fill {
-				height: 0.5rem;
+				height: 0.75rem;
 			}
 		}
 	}
