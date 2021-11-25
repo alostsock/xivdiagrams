@@ -1,4 +1,3 @@
-import type { Options as RoughOptions } from 'roughjs/bin/core';
 import type { StrokeOptions } from 'perfect-freehand';
 
 export const BASE_CANVAS_SIZE = 540;
