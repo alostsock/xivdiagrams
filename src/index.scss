@@ -45,6 +45,10 @@ h3 {
 	font-size: 1rem;
 }
 
+ul {
+	padding-left: 2rem;
+}
+
 fieldset {
 	padding: 0;
 	margin: 0.5rem;
@@ -82,13 +86,13 @@ a.button {
 
 	&:hover:not(:disabled) {
 		cursor: pointer;
-		background: rgba(var(--gray-3-rgb), 0.95);
+		background: rgba(var(--gray-2-rgb), 0.95);
 	}
 
 	&:active:not(:disabled),
 	&.selected {
 		color: var(--gray-8);
-		background: rgba(var(--gray-3-rgb), 0.95);
+		background: rgba(var(--gray-2-rgb), 0.95);
 	}
 
 	&:disabled {
@@ -170,18 +174,46 @@ input {
 	}
 }
 
+.kbd {
+	font-size: 0.9rem;
+	font-weight: bold;
+	font-family: monospace;
+	background: var(--gray-2);
+	padding: 0.1rem 0.25rem;
+	margin: 0 0.25rem;
+	border-radius: var(--border-radius);
+	box-shadow: var(--shadow-low);
+	white-space: nowrap;
+}
+
 [data-reach-dialog-overlay] {
-	background: rgba(10, 10, 10, 0.6);
+	background: rgba(10, 10, 10, 0.7);
+	display: flex;
+
+	animation: fadein 150ms ease;
 }
 
 [data-reach-dialog-content] {
+	color: var(--gray-7);
 	background: var(--gray-1);
-	width: 75vw;
+	width: 100%;
+	height: 100%;
 	padding: 1rem;
-	border-radius: var(--border-radius);
-	box-shadow: var(--shadow-high);
+	margin: 0;
+
+	transform-origin: top center;
+	animation: appear 150ms ease;
 
 	@media screen and (min-width: 600px) {
+		width: 75vw;
+		height: auto;
+		margin: auto;
+		border: var(--border);
+		border-radius: var(--border-radius);
+		box-shadow: var(--shadow-high);
+	}
+
+	@media screen and (min-width: 800px) {
 		width: 50vw;
 	}
 
@@ -192,9 +224,13 @@ input {
 	}
 }
 
-.appear {
-	transform-origin: top center;
-	animation: appear 150ms ease;
+@keyframes fadein {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
 }
 
 @keyframes appear {

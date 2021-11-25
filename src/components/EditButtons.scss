@@ -8,16 +8,12 @@
 	}
 
 	.save {
-		svg {
-			margin-right: 0.25rem;
-		}
-
 		&:not(:disabled) {
 			box-shadow: var(--shadow-low);
 		}
 	}
 
-	button > svg {
+	button svg {
 		width: 1.5rem;
 		height: 1.5rem;
 	}
@@ -27,21 +23,23 @@
 		margin: 0;
 	}
 
-	.popup-wrapper {
+	.menu {
 		position: relative;
 
 		.popup {
 			left: 0;
 			max-width: min-content;
-
-			button + button {
-				margin-top: 0.5rem;
-			}
+			padding-left: 0;
+			padding-right: 0;
 
 			button {
+				font-weight: normal;
 				width: 100%;
 				border: none;
 				outline: none;
+				border-radius: 0;
+				padding-left: 1rem;
+				padding-right: 1rem;
 			}
 		}
 	}

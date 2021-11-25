@@ -59,11 +59,12 @@
 		}
 	}
 
-	// tablets or larger, must have room for a sidebar
-	// can't mix calc units in the media query to account for the sidebar:
+	// Tablets or larger.
+	// Can't mix calc units in the media query to account for the sidebar:
 	// https://bugs.chromium.org/p/chromium/issues/detail?id=843584
-	// as a workaround, use fixed width instead
-	@media screen and (min-aspect-ratio: 1.32) and (min-width: 800px) {
+	// as a workaround, use fixed width instead.
+	// Pick an aspect ratio slightly under 4/3, 1.333 ~ 13/10
+	@media screen and (min-aspect-ratio: 13/10) and (min-width: 800px) {
 		width: 100%;
 		max-width: calc(100vh + 30rem);
 
@@ -76,6 +77,11 @@
 			'diagram c'
 			'diagram d'
 			'diagram e';
+
+		> :not(.diagram) {
+			margin-left: 0.5rem;
+			margin-right: 0.5rem;
+		}
 
 		.diagram {
 			grid-area: diagram;

@@ -88,13 +88,15 @@ const AboutButton = () => {
 
 	const issuesUrl = 'https://github.com/alostsock/xivdiagrams/issues';
 
+	const Kbd = ({ cmd }: { cmd: string }) => <span className="kbd">{cmd}</span>;
+
 	return (
 		<React.Fragment>
 			<button title="About" className="icon about" onClick={open}>
 				<InfoSvg />
 			</button>
 
-			<Dialog className="appear" isOpen={isOpen} onDismiss={close}>
+			<Dialog aria-label="about" isOpen={isOpen} onDismiss={close}>
 				<header>
 					<h1>About</h1>
 					<button className="icon" onClick={close}>
@@ -107,19 +109,29 @@ const AboutButton = () => {
 					quick and simple.
 				</p>
 
-				<p>
-					Currently, basic features and object markers have been implemented,
-					with common shortcuts like delete/backspace, copy/paste (ctrl + c/v),
-					and undo/redo (ctrl + z/y).
-				</p>
+				<p>Keyboard shortcuts:</p>
 
-				<p>I plan on adding more features as I get the time.</p>
+				<ul>
+					<li>
+						Select all <Kbd cmd="ctrl + A" />
+					</li>
+					<li>
+						Delete <Kbd cmd="delete" />, <Kbd cmd="backspace" />
+					</li>
+					<li>
+						Copy <Kbd cmd="ctrl + C" />, Paste <Kbd cmd="ctrl + V" />
+					</li>
+					<li>
+						Undo <Kbd cmd="ctrl + Z" />, Redo <Kbd cmd="ctrl + Y" />
+					</li>
+				</ul>
 
 				<p>
-					This project is still in its early stages, and your feedback can help
-					improve it! If you have suggestions, or {"you've"} run into a bug, you
-					can create an <a href={issuesUrl}>issue on Github</a> or find me on
-					Discord (<b>para#1968</b>).
+					Currently, basic features like common player/object/mechanic markers,
+					and multi-step diagrams have been implemented – I plan on adding more
+					features as I get the time. If you have suggestions, or {"you've"} run
+					into a bug, you can create an <a href={issuesUrl}>issue on Github</a>{' '}
+					or find me on Discord (<b>para#1968</b>).
 				</p>
 
 				<p>– 🧦</p>

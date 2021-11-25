@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import clsx from 'clsx';
 import './EditButtons.scss';
 import { action, runInAction } from 'mobx';
@@ -8,9 +8,10 @@ import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 import { usePlanContext } from 'data/PlanProvider';
 import { createPlan, editPlan } from 'data/api';
-import { SaveSvg, EditSvg, ViewSvg, LinkSvg } from 'data/icons';
+import { SaveSvg, EditSvg, ViewSvg, LinkSvg, MoreSvg } from 'data/icons';
 import { storeKey, removeKey } from 'data/storage';
 import { useOnPointerDownOutside } from 'hooks';
+import { useRect } from '@reach/rect';
 
 interface Props {
 	className?: string;
@@ -88,8 +89,22 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 		}
 	});
 
+	const ref = useRef(null);
+	const rect = useRect(ref, { observe: true });
+	const IconLabel = (props: { icon: React.ReactNode; label: string }) => {
+		const isWide = rect && rect.width > 400;
+		const iconStyle = isWide ? { marginRight: '0.25rem' } : undefined;
+
+		return (
+			<React.Fragment>
+				<span style={iconStyle}>{props.icon}</span>
+				{isWide && props.label}
+			</React.Fragment>
+		);
+	};
+
 	return (
-		<div className={clsx('EditButtons', className)} style={style}>
+		<div ref={ref} className={clsx('EditButtons', className)} style={style}>
 			{plan.editable && (
 				<button
 					title="Save"
@@ -97,11 +112,15 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 					disabled={!saveable}
 					onClick={() => saveable && handleSave()}
 				>
-					<SaveSvg /> Save
+					<IconLabel icon={<SaveSvg />} label="Save" />
 				</button>
 			)}
 
-			<Popup title="Share" label={<LinkSvg />} disabled={isBlankDiagram}>
+			<Menu
+				title="Share"
+				label={<IconLabel icon={<LinkSvg />} label="Share" />}
+				disabled={isBlankDiagram}
+			>
 				{() => (
 					<React.Fragment>
 						<button
@@ -121,21 +140,25 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 						)}
 					</React.Fragment>
 				)}
-			</Popup>
+			</Menu>
 
 			{plan.editable && (
 				<button title="Preview" onClick={toggleEditable}>
-					<ViewSvg />
+					<IconLabel icon={<ViewSvg />} label="View" />
 				</button>
 			)}
 
 			{!plan.editable && (isBlankDiagram || !!editKey) && (
 				<button title="Edit" onClick={toggleEditable}>
-					<EditSvg />
+					<IconLabel icon={<EditSvg />} label="Edit" />
 				</button>
 			)}
 
-			<Popup title="More actions" label="•••" disabled={false}>
+			<Menu
+				title="More actions"
+				label={<IconLabel icon={<MoreSvg />} label="More" />}
+				disabled={false}
+			>
 				{(setIsSelected) => (
 					<React.Fragment>
 						<button
@@ -164,14 +187,14 @@ const EditButtons = observer(function EditButtons({ className, style }: Props) {
 						)}
 					</React.Fragment>
 				)}
-			</Popup>
+			</Menu>
 		</div>
 	);
 });
 
 export default EditButtons;
 
-const Popup = (props: {
+const Menu = (props: {
 	title: string;
 	label: React.ReactNode;
 	disabled: boolean;
@@ -181,7 +204,7 @@ const Popup = (props: {
 	const addRef = useOnPointerDownOutside(() => setIsSelected(false));
 
 	return (
-		<div className="popup-wrapper">
+		<div className="menu">
 			<button
 				ref={addRef}
 				title={props.title}

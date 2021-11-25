@@ -6,17 +6,12 @@
 	fieldset {
 		flex-direction: column;
 
-		label {
-			width: 2rem;
-			height: 2rem;
-		}
-
 		label + label {
 			margin-top: 0.5rem;
 		}
 
 		@media screen and (min-width: 600px) {
-			label {
+			label.icon {
 				width: 2.5rem;
 				height: 2.5rem;
 			}
