@@ -2,7 +2,7 @@
 	width: 100%;
 	min-height: 100vh;
 
-	> :not(.diagram) {
+	> :not(.diagram, .stepprogress) {
 		margin-left: 0.5rem;
 		margin-right: 0.5rem;
 	}
@@ -12,7 +12,7 @@
 		width: 100%;
 		height: 100%;
 		padding-bottom: 100%;
-		margin: 0.5rem 0;
+		margin-top: 0.5rem;
 		display: flex;
 		align-items: center;
 
@@ -55,7 +55,8 @@
 		}
 
 		.diagram .canvas-container {
-			border-radius: var(--border-radius);
+			border-top-left-radius: var(--border-radius);
+			border-top-right-radius: var(--border-radius);
 		}
 	}
 
@@ -70,16 +71,17 @@
 
 		display: grid;
 		grid-template-columns: 100vh 1fr;
-		grid-template-rows: repeat(4, min-content) 1fr min-content;
+		grid-template-rows: repeat(5, min-content) 1fr min-content;
 		grid-template-areas:
 			'diagram a'
 			'diagram b'
 			'diagram c'
 			'diagram d'
 			'diagram e'
-			'diagram f';
+			'diagram f'
+			'diagram g';
 
-		> :not(.diagram) {
+		> :not(.diagram, .stepprogress) {
 			margin-left: 0.5rem;
 			margin-right: 0.5rem;
 		}
@@ -113,19 +115,21 @@
 			grid-area: c;
 		}
 
-		.stepdetails {
+		.stepprogress {
 			grid-area: d;
 			margin-top: 0.5rem;
-			border-top: 1px solid var(--gray-2);
-			border-bottom: 1px solid var(--gray-2);
 		}
 
-		.notes {
+		.stepdetails {
 			grid-area: e;
 		}
 
-		footer {
+		.notes {
 			grid-area: f;
+		}
+
+		footer {
+			grid-area: g;
 			margin-bottom: 0.5rem;
 
 			// make room for info/github buttons

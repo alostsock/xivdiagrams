@@ -12,6 +12,7 @@ import {
 import Heading from 'components/Heading';
 import EditButtons from 'components/EditButtons';
 import Preferences from 'components/Preferences';
+import StepProgress from './StepProgress';
 import StepDetails from 'components/StepDetails';
 import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
@@ -63,6 +64,8 @@ const App = observer(function App() {
 					></canvas>
 				</div>
 			</div>
+
+			<StepProgress className="stepprogress" />
 
 			<StepDetails className="stepdetails" />
 

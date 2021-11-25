@@ -41,12 +41,12 @@ const NotesEditable = observer(function NotesEditable() {
 				<h3>Notes</h3>
 
 				<div className="charcount">
-					{plan.currentStep.notes.length}/{maxChars}
+					{plan.currentStep.notes.length} / {maxChars}
 				</div>
 			</div>
 			<textarea
 				rows={8}
-				placeholder="Write something here! (as if people actually read this stuff...)"
+				placeholder="A place to speaketh plain."
 				value={plan.currentStep.notes}
 				onChange={action((e) => {
 					plan.currentStep.notes = e.target.value.slice(0, maxChars);
