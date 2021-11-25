@@ -18,6 +18,7 @@ import {
 	boundsInBounds,
 	distance,
 } from 'renderer/geometry';
+import { RoughGenerator } from 'roughjs/bin/generator';
 
 export function getCanvasCoords(e: PointerEvent | DragEvent): Point {
 	const { left, top } = e.currentTarget.getBoundingClientRect();
@@ -328,6 +329,11 @@ export const handleKeyDown = action(function handleKeyDown(
 			origin,
 			position
 		);
+		pasted.forEach((entity) => {
+			if ('roughOptions' in entity) {
+				entity.roughOptions.seed = RoughGenerator.newSeed();
+			}
+		});
 		diagram.addEntities(pasted);
 		plan.dirty = true;
 		diagram.updateSelection(pasted);
