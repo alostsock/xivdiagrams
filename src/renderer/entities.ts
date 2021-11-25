@@ -696,10 +696,10 @@ function generateId() {
 
 function getRoughOptions(options?: RoughOptions): RoughOptions {
 	return {
-		seed: options?.seed ?? RoughGenerator.newSeed(),
-		hachureAngle: Math.floor(Math.random() * 90),
 		...DEFAULT_ROUGH_OPTIONS,
+		hachureAngle: Math.floor(Math.random() * 90),
 		...options,
+		seed: options?.seed ?? RoughGenerator.newSeed(),
 	};
 }
 
@@ -725,7 +725,8 @@ export function drawBounds(ctx: CanvasRenderingContext2D, bounds: Bounds) {
 export function createFromAnchorPoints(
 	type: Extract<Entity['type'], 'rect' | 'circle' | 'cone' | LineType>,
 	[x0, y0]: Point,
-	[x, y]: Point
+	[x, y]: Point,
+	seed?: number
 ) {
 	switch (type) {
 		case 'rect':
@@ -737,7 +738,7 @@ export function createFromAnchorPoints(
 				rotation: calcAngle([x0, y0], [x, y]),
 				width: Math.hypot(x - x0, y - y0),
 				height: 50,
-				roughOptions: getRoughOptions(),
+				roughOptions: getRoughOptions({ seed }),
 			});
 		case 'circle':
 			return new Circle({
@@ -745,7 +746,7 @@ export function createFromAnchorPoints(
 				radius: Math.hypot(x - x0, y - y0),
 				innerRadius: 0,
 				innerRadiusDrawingStartAngle: Math.random() * Math.PI * 2,
-				roughOptions: getRoughOptions(),
+				roughOptions: getRoughOptions({ seed }),
 			});
 		case 'cone': {
 			const defaultAngle = Math.PI / 6;
@@ -756,7 +757,7 @@ export function createFromAnchorPoints(
 				innerRadius: 0,
 				start: angle - defaultAngle,
 				end: angle + defaultAngle,
-				roughOptions: getRoughOptions(),
+				roughOptions: getRoughOptions({ seed }),
 			});
 		}
 		case 'line':
@@ -766,7 +767,7 @@ export function createFromAnchorPoints(
 				origin: [x0, y0],
 				angle: calcAngle([x0, y0], [x, y]),
 				length: Math.hypot(x - x0, y - y0),
-				roughOptions: getRoughOptions(),
+				roughOptions: getRoughOptions({ seed }),
 			});
 	}
 }

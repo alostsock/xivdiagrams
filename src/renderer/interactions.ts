@@ -52,11 +52,11 @@ export const handlePointerMove = action(function handlePointerMove(
 				diagram.entityInCreation.addPoint([x, y]);
 				plan.dirty = true;
 			} else {
-				// TODO: modify entity instead of creating a new one
 				diagram.entityInCreation = createFromAnchorPoints(
 					diagram.entityInCreation.type,
 					diagram.dragAnchor,
-					[x, y]
+					[x, y],
+					diagram.entityInCreation.roughOptions.seed
 				);
 			}
 			diagram.render();
