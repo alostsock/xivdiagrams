@@ -1,4 +1,4 @@
-import { makeAutoObservable, action } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import { nanoid } from 'nanoid';
 import type { RoughCanvas } from 'roughjs/bin/canvas';
 import type { Options as RoughOptions } from 'roughjs/bin/core';
@@ -40,6 +40,7 @@ import {
 	MarkSizeRotationControl,
 } from 'renderer/controls';
 import { diagram } from 'renderer/diagram';
+import { imageCache } from 'renderer/image-cache';
 import { MarkName, createSvgDataUrl } from 'data/marks';
 
 interface BaseData {
@@ -537,7 +538,6 @@ export class Mark implements BaseEntity<MarkData> {
 	controls: Control<Mark>[];
 
 	image: HTMLImageElement;
-	isLoaded = false;
 
 	constructor(options: ConstructorOptions<MarkData>) {
 		makeAutoObservable(this);
@@ -550,13 +550,8 @@ export class Mark implements BaseEntity<MarkData> {
 		this.rotatable = options.rotatable;
 		this.controls = [new MarkSizeRotationControl(this)];
 
-		this.image = new Image();
-		this.image.onload = action(() => {
-			this.isLoaded = true;
-			diagram.render();
-		});
 		const colors = this.colors.length > 0 ? this.colors : undefined;
-		this.image.src = createSvgDataUrl(this.name, colors);
+		this.image = imageCache.get(createSvgDataUrl(this.name, colors), 'mark');
 	}
 
 	toJSON(): MarkData {
@@ -585,7 +580,7 @@ export class Mark implements BaseEntity<MarkData> {
 	}
 
 	draw(_rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
-		if (!this.isLoaded) return;
+		if (!this.image.complete) return;
 
 		const [x, y] = this.origin;
 		const dx = x - this.size / 2;
