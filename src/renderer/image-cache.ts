@@ -1,4 +1,3 @@
-import { plan } from 'renderer/plan';
 import { diagram } from 'renderer/diagram';
 
 /**
@@ -29,20 +28,6 @@ class ImageCache {
 		}
 
 		return image;
-	}
-
-	purge() {
-		const arenaUrls = new Set();
-		for (const step of plan.steps) {
-			if (step.imageUrl) {
-				arenaUrls.add(step.imageUrl);
-			}
-		}
-		for (const url of this.arenas.keys()) {
-			if (!arenaUrls.has(url)) {
-				this.arenas.delete(url);
-			}
-		}
 	}
 }
 
