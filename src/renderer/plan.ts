@@ -9,6 +9,7 @@ export interface StepData {
 	notes: string;
 	encounterName?: string;
 	arenaUrl?: string;
+	arenaOpacity?: number;
 	entities: EntityData[];
 }
 
@@ -37,6 +38,7 @@ class Plan implements PlanData {
 
 	saveStep() {
 		this.currentStep.arenaUrl = diagram.arenaUrl ?? undefined;
+		this.currentStep.arenaOpacity = diagram.arenaOpacity;
 		this.currentStep.entities = diagram.entities.map((e) =>
 			JSON.parse(JSON.stringify(e))
 		);
@@ -53,6 +55,7 @@ class Plan implements PlanData {
 		diagram.updateSelection([]);
 		this.currentStepIndex = index;
 		diagram.arenaUrl = this.steps[index].arenaUrl ?? null;
+		diagram.arenaOpacity = this.steps[index].arenaOpacity ?? 0.75;
 		diagram.entities = deserializeEntities(this.steps[index].entities);
 		diagram.render();
 	}
@@ -60,6 +63,9 @@ class Plan implements PlanData {
 	addStep() {
 		this.saveStep();
 		this.steps.splice(this.currentStepIndex + 1, 0, {
+			encounterName: this.currentStep.encounterName,
+			arenaUrl: this.currentStep.arenaUrl,
+			arenaOpacity: this.currentStep.arenaOpacity,
 			entities: this.currentStep.entities.map((e) =>
 				JSON.parse(JSON.stringify(e))
 			),
@@ -103,6 +109,7 @@ class Plan implements PlanData {
 				notes: step.notes.trim(),
 				encounterName: step.encounterName,
 				arenaUrl: step.arenaUrl,
+				arenaOpacity: step.arenaOpacity,
 				entities: step.entities,
 			})),
 		};
@@ -111,6 +118,7 @@ class Plan implements PlanData {
 	setArena(encounterName: string, arenaUrl: string) {
 		this.currentStep.encounterName = encounterName;
 		diagram.arenaUrl = arenaUrl;
+		diagram.arenaOpacity = 0.75;
 		diagram.render();
 		this.dirty = true;
 	}

@@ -5,15 +5,22 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { plan } from 'renderer/plan';
 import { encounters } from 'data/encounters';
-import { LeftSvg, RightSvg, PlusSvg, CrossSvg } from 'data/icons';
-import { Dialog } from '@reach/dialog';
+import { LeftSvg, RightSvg, PlusSvg, CrossSvg, SettingsSvg } from 'data/icons';
 import {
 	Accordion,
 	AccordionButton,
 	AccordionItem,
 	AccordionPanel,
 } from '@reach/accordion';
+import { Dialog } from '@reach/dialog';
+import {
+	Disclosure,
+	DisclosureButton,
+	DisclosurePanel,
+} from '@reach/disclosure';
+import { Slider } from '@reach/slider';
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@reach/tabs';
+import { diagram } from 'renderer/diagram';
 
 const MAX_STEPS = 35;
 
@@ -75,11 +82,15 @@ const EncounterEditable = observer(function EncounterEditable() {
 	const close = () => setIsOpen(false);
 
 	return (
-		<h3 className="encounter">
-			<button onClick={open}>
+		<div className="encounter">
+			<h3>
 				{plan.currentStep.encounterName
 					? plan.currentStep.encounterName
 					: 'No encounter selected'}
+			</h3>
+
+			<button onClick={open} className="change">
+				Change
 			</button>
 
 			<Dialog
@@ -114,7 +125,31 @@ const EncounterEditable = observer(function EncounterEditable() {
 					</TabPanels>
 				</Tabs>
 			</Dialog>
-		</h3>
+
+			<Disclosure>
+				<DisclosureButton className="icon settings">
+					<SettingsSvg />
+				</DisclosureButton>
+
+				<DisclosurePanel className="panel">
+					<label>
+						Opacity
+						<Slider
+							className="slider"
+							min={0}
+							max={1}
+							step={0.05}
+							value={diagram.arenaOpacity}
+							onChange={action((opacity) => {
+								diagram.arenaOpacity = opacity;
+								diagram.render();
+								plan.dirty = true;
+							})}
+						/>
+					</label>
+				</DisclosurePanel>
+			</Disclosure>
+		</div>
 	);
 });
 

@@ -34,6 +34,7 @@ class Diagram {
 
 	// diagram state
 	arenaUrl: string | null = null;
+	arenaOpacity = 0.75;
 	entities: Entity[] = [];
 
 	// ui state
@@ -115,7 +116,7 @@ class Diagram {
 
 		if (this.arenaUrl) {
 			this.context.save();
-			this.context.globalAlpha = 0.75;
+			this.context.globalAlpha = this.arenaOpacity;
 			const image = imageCache.get(this.arenaUrl, 'arena');
 			const margin = ARENA_MARGIN;
 			const size = BASE_CANVAS_SIZE - ARENA_MARGIN * 2;
