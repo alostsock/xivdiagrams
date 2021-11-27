@@ -292,6 +292,7 @@ input[type='checkbox'] {
 
 		[data-reach-slider-handle] {
 			background: var(--blue-5);
+			z-index: inherit;
 			cursor: pointer;
 		}
 	}

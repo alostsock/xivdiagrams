@@ -23,6 +23,7 @@
 			"version": "detect"
 		}
 	},
+	"ignorePatterns": ["**/*.js"],
 	"rules": {
 		"no-mixed-operators": 0,
 		"no-mixed-spaces-and-tabs": ["error", "smart-tabs"]

@@ -4,6 +4,7 @@ import './StepDetails.scss';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { plan } from 'renderer/plan';
+import { diagram } from 'renderer/diagram';
 import { encounters } from 'data/encounters';
 import { LeftSvg, RightSvg, PlusSvg, CrossSvg, SettingsSvg } from 'data/icons';
 import {
@@ -20,7 +21,7 @@ import {
 } from '@reach/disclosure';
 import { Slider } from '@reach/slider';
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@reach/tabs';
-import { diagram } from 'renderer/diagram';
+import Reveal from 'components/Reveal';
 
 const MAX_STEPS = 35;
 
@@ -166,7 +167,8 @@ const Raids = ({ onSelect }: { onSelect: () => void }) => (
 							<h3>{floor.floorName}</h3>
 							<div className="arenas">
 								{floor.arenas.map((arenaUrl, i) => (
-									<img
+									<Reveal
+										className="arena"
 										key={i}
 										title={`${floor.encounterName} Arena ${i + 1}`}
 										alt={`${floor.encounterName} Arena ${i + 1}`}
