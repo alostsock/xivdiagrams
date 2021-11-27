@@ -88,17 +88,18 @@ const EncounterEditable = observer(function EncounterEditable() {
 				isOpen={isOpen}
 				onDismiss={close}
 			>
+				<button className="icon close" onClick={close}>
+					<CrossSvg />
+				</button>
+
 				<Tabs>
 					<TabList>
-						<header>
-							<h1>
-								<Tab>Raids</Tab>
-								<Tab>Ultimates</Tab>
-							</h1>
-							<button className="icon" onClick={close}>
-								<CrossSvg />
-							</button>
-						</header>
+						<Tab>
+							<h1>Raids</h1>
+						</Tab>
+						<Tab>
+							<h1>Ultimates</h1>
+						</Tab>
 					</TabList>
 
 					<TabPanels>

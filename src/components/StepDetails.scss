@@ -71,6 +71,11 @@
 			&:hover {
 				box-shadow: var(--shadow-high);
 			}
+
+			@media screen and (min-width: 1000px) {
+				width: 8rem;
+				height: 8rem;
+			}
 		}
 	}
 }

@@ -97,12 +97,10 @@ const AboutButton = () => {
 			</button>
 
 			<Dialog aria-label="about" isOpen={isOpen} onDismiss={close}>
-				<header>
-					<h1>About</h1>
-					<button className="icon" onClick={close}>
-						<CrossSvg />
-					</button>
-				</header>
+				<h1>About</h1>
+				<button className="icon close" onClick={close}>
+					<CrossSvg />
+				</button>
 
 				<p>
 					<b>XIV Diagrams</b> is a tool for quickly creating and sharing raid
