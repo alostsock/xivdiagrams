@@ -1,6 +1,7 @@
 import type { StrokeOptions } from 'perfect-freehand';
 
 export const BASE_CANVAS_SIZE = 540;
+export const ARENA_MARGIN = 60;
 
 // entities
 

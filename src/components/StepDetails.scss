@@ -1,32 +1,76 @@
 .StepDetails {
 	padding: 0.5rem;
 	display: flex;
-
-	button {
-		width: 2rem;
-		padding: 0.25rem;
-		flex-shrink: 0;
-	}
+	flex-wrap: wrap;
 
 	button + button {
 		margin-left: 0.5rem;
 	}
 
+	.encounter {
+		width: 100%;
+		margin-bottom: 1rem;
+
+		button {
+			width: 100%;
+		}
+	}
+
 	.info {
 		width: 100%;
-		margin-left: 0.5rem;
 		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 
-		h3 {
-			flex-grow: 1;
+		.leftright {
+			display: flex;
+
+			button {
+				height: 100%;
+			}
 		}
 
-		h4 {
-			color: var(--gray-6);
-			width: 100%;
-			margin-top: 0.5rem;
+		.currentstep {
+			flex-grow: 1;
+			margin-left: 0.5rem;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+
+			h3 {
+				flex-grow: 1;
+				display: flex;
+			}
+
+			h4 {
+				color: var(--gray-6);
+				width: 100%;
+				margin-top: 0.5rem;
+			}
+		}
+	}
+}
+
+// Dialog is outside the scope of the component
+.encounterdialog {
+	.arenas {
+		width: 100%;
+		margin: 0.5rem 0;
+		display: flex;
+		flex-wrap: wrap;
+
+		img {
+			width: 6rem;
+			height: 6rem;
+			margin: 0.25rem;
+			border-radius: var(--border-radius);
+
+			cursor: pointer;
+
+			transition: box-shadow 150ms;
+
+			&:hover {
+				box-shadow: var(--shadow-high);
+			}
 		}
 	}
 }

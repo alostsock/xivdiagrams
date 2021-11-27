@@ -266,7 +266,6 @@ function detailedHitTest(point: Point): Entity | false {
 
 		// entities closer to the point take priority
 		const entityDistance = entity.distance(point);
-		console.log(entity.type, entityDistance, smallest.type, smallestDistance);
 		if (entityDistance < smallestDistance) {
 			smallest = entity;
 			smallestDistance = entityDistance;

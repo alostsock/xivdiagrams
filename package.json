@@ -10,8 +10,10 @@
 	},
 	"dependencies": {
 		"@fontsource/lato": "^4.5.0",
+		"@reach/accordion": "^0.16.1",
 		"@reach/dialog": "^0.16.2",
 		"@reach/rect": "^0.16.0",
+		"@reach/tabs": "^0.16.4",
 		"clsx": "^1.1.1",
 		"mobx": "^6.3.3",
 		"mobx-react-lite": "^3.2.1",

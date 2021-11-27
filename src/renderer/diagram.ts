@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { RoughCanvas } from 'roughjs/bin/canvas';
 import {
 	BASE_CANVAS_SIZE,
+	ARENA_MARGIN,
 	MIN_RADIUS,
 	MIN_DIMENSION,
 	MIN_LINE_LEN,
@@ -18,6 +19,7 @@ import {
 import type { Control } from 'renderer/controls';
 import { Point, calcBoundsFromPoints } from 'renderer/geometry';
 import { history } from 'renderer/history';
+import { imageCache } from 'renderer/image-cache';
 import type { Tool } from 'components/Toolset';
 import { getPreferences, storePreferences } from 'data/storage';
 
@@ -31,6 +33,7 @@ class Diagram {
 	drawPrecisely;
 
 	// diagram state
+	arenaUrl: string | null = null;
 	entities: Entity[] = [];
 
 	// ui state
@@ -109,6 +112,16 @@ class Diagram {
 		this.context.fillStyle = '#fffefc';
 		this.context.fillRect(0, 0, width, height);
 		this.context.restore();
+
+		if (this.arenaUrl) {
+			this.context.save();
+			this.context.globalAlpha = 0.75;
+			const image = imageCache.get(this.arenaUrl, 'arena');
+			const margin = ARENA_MARGIN;
+			const size = BASE_CANVAS_SIZE - ARENA_MARGIN * 2;
+			this.context.drawImage(image, margin, margin, size, size);
+			this.context.restore();
+		}
 
 		if (this.selectionPoints) {
 			const { left, right, top, bottom } = calcBoundsFromPoints(

@@ -2,11 +2,14 @@ import { makeAutoObservable } from 'mobx';
 import { EntityData, deserializeEntities } from 'renderer/entities';
 import { diagram } from 'renderer/diagram';
 import { history } from 'renderer/history';
+import { imageCache } from 'renderer/image-cache';
 
 export interface StepData {
 	subtitle?: string;
-	entities: EntityData[];
 	notes: string;
+	encounterName?: string;
+	arenaUrl?: string;
+	entities: EntityData[];
 }
 
 export interface PlanData {
@@ -15,7 +18,7 @@ export interface PlanData {
 	steps: StepData[];
 }
 
-class Plan {
+class Plan implements PlanData {
 	title = '';
 	author = '';
 	steps: StepData[] = [{ entities: [], notes: '' }];
@@ -33,9 +36,11 @@ class Plan {
 	}
 
 	saveStep() {
+		this.currentStep.arenaUrl = diagram.arenaUrl ?? undefined;
 		this.currentStep.entities = diagram.entities.map((e) =>
 			JSON.parse(JSON.stringify(e))
 		);
+		imageCache.purge();
 	}
 
 	loadStep(index: number) {
@@ -47,6 +52,7 @@ class Plan {
 		history.clear();
 		diagram.updateSelection([]);
 		this.currentStepIndex = index;
+		diagram.arenaUrl = this.steps[index].arenaUrl ?? null;
 		diagram.entities = deserializeEntities(this.steps[index].entities);
 		diagram.render();
 	}
@@ -78,8 +84,8 @@ class Plan {
 			this.author = '';
 			this.steps = [{ entities: [], notes: '' }];
 		} else {
-			this.title = planData.title;
-			this.author = planData.author;
+			this.title = planData.title.trim();
+			this.author = planData.author.trim();
 			this.steps = planData.steps;
 		}
 		this.dirty = false;
@@ -94,10 +100,19 @@ class Plan {
 			author: this.author.trim(),
 			steps: this.steps.map((step) => ({
 				subtitle: step.subtitle?.trim(),
-				entities: step.entities,
 				notes: step.notes.trim(),
+				encounterName: step.encounterName,
+				arenaUrl: step.arenaUrl,
+				entities: step.entities,
 			})),
 		};
+	}
+
+	setArena(encounterName: string, arenaUrl: string) {
+		this.currentStep.encounterName = encounterName;
+		diagram.arenaUrl = arenaUrl;
+		diagram.render();
+		this.dirty = true;
 	}
 }
 

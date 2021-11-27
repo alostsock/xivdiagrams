@@ -1,6 +1,8 @@
 @import './sanitize.css';
 @import './variables.css';
+@import '@reach/accordion/styles.css';
 @import '@reach/dialog/styles.css';
+@import '@reach/tabs/styles.css';
 
 :where(svg:not([fill])) {
 	fill: currentColor;
@@ -35,11 +37,11 @@ h4 {
 
 h1 {
 	color: var(--gray-8);
-	font-size: 1.8rem;
+	font-size: 1.4rem;
 }
 
 h2 {
-	font-size: 1.4rem;
+	font-size: 1.2rem;
 }
 
 h3 {
@@ -173,7 +175,7 @@ input:not([type='checkbox']) {
 	border: 1px solid transparent;
 	border-radius: var(--border-radius);
 
-	transition: background 150ms, border 150ms;
+	transition: background 150ms;
 
 	&:hover {
 		background: var(--gray-0);
@@ -209,10 +211,10 @@ input[type='checkbox'] {
 }
 
 [data-reach-dialog-overlay] {
-	background: rgba(10, 10, 10, 0.7);
+	background: rgba(10, 10, 10, 0.6);
 	display: flex;
 
-	animation: fadein 150ms ease;
+	animation: fadein 150ms;
 }
 
 [data-reach-dialog-content] {
@@ -221,12 +223,14 @@ input[type='checkbox'] {
 	height: 100%;
 	padding: 1rem;
 	margin: 0;
+	overflow-y: auto;
 
 	transform-origin: top center;
 	animation: appear 150ms ease;
 
 	@media screen and (min-width: 600px) {
 		width: 75vw;
+		max-height: 90vh;
 		height: auto;
 		margin: auto;
 		border: var(--border);
@@ -239,9 +243,58 @@ input[type='checkbox'] {
 	}
 
 	header {
+		width: 100%;
 		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
+		align-items: center;
+
+		button.icon {
+			margin-left: auto;
+		}
+	}
+}
+
+[data-reach-tab-list] {
+	background: none;
+	margin-bottom: 0.5rem;
+
+	[data-reach-tab] {
+		font-weight: bold;
+		color: var(--gray-6);
+		padding: 0.25rem 0.5rem;
+		border: 1px solid transparent;
+	}
+
+	[data-reach-tab][data-selected] {
+		color: var(--gray-8);
+		background: rgba(var(--gray-2-rgb), 0.95);
+		border: 1px solid transparent;
+		box-shadow: none;
+	}
+
+	[data-reach-tab] + [data-reach-tab] {
+		margin-left: 0.5rem;
+	}
+}
+
+[data-reach-accordion] {
+	[data-reach-accordion-button] {
+		background: none;
+		width: 100%;
+		border: none;
+		border-top: 1px solid var(--gray-3);
+		border-radius: 0;
+
+		&[data-state='open'] {
+			color: var(--gray-8);
+			border-bottom: none;
+		}
+	}
+
+	[data-reach-accordion-panel] {
+		padding: 0.5rem;
+
+		transform-origin: top left;
+		animation: appear 150ms ease;
 	}
 }
 
