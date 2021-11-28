@@ -35,7 +35,6 @@ export default function Blur({
 		// spread things out a bit when many images are shown at once
 		requestAnimationFrame(() => {
 			const pixels = decode(hash, width, height);
-			console.log(pixels);
 			const context = canvas.getContext('2d');
 			if (!context) return;
 			const imageData = context.createImageData(width, height);

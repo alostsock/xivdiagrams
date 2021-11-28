@@ -137,7 +137,7 @@ const EncounterEditable = observer(function EncounterEditable() {
 						Opacity
 						<Slider
 							className="slider"
-							min={0}
+							min={0.25}
 							max={1}
 							step={0.05}
 							value={diagram.arenaOpacity}

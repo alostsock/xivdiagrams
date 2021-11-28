@@ -10,7 +10,30 @@ import { history } from 'renderer/history';
 import { useOnPointerDownOutside } from 'hooks';
 import { CrossSvg } from 'data/icons';
 
+const colors = [
+	{ name: 'gray', stroke: '#1a1f26', fill: 'rgba(112, 115, 119, 0.25)' },
+	{ name: 'blue', stroke: '#1764ab', fill: 'rgba(75, 163, 241, 0.25)' },
+	{ name: 'green', stroke: '#3ea47b', fill: 'rgba(112, 205, 167, 0.25)' },
+	{ name: 'red', stroke: '#c33f42', fill: 'rgba(228, 112, 114, 0.25)' },
+	{ name: 'purple', stroke: '#5b42e8', fill: 'rgba(91, 66, 232, 0.25)' },
+	{ name: 'cyan', stroke: '#1eb6b8', fill: 'rgba(101, 198, 199, 0.25)' },
+	{ name: 'lime', stroke: '#66a80f', fill: 'rgba(131, 212, 20, 0.25)' },
+	{ name: 'yellow', stroke: '#e67700', fill: 'rgba(255, 160, 27, 0.25)' },
+] as const;
+
+type Stroke = typeof colors[number]['stroke'];
+type Fill = typeof colors[number]['fill'];
+
 const fillable: Entity['type'][] = ['circle', 'cone', 'rect'];
+
+const fills = [
+	{ style: 'none', label: 'No Fill' },
+	{ style: 'solid', label: 'Solid' },
+	{ style: 'hachure', label: 'Hachure' },
+	{ style: 'cross-hatch', label: 'Cross Hatch' },
+	{ style: 'zigzag', label: 'Zigzag' },
+] as const;
+type FillStyle = typeof fills[number]['style'];
 
 interface Props {
 	className?: string;
@@ -28,9 +51,11 @@ const Properties = observer(function Properties({ className, style }: Props) {
 			{selectedEntity && 'roughOptions' in selectedEntity && (
 				<ColorPicker entity={selectedEntity} />
 			)}
+
 			{selectedEntity && fillable.includes(selectedEntity.type) && (
 				<FillPicker entity={selectedEntity} />
 			)}
+
 			{diagram.selectedEntities.length > 0 && (
 				<button
 					onClick={() => diagram.deleteEntities(diagram.selectedEntities)}
@@ -43,19 +68,6 @@ const Properties = observer(function Properties({ className, style }: Props) {
 });
 
 export default Properties;
-
-const colors = [
-	{ name: 'gray', stroke: '#1a1f26', fill: 'rgba(112, 115, 119, 0.25)' },
-	{ name: 'blue', stroke: '#1764ab', fill: 'rgba(75, 163, 241, 0.25)' },
-	{ name: 'green', stroke: '#3ea47b', fill: 'rgba(112, 205, 167, 0.25)' },
-	{ name: 'red', stroke: '#c33f42', fill: 'rgba(228, 112, 114, 0.25)' },
-	{ name: 'purple', stroke: '#5b42e8', fill: 'rgba(91, 66, 232, 0.25)' },
-	{ name: 'cyan', stroke: '#1eb6b8', fill: 'rgba(101, 198, 199, 0.25)' },
-	{ name: 'lime', stroke: '#66a80f', fill: 'rgba(131, 212, 20, 0.25)' },
-	{ name: 'yellow', stroke: '#e67700', fill: 'rgba(255, 160, 27, 0.25)' },
-] as const;
-type Stroke = typeof colors[number]['stroke'];
-type Fill = typeof colors[number]['fill'];
 
 interface PickerProps {
 	entity: Entity;
@@ -107,15 +119,6 @@ const ColorPicker = observer(function ColorPicker({ entity }: PickerProps) {
 		</div>
 	);
 });
-
-const fills = [
-	{ style: 'none', label: 'No Fill' },
-	{ style: 'solid', label: 'Solid' },
-	{ style: 'hachure', label: 'Hachure' },
-	{ style: 'cross-hatch', label: 'Cross Hatch' },
-	{ style: 'zigzag', label: 'Zigzag' },
-] as const;
-type FillStyle = typeof fills[number]['style'];
 
 const FillPicker = observer(function FillPicker({ entity }: PickerProps) {
 	const [isOpen, setIsOpen] = useState(false);
