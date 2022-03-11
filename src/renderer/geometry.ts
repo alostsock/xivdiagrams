@@ -224,3 +224,34 @@ export function distToPoints(point: Point, points: Points): number {
 
 	return Math.sqrt(min2);
 }
+
+// https://github.com/excalidraw/excalidraw/blob/f9d2d537a21fdf35cc412aa4186a513b0c909ac1/src/utils.ts#L94
+export function measureText(text: string, size: number) {
+	const line = document.createElement('div');
+	const body = document.body;
+	line.style.position = 'absolute';
+	line.style.whiteSpace = 'pre';
+	line.style.font = `${size}px Patrick Hand`;
+	body.appendChild(line);
+	line.innerText = text
+		.split('\n')
+		// replace empty lines with single space because leading/trailing empty
+		// lines would be stripped from computation
+		.map((x) => x || ' ')
+		.join('\n');
+	const width = line.offsetWidth;
+	const height = line.offsetHeight;
+	// Now creating 1px sized item that will be aligned to baseline
+	// to calculate baseline shift
+	const span = document.createElement('span');
+	span.style.display = 'inline-block';
+	span.style.overflow = 'hidden';
+	span.style.width = '1px';
+	span.style.height = '1px';
+	line.appendChild(span);
+	// Baseline is important for positioning text on canvas
+	const baseline = span.offsetTop + span.offsetHeight;
+	document.body.removeChild(line);
+
+	return { width, height, baseline };
+}

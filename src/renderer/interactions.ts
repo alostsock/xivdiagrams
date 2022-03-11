@@ -7,6 +7,7 @@ import { HIT_TEST_TOLERANCE } from 'renderer/constants';
 import {
 	Entity,
 	Freehand,
+	Text,
 	createFromAnchorPoints,
 	deserializeEntities,
 } from 'renderer/entities';
@@ -49,7 +50,9 @@ export const handlePointerMove = action(function handlePointerMove(
 		diagram.cursorType = 'crosshair';
 
 		if (diagram.dragAnchor && diagram.entityInCreation) {
-			if (diagram.entityInCreation instanceof Freehand) {
+			if (diagram.entityInCreation instanceof Text) {
+				return;
+			} else if (diagram.entityInCreation instanceof Freehand) {
 				diagram.entityInCreation.addPoint([x, y]);
 				plan.dirty = true;
 			} else {
@@ -126,14 +129,19 @@ export const handlePointerDown = action(function handlePointerDown(
 
 	if (diagram.selectedTool !== 'cursor') {
 		// start creating an entity
-		diagram.entityInCreation =
-			diagram.selectedTool === 'freehand'
-				? new Freehand({ points: [[x, y]] })
-				: createFromAnchorPoints(
-						diagram.selectedTool,
-						diagram.dragAnchor,
-						diagram.dragAnchor
-				  );
+		if (diagram.selectedTool === 'freehand') {
+			diagram.entityInCreation = new Freehand({ points: [[x, y]] });
+		} else if (diagram.selectedTool === 'text') {
+			diagram.entityInCreation = new Text({ origin: [x, y], text: '' });
+			// handle text editing in the TextEntityEditor component
+			e.preventDefault();
+		} else {
+			diagram.entityInCreation = createFromAnchorPoints(
+				diagram.selectedTool,
+				diagram.dragAnchor,
+				diagram.dragAnchor
+			);
+		}
 		diagram.render();
 		return;
 	}
@@ -189,6 +197,10 @@ export const handlePointerUpLeave = action(function handlePointerUpLeave() {
 	}
 
 	if (diagram.entityInCreation) {
+		if (diagram.entityInCreation.type === 'text') {
+			// handle text editing in the TextEntityEditor component
+			return;
+		}
 		// add the entity to the stack, and clear temporary state
 		const createdEntity = diagram.entityInCreation;
 		diagram.entityInCreation = null;

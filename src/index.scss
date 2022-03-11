@@ -168,7 +168,7 @@ button.selected + .popup {
 	transition: background 150ms, opacity 150ms ease, transform 150ms ease;
 }
 
-input:not([type='checkbox']) {
+:where(input:not([type='checkbox'])) {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

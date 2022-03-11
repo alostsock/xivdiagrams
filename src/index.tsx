@@ -8,6 +8,7 @@ import App from 'components/App';
 
 import './index.scss';
 import '@fontsource/lato';
+import '@fontsource/patrick-hand';
 
 configureMobx({
 	enforceActions: 'always',

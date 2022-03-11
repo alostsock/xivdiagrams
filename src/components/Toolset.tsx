@@ -14,13 +14,14 @@ import {
 	LineSvg,
 	ArrowSvg,
 	FreehandSvg,
+	TextSvg,
 } from 'data/icons';
 
 export type Tool =
 	| 'cursor'
 	| Extract<
 			Entity['type'],
-			'rect' | 'circle' | 'cone' | 'line' | 'arrow' | 'freehand'
+			'rect' | 'circle' | 'cone' | 'line' | 'arrow' | 'freehand' | 'text'
 	  >;
 
 const tools: [Tool, JSX.Element][] = [
@@ -31,6 +32,7 @@ const tools: [Tool, JSX.Element][] = [
 	['line', <LineSvg key="line" />],
 	['arrow', <ArrowSvg key="arrow" />],
 	['freehand', <FreehandSvg key="freehand" />],
+	['text', <TextSvg key="text" />],
 ];
 
 interface Props {

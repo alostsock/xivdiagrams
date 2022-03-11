@@ -26,6 +26,7 @@ import {
 	distToSegments,
 	pointInBounds,
 	averagePoints,
+	measureText,
 } from 'renderer/geometry';
 import {
 	Control,
@@ -101,6 +102,13 @@ export interface FreehandData extends BaseData {
 	points: Points;
 }
 
+export interface TextData extends BaseData {
+	type: 'text';
+	origin: Point;
+	size?: number;
+	text: string;
+}
+
 export type EntityData =
 	| CircleData
 	| ConeData
@@ -123,7 +131,7 @@ type BaseEntity<T extends BaseData> = T & {
 	toJSON: () => T;
 };
 
-export type Entity = Circle | Cone | Rect | Line | Mark | Freehand;
+export type Entity = Circle | Cone | Rect | Line | Mark | Freehand | Text;
 
 export class Circle implements BaseEntity<CircleData> {
 	id;
@@ -685,6 +693,54 @@ export function getSvgPathFromStroke(stroke: Points) {
 
 	d.push('Z');
 	return d.join(' ');
+}
+
+export class Text implements BaseEntity<TextData> {
+	id;
+	type: 'text' = 'text';
+
+	size: number;
+	text: string;
+	origin: Point;
+
+	isSelected = false;
+	controls: Control<Text>[];
+
+	constructor(options: ConstructorOptions<TextData>) {
+		makeAutoObservable(this);
+		this.id = options.id ?? generateId();
+		this.size = options.size ?? 32;
+		this.text = options.text;
+		this.origin = options.origin;
+		this.controls = [];
+	}
+
+	toJSON(): TextData {
+		return selectProps<Text, TextData>(this, ['id', 'type', 'text', 'origin']);
+	}
+
+	get bounds(): Bounds {
+		return {
+			left: 0,
+			right: 0,
+			top: 0,
+			bottom: 0,
+		};
+	}
+
+	distance(point: Point) {
+		return Infinity;
+	}
+
+	draw(rc: RoughCanvas, ctx: CanvasRenderingContext2D) {
+		ctx.save();
+		const { height, baseline } = measureText(this.text, this.size);
+		console.log(height, baseline);
+		ctx.font = `${this.size}px Patrick Hand`;
+		const [x, y] = this.origin;
+		ctx.fillText(this.text, x, y + baseline - height / 2);
+		ctx.restore();
+	}
 }
 
 function generateId() {

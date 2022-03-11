@@ -11,6 +11,7 @@
 	},
 	"dependencies": {
 		"@fontsource/lato": "^4.5.0",
+		"@fontsource/patrick-hand": "^4.5.0",
 		"@reach/accordion": "^0.16.1",
 		"@reach/dialog": "^0.16.2",
 		"@reach/disclosure": "^0.16.2",

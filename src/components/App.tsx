@@ -16,7 +16,11 @@ import StepDetails from 'components/StepDetails';
 import Notes from 'components/Notes';
 import Toolset from 'components/Toolset';
 import Properties from 'components/Properties';
-import Marks, { handleMarkDragEnterOver, handleMarkDrop } from './Marks';
+import Marks, {
+	handleMarkDragEnterOver,
+	handleMarkDrop,
+} from 'components/Marks';
+import TextEntityEditor from 'components/TextEntityEditor';
 
 const App = observer(function App() {
 	const { setCanvasElement } = usePlanContext();
@@ -60,8 +64,9 @@ const App = observer(function App() {
 						onDrop={handleMarkDrop}
 						onKeyDown={handleKeyDown}
 						tabIndex={0}
-					></canvas>
+					/>
 				</div>
+				<TextEntityEditor />
 			</div>
 
 			<StepDetails className="stepdetails" />

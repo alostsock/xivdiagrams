@@ -252,6 +252,11 @@
   resolved "https://registry.yarnpkg.com/@fontsource/lato/-/lato-4.5.0.tgz#c248b083be330daafade76995fed9088d5b76c04"
   integrity sha512-Y1qluoF+5b2U6MWcEz70+euZwl4TEV+9v7nZCmuRgNHb5McYc3VmbNmYNEiLsnb1HHwlAHA70P/LktP9EJ61ag==
 
+"@fontsource/patrick-hand@^4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/patrick-hand/-/patrick-hand-4.5.0.tgz#a161b264674c463f5a6643240e9681f07e70c8af"
+  integrity sha512-43nF+CAzvnSw5z4EI5Gby6ipT5Iyw4WG7qi1Yx0LAHVMbPzQzs1FFDXi5+m/5llY+j9kSnNcHnLknjf/G6o92w==
+
 "@humanwhocodes/config-array@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.6.0.tgz#b5621fdb3b32309d2d16575456cbc277fa8f021a"
